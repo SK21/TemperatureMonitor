@@ -1,0 +1,4 @@
+# TempMonitor
+  This sketch can be used to report temperatures from DS18B20 sensors. Connect multiple DS18B20 temp sensors to a 'ESP8266 Thing' from Sparkfun. See the 'Hookup Guide' at https://learn.sparkfun.com/tutorials/esp8266-thing-hookup-guide for initial board setup. 
+  Start 'the Thing' with the switch in AP mode. Connect to it's network with a PC, phone, tablet, etc. In a browser enter 192.168.4.1 From here you can check temperatures directly or choose a wifi network that the server program is on. Enter the network SSID, password and IP of the PC on which the server program is running. Once this has been saved switch to client mode and connect to the server on the PC.
+  The server program will check the sensors periodically and record the results in a database. It shows tables and graphs of the data. It can text out alarms using the Texter program.

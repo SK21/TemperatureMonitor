@@ -1,0 +1,12 @@
+# TempMonitorBasic
+Client only version of TempMonitor for grain bins
+
+ Reads DS18B20 sensors and OPI cables for grain bin monitoring. Uses wifi to connect to a PC with the server program. 
+ Edit the sketch to enter network name, network password and IP of the PC.
+
+ I have used it on the Sparkfun 'Thing', 'Thing Dev' and
+ the WEMOS D1 Mini Pro (https://universal-solder.ca/product/wemos-d1-mini-pro-16mb-esp8266-wifi-arduino-lua-nodemcu-antenna/). 
+ I have used them without the external antenna with good results.
+
+ For OPI cables I used 2 pin connectors (https://www.amazon.ca/TING-Waterproof-Electrical-Connector-Pigtail/dp/B00UFICM5I).
+ Connect red to ground. Connect black to a signal pin. connect a 2.2K ohm resistor between black and power.
