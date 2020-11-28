@@ -7,7 +7,7 @@ byte ControlBoxID = 1;		// unique to each control box
 // *******************************************
 
 #define APP_Name "Temperature Monitor"
-#define App_Version "22-Nov-2020"
+#define App_Version "28-Nov-2020"
 
 // wifi
 byte ConnectionStatus = WL_IDLE_STATUS;
@@ -21,10 +21,10 @@ IPAddress ipDestination;
 unsigned int SendToPort = 2388; //port that listens
 
 // sensors
-// ESP-01
+ //ESP-01
 //OneWire OWbus[2] = { OneWire(0),OneWire(2) };
 
-// Wemos D1
+//// Wemos D1
 OneWire OWbus[2] = { OneWire(12),OneWire(13) };
 
 byte SensorAddress[8];
@@ -56,6 +56,8 @@ String NetworkPassword;
 
 bool SendEnabled = false; // if last PGN received was for this node send is enabled
 
+bool SensorsCounted = false;
+
 struct SensorData
 {
 	byte ID[8];
@@ -65,6 +67,8 @@ struct SensorData
 };
 
 SensorData Sensors[255];
+
+WiFiManager wm;
 
 void setup()
 {
@@ -81,9 +85,10 @@ void setup()
 	delay(1000);
 
 	WiFi.mode(WIFI_STA);
-	WiFiManager wm;
 	wm.setTimeout(180);	// returns from unsuccessful AP config after this time in seconds
 	//wm.resetSettings();	// reset saved settings
+
+	wm.setWebServerCallback(bindServerCallback);
 
 	bool ESPconnected = wm.autoConnect(apSSID.c_str());
 	if (!ESPconnected) ESP.restart();
@@ -100,7 +105,13 @@ void setup()
 void loop()
 {
 	CheckWifi();
-	if (ConnectedCount == 1) UpdateSensors();	// get a count of connected sensors
+
+	if ((ConnectedCount == 1) && !SensorsCounted)
+	{
+		UpdateSensors();	// get an initial count of connected sensors
+		SensorsCounted = true;
+	}
+
 	ReceiveData();
 
 	switch (CommandByte)
@@ -151,3 +162,10 @@ void SetNewUserData()
 		}
 	}
 }
+
+void bindServerCallback()
+{
+	wm.server->on("/info", HandleTemps);
+}
+
+

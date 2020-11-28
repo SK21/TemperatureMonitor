@@ -1,3 +1,5 @@
+// adapted from https://playground.arduino.cc/Learning/OneWire/
+
 void UpdateSensors()
 {
 	Serial.println("Updating sensors");
@@ -25,6 +27,7 @@ void UpdateSensors()
 				Sensors[SensorCount].UserData[1] = (byte)(UserData);
 				SensorCount++;
 			}
+			Serial.println("Sensor count: " + String(SensorCount));
 			delay(1000);
 		}
 	}
@@ -70,16 +73,19 @@ void SetUserData(byte Addr[], byte BusID, int NewValue)
 	OWbus[BusID].reset();
 	OWbus[BusID].select(Addr);
 	OWbus[BusID].write(0x4E, 1);	// begin write to scratchpad
-	delay(100);
 
 	data[0] = NewValue >> 8;
 	data[1] = NewValue & 255;
+
 	OWbus[BusID].write(data[0], 1);
 	OWbus[BusID].write(data[1], 1);
-
 	OWbus[BusID].write(9, 1);		// set resolution to 0.5°C
-	delay(1000);
-	OWbus[BusID].write(0x4E, 1);	// copy scratchpad to eeprom
+	delay(10);
+
+	OWbus[BusID].reset();
+	OWbus[BusID].select(Addr);
+
+	OWbus[BusID].write(0x48, 1);	// copy scratchpad to eeprom
 	delay(100);
 }
 
