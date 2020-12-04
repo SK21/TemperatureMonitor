@@ -2,15 +2,16 @@
 
 void UpdateSensors()
 {
-	Serial.println("Updating sensors");
+	Serial.println("Updating sensors on "+String(BusCount) + " buses.");
 	SensorCount = 0;
 	byte Addr[8];
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < BusCount; i++)
 	{
+	  Serial.println("Searching bus "+String(i));
 		OWbus[i].reset_search();
-		delay(100);
+		delay(500);
 		while (OWbus[i].search(Addr) && SensorCount < 256)
-		{
+		{      
 			SensorTemp = GetTemp(Addr, i);
 			if (ValidTemp(SensorTemp))
 			{
@@ -27,10 +28,11 @@ void UpdateSensors()
 				Sensors[SensorCount].UserData[1] = (byte)(UserData);
 				SensorCount++;
 			}
-			Serial.println("Sensor count: " + String(SensorCount));
+
 			delay(1000);
 		}
 	}
+  Serial.println("Sensor count: " + String(SensorCount));
 }
 
 float GetTemp(byte Addr[], byte BusID)
@@ -79,7 +81,7 @@ void SetUserData(byte Addr[], byte BusID, int NewValue)
 
 	OWbus[BusID].write(data[0], 1);
 	OWbus[BusID].write(data[1], 1);
-	OWbus[BusID].write(9, 1);		// set resolution to 0.5°C
+	OWbus[BusID].write(9, 1);		// set resolution to 0.5ï¿½C
 	delay(10);
 
 	OWbus[BusID].reset();

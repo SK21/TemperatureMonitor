@@ -7,7 +7,7 @@ byte ControlBoxID = 1;		// unique to each control box
 // *******************************************
 
 #define APP_Name "Temperature Monitor"
-#define App_Version "28-Nov-2020"
+#define App_Version "29-Nov-2020"
 
 // wifi
 byte ConnectionStatus = WL_IDLE_STATUS;
@@ -23,9 +23,14 @@ unsigned int SendToPort = 2388; //port that listens
 // sensors
  //ESP-01
 //OneWire OWbus[2] = { OneWire(0),OneWire(2) };
+//int BusCount = 2;
 
 //// Wemos D1
-OneWire OWbus[2] = { OneWire(12),OneWire(13) };
+OneWire OWbus[3] = { OneWire(12),OneWire(13),OneWire(14) };
+int BusCount = 3;
+
+//OneWire OWbus[1]={OneWire(5)};
+//int BusCount=1;
 
 byte SensorAddress[8];
 
@@ -70,6 +75,9 @@ SensorData Sensors[255];
 
 WiFiManager wm;
 
+unsigned long FlashTime;
+bool FlashState;
+
 void setup()
 {
 	Serial.begin(38400);
@@ -79,6 +87,7 @@ void setup()
 	Serial.print(APP_Name);
 	Serial.print("  :  ");
 	Serial.println(App_Version);
+	Serial.println("ControlBox: " + String(ControlBoxID));
 	Serial.println();
 
 	UDP.begin(ReceiveFromPort);
@@ -86,7 +95,7 @@ void setup()
 
 	WiFi.mode(WIFI_STA);
 	wm.setTimeout(180);	// returns from unsuccessful AP config after this time in seconds
-	//wm.resetSettings();	// reset saved settings
+//	wm.resetSettings();	// reset saved settings
 
 	wm.setWebServerCallback(bindServerCallback);
 
@@ -100,10 +109,14 @@ void setup()
 	ipDestination = WiFi.localIP();
 	ipDestination[3] = 255;		// change to broadcast
 	Serial.println(ipDestination.toString());
+
+	pinMode(LED_BUILTIN, OUTPUT);
 }
 
 void loop()
 {
+	FlashLED();
+
 	CheckWifi();
 
 	if ((ConnectedCount == 1) && !SensorsCounted)
@@ -169,3 +182,19 @@ void bindServerCallback()
 }
 
 
+void FlashLED()
+{
+	if (millis() - FlashTime > 1000)
+	{
+		FlashTime = millis();
+		FlashState = !FlashState;
+		if (FlashState)
+		{
+			digitalWrite(BUILTIN_LED, HIGH);
+		}
+		else
+		{
+			digitalWrite(BUILTIN_LED, LOW);
+		}
+	}
+}

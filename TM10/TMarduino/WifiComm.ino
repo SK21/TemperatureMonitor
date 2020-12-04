@@ -93,7 +93,7 @@ void ReceiveData()
 //12	user data low, cable bits 7 - 4, sensor # bits 3 - 0, (0 - 15 each)
 //13	Temp high
 //14	Temp low
-//15	previous received command
+//15	previously received command
 
 void SendData(byte SensorID)
 {
