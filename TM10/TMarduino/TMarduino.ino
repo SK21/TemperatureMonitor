@@ -1,13 +1,10 @@
 #include <WiFiManager.h>		// https://github.com/tzapu/WiFiManager
 #include <OneWire.h>            // https://github.com/PaulStoffregen/OneWire
 #include <WiFiUdp.h>
-
-// user settings *****************************
-byte ControlBoxID = 1;		// unique to each control box
-// *******************************************
+#include <EEPROM.h>
 
 #define APP_Name "Temperature Monitor"
-#define App_Version "29-Nov-2020"
+#define App_Version "04-Dec-2020"
 
 // wifi
 byte ConnectionStatus = WL_IDLE_STATUS;
@@ -21,13 +18,13 @@ IPAddress ipDestination;
 unsigned int SendToPort = 2388; //port that listens
 
 // sensors
- //ESP-01
-//OneWire OWbus[2] = { OneWire(0),OneWire(2) };
-//int BusCount = 2;
-
 //// Wemos D1
 OneWire OWbus[3] = { OneWire(12),OneWire(13),OneWire(14) };
 int BusCount = 3;
+
+ //ESP-01
+//OneWire OWbus[2] = { OneWire(0),OneWire(2) };
+//int BusCount = 2;
 
 //OneWire OWbus[1]={OneWire(5)};
 //int BusCount=1;
@@ -55,7 +52,7 @@ byte dsScratchPadMem[9];
 
 byte SensorCount = 0;
 
-String apSSID = "TempMonitor " + String(ControlBoxID);
+String apSSID;
 String NetworkSSID;
 String NetworkPassword;
 
@@ -78,9 +75,16 @@ WiFiManager wm;
 unsigned long FlashTime;
 bool FlashState;
 
+bool SaveParameters;
+
+byte ControlBoxID;	// unique to each control box
+char CBID[5];		// controlbox ID char
+
 void setup()
 {
 	Serial.begin(38400);
+
+	LoadParameters();
 
 	delay(5000);
 	Serial.println();
@@ -93,11 +97,23 @@ void setup()
 	UDP.begin(ReceiveFromPort);
 	delay(1000);
 
+	apSSID = "TempMonitor " + String(ControlBoxID);
+
 	WiFi.mode(WIFI_STA);
 	wm.setTimeout(180);	// returns from unsuccessful AP config after this time in seconds
-//	wm.resetSettings();	// reset saved settings
+	//wm.resetSettings();	// reset saved settings
 
 	wm.setWebServerCallback(bindServerCallback);
+	wm.setSaveConfigCallback(SaveConfigCallback);
+
+	String ID = String(ControlBoxID);
+	ID.toCharArray(CBID, 5);
+
+	WiFiManagerParameter BoxID("ID", "Unique Controlbox ID:", CBID, 5);
+	wm.addParameter(&BoxID);
+
+	std::vector<const char*> menu = { "wifi","info","param","exit" };
+	wm.setMenu(menu);
 
 	bool ESPconnected = wm.autoConnect(apSSID.c_str());
 	if (!ESPconnected) ESP.restart();
@@ -105,10 +121,12 @@ void setup()
 	NetworkSSID = wm.getWiFiSSID();
 	NetworkPassword = wm.getWiFiPass();
 
+	strcpy(CBID, BoxID.getValue());
+	if (SaveParameters) SaveNewParameters();
+
 	// UDP destination
 	ipDestination = WiFi.localIP();
 	ipDestination[3] = 255;		// change to broadcast
-	Serial.println(ipDestination.toString());
 
 	pinMode(LED_BUILTIN, OUTPUT);
 }
@@ -181,6 +199,29 @@ void bindServerCallback()
 	wm.server->on("/info", HandleTemps);
 }
 
+void SaveConfigCallback()
+{
+	SaveParameters = true;
+}
+
+void SaveNewParameters()
+{
+	ControlBoxID = atoi(CBID);
+	SaveParameters = false;
+
+	EEPROM.begin(512);
+	EEPROM.put(0, ControlBoxID);
+	EEPROM.commit();
+	EEPROM.end();
+}
+
+void LoadParameters()
+{
+	EEPROM.begin(512);
+	EEPROM.get(0, ControlBoxID);
+	EEPROM.end();
+}
+
 
 void FlashLED()
 {
@@ -198,3 +239,4 @@ void FlashLED()
 		}
 	}
 }
+
