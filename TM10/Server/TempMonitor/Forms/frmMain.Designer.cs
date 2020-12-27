@@ -35,9 +35,12 @@
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveAsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.backupToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.restoreToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem8 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem9 = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem11 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.helpToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -48,6 +51,7 @@
             this.butRefresh = new System.Windows.Forms.ToolStripButton();
             this.butSensors = new System.Windows.Forms.ToolStripButton();
             this.butBins = new System.Windows.Forms.ToolStripButton();
+            this.butControlBoxes = new System.Windows.Forms.ToolStripButton();
             this.butReports = new System.Windows.Forms.ToolStripButton();
             this.butOptions = new System.Windows.Forms.ToolStripButton();
             this.tbEvents = new System.Windows.Forms.TextBox();
@@ -64,6 +68,7 @@
             this.fileToolStripMenuItem,
             this.toolStripMenuItem8,
             this.toolStripMenuItem9,
+            this.toolStripMenuItem1,
             this.toolStripMenuItem11,
             this.toolsToolStripMenuItem,
             this.helpToolStripMenuItem});
@@ -80,6 +85,8 @@
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
             this.saveAsToolStripMenuItem,
+            this.backupToolStripMenuItem,
+            this.restoreToolStripMenuItem,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
@@ -101,21 +108,35 @@
             this.openToolStripMenuItem.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(200, 42);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(200, 42);
             this.saveAsToolStripMenuItem.Text = "Save &As";
             this.saveAsToolStripMenuItem.Click += new System.EventHandler(this.saveAsToolStripMenuItem_Click);
+            // 
+            // backupToolStripMenuItem
+            // 
+            this.backupToolStripMenuItem.Name = "backupToolStripMenuItem";
+            this.backupToolStripMenuItem.Size = new System.Drawing.Size(200, 42);
+            this.backupToolStripMenuItem.Text = "Backup";
+            this.backupToolStripMenuItem.Click += new System.EventHandler(this.backupToolStripMenuItem_Click);
+            // 
+            // restoreToolStripMenuItem
+            // 
+            this.restoreToolStripMenuItem.Name = "restoreToolStripMenuItem";
+            this.restoreToolStripMenuItem.Size = new System.Drawing.Size(200, 42);
+            this.restoreToolStripMenuItem.Text = "Restore";
+            this.restoreToolStripMenuItem.Click += new System.EventHandler(this.restoreToolStripMenuItem_Click);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(200, 42);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -133,11 +154,19 @@
             this.toolStripMenuItem9.Text = "Bins";
             this.toolStripMenuItem9.Click += new System.EventHandler(this.toolStripMenuItem9_Click);
             // 
+            // toolStripMenuItem1
+            // 
+            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(90, 22);
+            this.toolStripMenuItem1.Text = "Controlboxes";
+            this.toolStripMenuItem1.Click += new System.EventHandler(this.toolStripMenuItem1_Click_1);
+            // 
             // toolStripMenuItem11
             // 
             this.toolStripMenuItem11.Name = "toolStripMenuItem11";
             this.toolStripMenuItem11.Size = new System.Drawing.Size(74, 22);
             this.toolStripMenuItem11.Text = "Bin Report";
+            this.toolStripMenuItem11.Click += new System.EventHandler(this.toolStripMenuItem11_Click);
             // 
             // toolsToolStripMenuItem
             // 
@@ -182,6 +211,7 @@
             this.butRefresh,
             this.butSensors,
             this.butBins,
+            this.butControlBoxes,
             this.butReports,
             this.butOptions});
             this.toolStrip1.Location = new System.Drawing.Point(0, 24);
@@ -222,6 +252,16 @@
             this.butBins.ToolTipText = "Bins";
             this.butBins.Click += new System.EventHandler(this.butBins_Click);
             // 
+            // butControlBoxes
+            // 
+            this.butControlBoxes.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+            this.butControlBoxes.Image = ((System.Drawing.Image)(resources.GetObject("butControlBoxes.Image")));
+            this.butControlBoxes.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.butControlBoxes.Name = "butControlBoxes";
+            this.butControlBoxes.Size = new System.Drawing.Size(68, 68);
+            this.butControlBoxes.Text = "Controlboxes";
+            this.butControlBoxes.Click += new System.EventHandler(this.butControlBoxes_Click);
+            // 
             // butReports
             // 
             this.butReports.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
@@ -251,7 +291,7 @@
             this.tbEvents.Name = "tbEvents";
             this.tbEvents.ReadOnly = true;
             this.tbEvents.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbEvents.Size = new System.Drawing.Size(476, 373);
+            this.tbEvents.Size = new System.Drawing.Size(476, 297);
             this.tbEvents.TabIndex = 2;
             // 
             // openFileDialog1
@@ -269,7 +309,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(492, 505);
+            this.ClientSize = new System.Drawing.Size(492, 417);
             this.Controls.Add(this.tbEvents);
             this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.menuStrip1);
@@ -278,7 +318,7 @@
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
             this.Name = "FormMain";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "TemperatureMonitor";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.Load += new System.EventHandler(this.Form1_Load);
@@ -316,6 +356,10 @@
         private System.Windows.Forms.ToolStripButton butBins;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripButton butControlBoxes;
+        private System.Windows.Forms.ToolStripMenuItem backupToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem restoreToolStripMenuItem;
     }
 }
 

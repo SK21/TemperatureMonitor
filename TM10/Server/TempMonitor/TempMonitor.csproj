@@ -12,7 +12,7 @@
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>I:\C#\Projects\TempMonitor\Install\</PublishUrl>
+    <PublishUrl>E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\Install\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -22,7 +22,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>7</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -59,6 +59,9 @@
   <PropertyGroup>
     <SignManifests>true</SignManifests>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>iconfinder_83_Thermometer_Three_Quarter_Full_183499.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -73,6 +76,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\clsControlBox.cs" />
+    <Compile Include="Classes\clsControlBoxes.cs" />
     <Compile Include="Classes\clsDatabase.cs" />
     <Compile Include="Classes\clsPacket.cs" />
     <Compile Include="Classes\clsPackets.cs" />
@@ -81,14 +86,11 @@
     <Compile Include="Classes\clsSensors.cs" />
     <Compile Include="Classes\clsStorage.cs" />
     <Compile Include="Classes\clsStorages.cs" />
+    <Compile Include="Classes\DGVPrinter.cs" />
     <Compile Include="Classes\PGN25000.cs" />
+    <Compile Include="Classes\PGN25010.cs" />
+    <Compile Include="Classes\PGN25020.cs" />
     <Compile Include="Classes\PGN25100.cs" />
-    <Compile Include="Forms\frmInputBox.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Forms\frmInputBox.Designer.cs">
-      <DependentUpon>frmInputBox.cs</DependentUpon>
-    </Compile>
     <Compile Include="Forms\frmMain.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -131,12 +133,24 @@
     <Compile Include="Forms\frmBins.Designer.cs">
       <DependentUpon>frmBins.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmControlBoxes.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmControlBoxes.Designer.cs">
+      <DependentUpon>frmControlBoxes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmBinReport.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmBinReport.Designer.cs">
+      <DependentUpon>frmBinReport.cs</DependentUpon>
+    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Classes\Tools.cs" />
     <Compile Include="Classes\UDPComm.cs" />
-    <EmbeddedResource Include="Forms\frmInputBox.resx">
-      <DependentUpon>frmInputBox.cs</DependentUpon>
+    <EmbeddedResource Include="Forms\frmBinReport.resx">
+      <DependentUpon>frmBinReport.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmMain.resx">
       <DependentUpon>frmMain.cs</DependentUpon>
@@ -159,6 +173,9 @@
     <EmbeddedResource Include="Forms\frmBins.resx">
       <DependentUpon>frmBins.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmControlBoxes.resx">
+      <DependentUpon>frmControlBoxes.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -167,7 +184,9 @@
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
     </Compile>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -204,6 +223,12 @@
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="iconfinder_83_Thermometer_Three_Quarter_Full_183499.ico" />
+    <None Include="Resources\Base.mdb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

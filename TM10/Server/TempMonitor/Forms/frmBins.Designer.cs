@@ -30,6 +30,7 @@ namespace TempMonitor
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmBins));
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.butSaveEdit = new System.Windows.Forms.Button();
             this.butCancelEdit = new System.Windows.Forms.Button();
             this.DGV = new System.Windows.Forms.DataGridView();
@@ -58,7 +59,7 @@ namespace TempMonitor
             // butSaveEdit
             // 
             this.butSaveEdit.Image = ((System.Drawing.Image)(resources.GetObject("butSaveEdit.Image")));
-            this.butSaveEdit.Location = new System.Drawing.Point(512, 377);
+            this.butSaveEdit.Location = new System.Drawing.Point(337, 494);
             this.butSaveEdit.Name = "butSaveEdit";
             this.butSaveEdit.Size = new System.Drawing.Size(88, 61);
             this.butSaveEdit.TabIndex = 40;
@@ -71,7 +72,7 @@ namespace TempMonitor
             // 
             this.butCancelEdit.Enabled = false;
             this.butCancelEdit.Image = ((System.Drawing.Image)(resources.GetObject("butCancelEdit.Image")));
-            this.butCancelEdit.Location = new System.Drawing.Point(374, 377);
+            this.butCancelEdit.Location = new System.Drawing.Point(337, 392);
             this.butCancelEdit.Name = "butCancelEdit";
             this.butCancelEdit.Size = new System.Drawing.Size(88, 61);
             this.butCancelEdit.TabIndex = 39;
@@ -94,16 +95,15 @@ namespace TempMonitor
             this.descriptionDataGridViewTextBoxColumn});
             this.DGV.DataMember = "Table1";
             this.DGV.DataSource = this.dataSet1;
-            this.DGV.Location = new System.Drawing.Point(12, 12);
+            this.DGV.Location = new System.Drawing.Point(12, 95);
             this.DGV.MultiSelect = false;
             this.DGV.Name = "DGV";
             this.DGV.ReadOnly = true;
             this.DGV.RowHeadersVisible = false;
             this.DGV.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DGV.Size = new System.Drawing.Size(319, 429);
+            this.DGV.Size = new System.Drawing.Size(319, 460);
             this.DGV.TabIndex = 41;
             this.DGV.CellEnter += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_CellEnter);
-            this.DGV.RowValidated += new System.Windows.Forms.DataGridViewCellEventHandler(this.DGV_RowValidated);
             // 
             // dataSet1
             // 
@@ -138,9 +138,9 @@ namespace TempMonitor
             this.Edit.Controls.Add(this.label1);
             this.Edit.Controls.Add(this.tbNumber);
             this.Edit.Controls.Add(this.label4);
-            this.Edit.Location = new System.Drawing.Point(337, 12);
+            this.Edit.Location = new System.Drawing.Point(12, 12);
             this.Edit.Name = "Edit";
-            this.Edit.Size = new System.Drawing.Size(263, 88);
+            this.Edit.Size = new System.Drawing.Size(413, 77);
             this.Edit.TabIndex = 42;
             this.Edit.TabStop = false;
             this.Edit.Text = "Edit";
@@ -184,7 +184,7 @@ namespace TempMonitor
             // butDelete
             // 
             this.butDelete.Image = ((System.Drawing.Image)(resources.GetObject("butDelete.Image")));
-            this.butDelete.Location = new System.Drawing.Point(512, 294);
+            this.butDelete.Location = new System.Drawing.Point(337, 194);
             this.butDelete.Name = "butDelete";
             this.butDelete.Size = new System.Drawing.Size(88, 61);
             this.butDelete.TabIndex = 44;
@@ -196,18 +196,19 @@ namespace TempMonitor
             // btPrint
             // 
             this.btPrint.Image = ((System.Drawing.Image)(resources.GetObject("btPrint.Image")));
-            this.btPrint.Location = new System.Drawing.Point(512, 208);
+            this.btPrint.Location = new System.Drawing.Point(337, 95);
             this.btPrint.Name = "btPrint";
             this.btPrint.Size = new System.Drawing.Size(88, 61);
             this.btPrint.TabIndex = 43;
             this.btPrint.Text = "Print";
             this.btPrint.TextAlign = System.Drawing.ContentAlignment.TopLeft;
             this.btPrint.UseVisualStyleBackColor = true;
+            this.btPrint.Click += new System.EventHandler(this.btPrint_Click);
             // 
             // btnNew
             // 
             this.btnNew.Image = ((System.Drawing.Image)(resources.GetObject("btnNew.Image")));
-            this.btnNew.Location = new System.Drawing.Point(374, 294);
+            this.btnNew.Location = new System.Drawing.Point(337, 293);
             this.btnNew.Name = "btnNew";
             this.btnNew.Size = new System.Drawing.Size(88, 61);
             this.btnNew.TabIndex = 45;
@@ -227,6 +228,8 @@ namespace TempMonitor
             // numberDataGridViewTextBoxColumn
             // 
             this.numberDataGridViewTextBoxColumn.DataPropertyName = "Number";
+            dataGridViewCellStyle1.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleCenter;
+            this.numberDataGridViewTextBoxColumn.DefaultCellStyle = dataGridViewCellStyle1;
             this.numberDataGridViewTextBoxColumn.HeaderText = "Number";
             this.numberDataGridViewTextBoxColumn.Name = "numberDataGridViewTextBoxColumn";
             this.numberDataGridViewTextBoxColumn.ReadOnly = true;
@@ -243,7 +246,7 @@ namespace TempMonitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(613, 450);
+            this.ClientSize = new System.Drawing.Size(438, 567);
             this.Controls.Add(this.btnNew);
             this.Controls.Add(this.butDelete);
             this.Controls.Add(this.btPrint);
@@ -251,6 +254,7 @@ namespace TempMonitor
             this.Controls.Add(this.DGV);
             this.Controls.Add(this.butSaveEdit);
             this.Controls.Add(this.butCancelEdit);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MaximizeBox = false;
             this.MinimizeBox = false;

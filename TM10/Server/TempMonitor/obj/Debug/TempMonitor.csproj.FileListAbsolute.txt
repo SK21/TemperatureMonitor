@@ -253,3 +253,192 @@ E:\MyFiles\MyDocs\C#\Projects\TempMonitor\b4\TempMonitor\obj\Debug\TempMonitor.a
 E:\MyFiles\MyDocs\C#\Projects\TempMonitor\b4\TempMonitor\obj\Debug\TempMonitor.exe
 E:\MyFiles\MyDocs\C#\Projects\TempMonitor\b4\TempMonitor\obj\Debug\TempMonitor.pdb
 E:\MyFiles\MyDocs\C#\Projects\TempMonitor\b4\TempMonitor\obj\Debug\TempMonitor.frmBins.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\SqlServerTypes\x64\msvcr120.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\SqlServerTypes\x64\SqlServerSpatial140.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\SqlServerTypes\x86\msvcr120.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\SqlServerTypes\x86\SqlServerSpatial140.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\TempMonitor.exe.config
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\TempMonitor.exe.manifest
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\TempMonitor.application
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\TempMonitor.exe
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\TempMonitor.pdb
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.Common.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.DataVisualization.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.Design.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.ProcessingObjectModel.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.WinForms.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.SqlServer.Types.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\EnvDTE.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.Shell.Interop.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.Shell.Interop.8.0.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\stdole.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.OLE.Interop.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.TextManager.Interop.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.TextManager.Interop.8.0.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\Microsoft.MSXML.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\de\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\es\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\fr\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\it\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ja\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ko\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\pt\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ru\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\zh-CHS\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\zh-CHT\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\de\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\es\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\fr\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\it\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ja\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ko\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\pt\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ru\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\zh-CHS\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\zh-CHT\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\de\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\es\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\fr\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\it\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ja\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ko\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\pt\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ru\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\zh-CHS\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\zh-CHT\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\de\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\es\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\fr\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\it\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ja\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ko\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\pt\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\ru\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\zh-CHS\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\bin\Debug\zh-CHT\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.csprojAssemblyReference.cache
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\Interop.DAO.dll
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.csproj.ResolveComReference.cache
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.frmBinReport.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.FormMain.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.Forms.frmNewFile.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.Forms.frmOptions.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.Forms.frmSensors.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.FormTimedMessage.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.frmAbout.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.frmBins.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.frmControlBoxes.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.Properties.Resources.resources
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.csproj.GenerateResource.cache
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.exe.manifest
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.application
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.csproj.CopyComplete
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.exe
+C:\LocalDocs\TM10\TM10\Server\TempMonitor\obj\Debug\TempMonitor.pdb
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\SqlServerTypes\x64\msvcr120.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\SqlServerTypes\x64\SqlServerSpatial140.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\SqlServerTypes\x86\msvcr120.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\SqlServerTypes\x86\SqlServerSpatial140.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\TempMonitor.exe.config
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\TempMonitor.exe.manifest
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\TempMonitor.application
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\TempMonitor.exe
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\TempMonitor.pdb
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.Common.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.DataVisualization.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.Design.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.ProcessingObjectModel.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.ReportViewer.WinForms.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.SqlServer.Types.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\EnvDTE.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.Shell.Interop.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.Shell.Interop.8.0.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\stdole.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.OLE.Interop.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.TextManager.Interop.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.VisualStudio.TextManager.Interop.8.0.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\Microsoft.MSXML.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\de\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\es\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\fr\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\it\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ja\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ko\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\pt\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ru\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\zh-CHS\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\zh-CHT\Microsoft.ReportViewer.Common.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\de\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\es\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\fr\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\it\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ja\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ko\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\pt\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ru\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\zh-CHS\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\zh-CHT\Microsoft.ReportViewer.DataVisualization.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\de\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\es\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\fr\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\it\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ja\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ko\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\pt\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ru\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\zh-CHS\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\zh-CHT\Microsoft.ReportViewer.Design.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\de\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\es\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\fr\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\it\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ja\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ko\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\pt\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\ru\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\zh-CHS\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\bin\Debug\zh-CHT\Microsoft.ReportViewer.WinForms.resources.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.csprojAssemblyReference.cache
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\Interop.DAO.dll
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.csproj.ResolveComReference.cache
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.frmBinReport.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.FormMain.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.Forms.frmNewFile.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.Forms.frmOptions.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.Forms.frmSensors.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.FormTimedMessage.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.frmAbout.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.frmBins.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.frmControlBoxes.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.Properties.Resources.resources
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.csproj.GenerateResource.cache
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.exe.manifest
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.application
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.csproj.CopyComplete
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.exe
+C:\LocalDocs\TempMonitor\Server\TempMonitor\obj\Debug\TempMonitor.pdb
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\bin\Debug\Resources\Base.mdb
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\bin\Debug\TempMonitor.exe.config
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\bin\Debug\TempMonitor.exe.manifest
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\bin\Debug\TempMonitor.application
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\bin\Debug\TempMonitor.exe
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\bin\Debug\TempMonitor.pdb
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.csprojAssemblyReference.cache
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\Interop.DAO.dll
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.csproj.ResolveComReference.cache
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.frmBinReport.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.FormMain.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.Forms.frmNewFile.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.Forms.frmOptions.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.Forms.frmSensors.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.FormTimedMessage.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.frmAbout.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.frmBins.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.frmControlBoxes.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.Properties.Resources.resources
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.csproj.GenerateResource.cache
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.csproj.CoreCompileInputs.cache
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.exe.manifest
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.application
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.exe
+E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.pdb

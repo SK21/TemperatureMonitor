@@ -9,7 +9,6 @@ namespace TempMonitor
         //  AllSensorsReport = 1,
         //  SingleSensor = 2,
         //  SetUserData = 3,
-        //  ReadSensors = 4
 
         private FormMain mf;
         private List<clsPacket> Packets = new List<clsPacket>();
@@ -27,11 +26,6 @@ namespace TempMonitor
             switch (Command)
             {
                 case PacketType.AllSensorsReport:
-                    // send 'read sensor' command first
-                    Packets.Add(new clsPacket { CommandID = PacketType.ReadSensors });
-                    NewPkt = Packets[Packets.Count - 1];
-                    NewPkt.TimeStamp = StartTime;
-
                     // stagger control boxes
                     for (short ID = 0; ID < mf.MaxBoxes; ID++)
                     {
@@ -103,19 +97,15 @@ namespace TempMonitor
                         switch (Item(i).CommandID)
                         {
                             case PacketType.AllSensorsReport:
-                                mf.SendInfo.AllSensorsReport(Item(i).ControlBoxID);
+                                mf.SendSensorData.AllSensorsReport(Item(i).ControlBoxID);
                                 break;
 
                             case PacketType.SingleSensorReport:
-                                mf.SendInfo.SpecificSensorReport(Item(i).ControlBoxID, Item(i).GetAddressBytes());
+                                mf.SendSensorData.SpecificSensorReport(Item(i).ControlBoxID, Item(i).GetAddressBytes());
                                 break;
 
                             case PacketType.SetUserData:
-                                mf.SendInfo.SetUserData(Item(i).ControlBoxID, Item(i).GetAddressBytes(), Item(i).UserData);
-                                break;
-
-                            case PacketType.ReadSensors:
-                                mf.SendInfo.ReadSensors();
+                                mf.SendSensorData.SetUserData(Item(i).ControlBoxID, Item(i).GetAddressBytes(), Item(i).UserData);
                                 break;
 
                             default:

@@ -2,7 +2,7 @@
 
 void UpdateSensors()
 {
-	Serial.println("Updating sensors on "+String(BusCount) + " buses.");
+	Serial.println("Updating sensors on " + String(BusCount) + " buses.");
 	SensorCount = 0;
 	byte Addr[8];
 	for (int i = 0; i < BusCount; i++)
@@ -81,7 +81,7 @@ void SetUserData(byte Addr[], byte BusID, int NewValue)
 
 	OWbus[BusID].write(data[0], 1);
 	OWbus[BusID].write(data[1], 1);
-	OWbus[BusID].write(9, 1);		// set resolution to 0.5�C
+	OWbus[BusID].write(9, 1);		// set resolution to 0.5C
 	delay(10);
 
 	OWbus[BusID].reset();
@@ -106,4 +106,38 @@ byte dsCRC8(const uint8_t* addr, uint8_t len)//begins from LS-bit of LS-byte (On
 		}
 	}
 	return crc;
+}
+
+void AllSensorsReport()
+{
+	bool Last;
+	for (byte i = 0; i < SensorCount; i++)
+	{
+		Last = ((i + 1) == SensorCount);
+		SendData(i, Last);
+	}
+}
+
+void SingleSensorReport()
+{
+	for (byte i = 0; i < SensorCount; i++)
+	{
+		if (memcmp(Sensors[i].ID, SensorAddress, 8) == 0)
+		{
+			SendData(i, 1);
+			break;	// exit loop
+		}
+	}
+}
+
+void SetNewUserData()
+{
+	for (byte i = 0; i < SensorCount; i++)
+	{
+		if (memcmp(Sensors[i].ID, SensorAddress, 8) == 0)
+		{
+			SetUserData(SensorAddress, Sensors[i].BusID, UserData);
+			break;	// exit loop
+		}
+	}
 }

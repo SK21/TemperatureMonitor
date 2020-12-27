@@ -2,7 +2,7 @@
 {
     public class PGN25000
     {
-        //	PC to Control Box
+        //	Sensor Data to Control Box
         //		PGN 25000
         //0		Header Hi	97
         //1		Header Lo	168
@@ -16,7 +16,6 @@
         //			- 1 all sensors report
         //			- 2 specific sensor report
         //			- 3 set sensor userdata
-        //			- 4 read sensors
 
         private const byte cByteCount = 16;
         private const byte HeaderHi = 97;
@@ -36,12 +35,6 @@
         {
             cData[2] = ControlBoxID;
             cData[15] = 1;
-            Send();
-        }
-
-        public void ReadSensors()
-        {
-            cData[15] = 4;
             Send();
         }
 

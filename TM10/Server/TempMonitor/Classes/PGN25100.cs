@@ -14,7 +14,7 @@ namespace TempMonitor.Classes
         //12	User Data Lo
         //13	Temp Hi
         //14	Temp Lo
-        //15	-
+        //15	0 - data remaining, 1 - finished
 
         private const byte cByteCount = 16;
         private const byte HeaderHi = 98;
@@ -95,6 +95,15 @@ namespace TempMonitor.Classes
                     Rec.Temperature = Temperature();
                     Rec.Save();
                 }
+
+                // controlbox
+                clsControlBox Box = new clsControlBox(mf);
+                if (!Box.Load(0, cData[2]))
+                {
+                    // new record
+                    Box.BoxID = cData[2];
+                    Box.Save();
+                }
             }
             catch (Exception ex)
             {
@@ -116,6 +125,11 @@ namespace TempMonitor.Classes
         public int UserData()
         {
             return cData[11] << 8 | cData[12];
+        }
+
+        public bool Finished()
+        {
+            return Convert.ToBoolean(cData[15]);
         }
     }
 }

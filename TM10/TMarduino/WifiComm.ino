@@ -1,39 +1,4 @@
 
-void CheckWifi()
-{
-	if (millis() - CommTime > 5000)
-	{
-		Serial.println();
-		ConnectionStatus = WiFi.status();
-		Serial.println("Wifi status: " + String(ConnectionStatus));
-		Serial.print("RSSI: ");
-		Serial.println(WiFi.RSSI());
-
-		if ((ConnectionStatus != WL_CONNECTED) || (WiFi.RSSI() <= -90) || (WiFi.RSSI() == 0))
-		{
-			Serial.print("Connecting to ");
-			Serial.println(NetworkSSID);
-
-			ConnectionStatus = WiFi.begin(NetworkSSID, NetworkPassword);
-			delay(5000);
-			ReconnectCount++;
-			ConnectedCount = 0;
-			Serial.print("RSSI: ");
-			Serial.println(WiFi.RSSI());
-			if (ReconnectCount > 5) ESP.restart();	// restart with wifi manager
-		}
-		else
-		{
-			ConnectedCount++;
-			ReconnectCount = 0;
-		}
-		Serial.println("Reconnect count: " + String(ReconnectCount));
-		Serial.println("Connected count: " + String(ConnectedCount));
-		Serial.println("Minutes connected: " + String(ConnectedCount * 5 / 60));
-		CommTime = millis();
-	}
-}
-
 
 //PGN 25000, data received by the node :
 //0			header high 97
@@ -53,23 +18,20 @@ void ReceiveData()
 	int PacketSize = UDP.parsePacket();
 	if (PacketSize)
 	{
+		SourceIP = UDP.remoteIP();
 		int Len = UDP.read(InBuffer, 255);
 		if (Len > 15)
 		{
-			if (InBuffer[0] == 97 && InBuffer[1] == 168)
+			PGN = InBuffer[0] << 8 | InBuffer[1];
+			Serial.println("PGN " + String(PGN) + " received for Controlbox	" + String(InBuffer[2]));
+			if (PGN == 25000)
 			{
-				Serial.println("PGN received.");
-				SendEnabled = false;
-				if (InBuffer[15] == 4)
+				// set sensor data
+				SendEnabled = false;	// disable sending until PGN received for this controlbox
 				{
-					// pre-read sensors
-					UpdateSensors();
-				}
-				else
-				{
-					if (InBuffer[2] == ControlBoxID)
+					if (InBuffer[2] == Props.ID)
 					{
-						Serial.println("PGN for this ControlBox.");
+						Serial.println("PGN " + String(PGN) + "  for this ControlBox.");
 						SendEnabled = true;
 						CommandByte = InBuffer[15];
 						for (byte i = 0; i < 8; i++)
@@ -80,11 +42,35 @@ void ReceiveData()
 					}
 				}
 			}
+
+			if (PGN == 25010)
+			{
+				// pre-read sensors
+				SendEnabled = false;
+				if (InBuffer[15] == 4) UpdateSensors();
+			}
+
+			if (PGN == 25020)
+			{
+				// set controlbox data
+				SendEnabled = false;
+				if (InBuffer[2] == Props.ID)
+				{
+					Serial.println("PGN " + String(PGN) + "  for this ControlBox.");
+					Props.UseSleep = InBuffer[3];
+					Props.SleepInterval = InBuffer[4] << 8 | InBuffer[5];
+					Props.ID = InBuffer[6];
+					CurrentTime = InBuffer[7] << 8 | InBuffer[8];
+					ReceivedReply = true;
+					SaveProperties();
+				}
+
+			}
 		}
 	}
 }
 
-//PGN 25100, data sent from the node :
+//PGN 25100, data sent from the controlbox :
 //0	header high byte 98
 //1	header low byte	12
 //2	node ID byte
@@ -93,15 +79,16 @@ void ReceiveData()
 //12	user data low, cable bits 7 - 4, sensor # bits 3 - 0, (0 - 15 each)
 //13	Temp high
 //14	Temp low
-//15	previously received command
+//15	0 - data remaining, 1 - finished
 
-void SendData(byte SensorID)
+void SendData(byte SensorID, byte Finished)
 {
 	if (SendEnabled)
 	{
+		// PGN 25100
 		OutBuffer[0] = 98;
 		OutBuffer[1] = 12;
-		OutBuffer[2] = ControlBoxID;
+		OutBuffer[2] = Props.ID;
 
 		for (byte i = 0; i < 8; i++)
 		{
@@ -114,12 +101,11 @@ void SendData(byte SensorID)
 		OutBuffer[13] = Sensors[SensorID].Temperature[0];
 		OutBuffer[14] = Sensors[SensorID].Temperature[1];
 
-		OutBuffer[15] = CommandByte;
+		OutBuffer[15] = Finished;
 
 		UDP.beginPacket(ipDestination, SendToPort);
 		UDP.write(OutBuffer, sizeof(OutBuffer));
 		UDP.endPacket();
+		Serial.println("SendData");
 	}
 }
-
-

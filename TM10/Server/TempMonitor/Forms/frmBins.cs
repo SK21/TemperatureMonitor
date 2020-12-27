@@ -10,8 +10,8 @@ namespace TempMonitor
         private clsStorages Bins;
         private int CurrentRow;
         private FormMain mf;
-        private bool Updating;
         private bool NewRecord;
+        private bool Updating;
 
         public frmBins(FormMain CallingForm)
         {
@@ -19,6 +19,22 @@ namespace TempMonitor
             mf = CallingForm;
             Bins = new clsStorages(mf);
             Bins.Load();
+        }
+
+        private void btnNew_Click(object sender, EventArgs e)
+        {
+            NewRecord = true;
+            Updating = true;
+
+            tbNumber.Text = "";
+            tbDescription.Text = "";
+
+            Updating = false;
+            SetButtons(true);
+        }
+
+        private void btPrint_Click(object sender, EventArgs e)
+        {
         }
 
         private void butCancelEdit_Click(object sender, EventArgs e)
@@ -35,7 +51,7 @@ namespace TempMonitor
             {
                 try
                 {
-                    short ID = Convert.ToInt16(NV(0));
+                    short ID = Convert.ToInt16(mf.Tls.NV(DGV.CurrentRow, 0, true));
                     Bins.Delete(ID);
                 }
                 catch (Exception ex)
@@ -57,13 +73,14 @@ namespace TempMonitor
                 try
                 {
                     clsStorage Bin;
-                    if (NewRecord)
+                    if (DGV.Rows.Count == 0 | NewRecord)
                     {
                         Bin = Bins.Add();
                     }
                     else
                     {
-                        Bin = Bins.Item(Convert.ToInt16(NV(0)));
+                        Bin = Bins.Item(Convert.ToInt16(mf.Tls.NV(DGV.CurrentRow, 0, true)));
+
                     }
 
                     Bin.Number = Convert.ToInt16(tbNumber.Text);
@@ -72,8 +89,8 @@ namespace TempMonitor
 
                     LoadData();
 
-                    CurrentRow = FindRecord(1, Bin.Number);
-                    DGV.Rows[CurrentRow].Selected = true;
+                    CurrentRow = mf.Tls.FindRecord(DGV, 1, Bin.Number);
+                    DGV.CurrentCell = DGV[1, CurrentRow];
                 }
                 catch (Exception ex)
                 {
@@ -91,25 +108,6 @@ namespace TempMonitor
                 SetButtons(false);
                 NewRecord = false;
             }
-        }
-
-        private int FindRecord(int Cell, int Key)
-        {
-            try
-            {
-                foreach (DataGridViewRow RW in DGV.Rows)
-                {
-                    if (Convert.ToInt32(RW.Cells[Cell].Value) == Key)
-                    {
-                        return RW.Index;
-                    }
-                }
-            }
-            catch (Exception)
-            {
-
-            }
-            return 0;
         }
 
         private void DGV_CellEnter(object sender, DataGridViewCellEventArgs e)
@@ -171,22 +169,6 @@ namespace TempMonitor
             Updating = false;
         }
 
-        private string NV(int Cell, bool IsNumber = true, DataGridViewRow RW = null)
-        {
-            if (RW == null) RW = DGV.Rows[CurrentRow];
-
-            string Val = "";
-            try
-            {
-                Val = RW.Cells[Cell].Value.ToString();
-            }
-            catch (Exception)
-            {
-            }
-            if ((Val == "") & IsNumber) Val = "0";
-            return Val;
-        }
-
         private void SetButtons(bool Edited)
         {
             if (!Updating)
@@ -195,11 +177,19 @@ namespace TempMonitor
                 {
                     butCancelEdit.Enabled = true;
                     butSaveEdit.Text = "Save";
+                    DGV.Enabled = false;
+                    btPrint.Enabled = false;
+                    butDelete.Enabled = false;
+                    btnNew.Enabled = false;
                 }
                 else
                 {
                     butCancelEdit.Enabled = false;
                     butSaveEdit.Text = "Close";
+                    DGV.Enabled = true;
+                    btPrint.Enabled = true;
+                    butDelete.Enabled = true;
+                    btnNew.Enabled = true;
                 }
             }
         }
@@ -220,23 +210,11 @@ namespace TempMonitor
             {
                 Updating = true;
 
-                tbNumber.Text = NV(1, false);
-                tbDescription.Text = NV(2, false);
+                tbNumber.Text = mf.Tls.NV(DGV.CurrentRow, 1, true);
+                tbDescription.Text = mf.Tls.NV(DGV.CurrentRow, 2);
 
                 Updating = false;
             }
-        }
-
-        private void btnNew_Click(object sender, EventArgs e)
-        {
-            NewRecord = true;
-            Updating = true;
-
-            tbNumber.Text = "";
-            tbDescription.Text = "";
-
-            Updating = false;
-
         }
     }
 }

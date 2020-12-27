@@ -13,51 +13,53 @@ namespace TempMonitor
         private byte[] AddressBytes = new byte[8];
         private byte cControlBoxID;
         private bool cEnabled;
-        private short cID;
+        private byte cID;
         private float cOffset;
-        private short cRecNum;
+        private byte cRecNum;
         private string cSensorAddress;
-        private int cUserData;
         private FormMain mf;
         private bool NewRecord;
+        private byte cBinNum;
+        private byte cCableNum;
+        private byte cSensorNum;
 
         public clsSensor(FormMain CallingForm)
         {
             mf = CallingForm;
             SetRecNum();
             cSensorAddress = "";
-            cUserData = 0;
             cControlBoxID = 0;
             cEnabled = true;
             cOffset = 0;
             NewRecord = true;
+            cBinNum = 0;
+            cCableNum = 0;
+            cSensorNum = 0;
         }
 
-        public short BinNum
+        public byte BinNum
         {
             get
             {
-                return (byte)(cUserData >> 8); // get left 8 bits
+                return cBinNum;
             }
             set
             {
                 if (value > 255 | value < 0) throw new ArgumentException("Must be between 0 and 255.");
-                cUserData = (UInt16)(cUserData & 0b0000000011111111);
-                cUserData = (UInt16)(cUserData | value << 8);
+                cBinNum = value;
             }
         }
 
-        public short CableID
+        public byte CableNum
         {
             get
             {
-                return (short)((cUserData & 0b0000000011110000) >> 4);
+                return cCableNum;
             }
             set
             {
                 if (value > 15 | value < 0) throw new ArgumentException("Must be between 0 and 15.");
-                cUserData = (UInt16)(cUserData & 0b1111111100001111);
-                cUserData = (UInt16)(cUserData | (value << 4));
+                cCableNum = value;
             }
         }
 
@@ -110,21 +112,38 @@ namespace TempMonitor
             }
         }
 
-        public short SensorID
+        public byte SensorNum
         {
             get
             {
-                return (short)(cUserData & 0b1111);
+                return cSensorNum;
             }
             set
             {
                 if (value > 15 | value < 0) throw new ArgumentException("Must be between 0 and 15.");
-                cUserData = (UInt16)(cUserData & 0b1111111111110000);
-                cUserData = (UInt16)(cUserData | (UInt16)value);
+                cSensorNum = value;
             }
         }
 
-        public int UserData { get { return cUserData; } set { cUserData = value; } }
+
+        public int UserData
+        {
+            get
+            {
+                int Result = cBinNum << 8 | cCableNum << 4 | cSensorNum;
+                return Result;
+            }
+            set
+            {
+                byte BinTmp = (byte)(value >> 8);
+                byte CableTmp= (byte)((value & 0b0000000011110000) >> 4);
+                byte SensorTmp = (byte)(value & 0b1111);
+                if (CableTmp > 15 | SensorTmp > 15) throw new ArgumentException("Must be between 0 and 15");
+                cBinNum = BinTmp;
+                cCableNum = CableTmp;
+                cSensorNum = SensorTmp;
+            }
+        }
 
         public string BinDescription(bool ShortDescription = false)
         {
@@ -268,13 +287,15 @@ namespace TempMonitor
             }
             else
             {
-                cID = (short)(RS.Fields["SenID"].Value ?? 0);    // returns 0 if null
-                cRecNum = (short)(RS.Fields["senRecNum"].Value ?? 0);
-                if (Convert.IsDBNull(RS.Fields["senAddress"].Value)) cSensorAddress = ""; else cSensorAddress = RS.Fields["senAddress"].Value;
-                cUserData = (UInt16)(RS.Fields["senUserData"].Value ?? 0);
-                cControlBoxID = (byte)(RS.Fields["senControlBoxID"].Value ?? 0);
-                cEnabled = RS.Fields["senEnabled"].Value ?? 0;
-                cOffset = (float)(RS.Fields["senOffSet"].Value ?? 0);
+                cID = (byte)(mf.Dbase.FieldToInt(RS, "senID"));
+                cRecNum = (byte)(mf.Dbase.FieldToInt(RS, "senRecNum"));
+                cSensorAddress = mf.Dbase.FieldToString(RS, "senAddress");
+                cControlBoxID = (byte)(mf.Dbase.FieldToInt(RS, "senControlBoxID"));
+                cEnabled = mf.Dbase.FieldToBool(RS, "senEnabled");
+                cOffset = mf.Dbase.FieldToFloat(RS, "senOffSet");
+                cBinNum = (byte)(mf.Dbase.FieldToInt(RS, "senBinNumber"));
+                cCableNum = (byte)(mf.Dbase.FieldToInt(RS, "senCableNumber"));
+                cSensorNum = (byte)(mf.Dbase.FieldToInt(RS, "senSensorNumber"));
                 NewRecord = false;
                 RS.Close();
 
@@ -295,8 +316,8 @@ namespace TempMonitor
             else
             {
                 result = "    Bin: " + BinNum.ToString();
-                result += "    Cable: " + CableID.ToString();
-                result += "    Sensor: " + SensorID.ToString();
+                result += "    Cable: " + CableNum.ToString();
+                result += "    Sensor: " + SensorNum.ToString();
             }
             return result;
         }
@@ -319,18 +340,20 @@ namespace TempMonitor
             }
             RS.Fields["senRecNum"].Value = cRecNum;
             RS.Fields["senAddress"].Value = cSensorAddress;
-            RS.Fields["senUserData"].Value = cUserData;
             RS.Fields["senControlBoxID"].Value = cControlBoxID;
             RS.Fields["senEnabled"].Value = cEnabled;
             RS.Fields["senOffset"].Value = cOffset;
             RS.Fields["senLastTemp"].Value = LastTemp();
             RS.Fields["senLastTime"].Value = LastTime();
+            RS.Fields["senBinNumber"].Value = cBinNum;
+            RS.Fields["senCableNumber"].Value = cCableNum;
+            RS.Fields["senSensorNumber"].Value = cSensorNum;
             RS.Update();
             if (NewRecord)
             {
                 // update with new autoincrement ID
                 RS.set_Bookmark(RS.LastModified);
-                cID = (short)(RS.Fields["senID"].Value ?? 0);
+                cID = (byte)(mf.Dbase.FieldToInt(RS, "senID"));
             }
             RS.Close();
             NewRecord = false;
@@ -381,7 +404,7 @@ namespace TempMonitor
             else
             {
                 RS.MoveLast();
-                cRecNum = (short)(RS.Fields["senRecNum"].Value ?? 0);
+                cRecNum = (byte)(mf.Dbase.FieldToInt(RS, "senRecNum"));
                 cRecNum += 1;
             }
             RS.Close();

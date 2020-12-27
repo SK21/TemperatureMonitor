@@ -1,4 +1,6 @@
-﻿namespace TempMonitor
+﻿using System;
+
+namespace TempMonitor
 {
     internal class clsStorage
     {
@@ -30,21 +32,25 @@
 
             set
             {
-                // check if unique
-                DAO.Recordset RS;
-                string SQL = "Select * from tblStorage where storNum = " + value.ToString();
-                RS = mf.Dbase.DB.OpenRecordset(SQL);
-                if (RS.EOF)
-                {
-                    cNumber = value;
-                }
-                RS.Close();
+                if (NewRecord & !UniqueID(value)) throw new ArgumentException("Duplicate Number: " + value.ToString());
+                cNumber = value;
             }
+        }
+
+        public bool UniqueID(int NewID)
+        {
+            bool Result;
+            DAO.Recordset RS;
+            string SQL = "select * from tblStorage where storNum = " + NewID.ToString();
+            RS = mf.Dbase.DB.OpenRecordset(SQL);
+            Result = RS.EOF;
+            RS.Close();
+            return Result;
         }
 
         public short RecNum { get { return cRecNum; } }
 
-        public void Load(short recID = 0, short StorNum = 0)
+        public bool Load(short recID = 0, short StorNum = 0)
         {
             string SQL;
             if (recID == 0)
@@ -57,14 +63,22 @@
             }
             DAO.Recordset RS;
             RS = mf.Dbase.DB.OpenRecordset(SQL);
-            if (!RS.EOF)
+
+            if (RS.EOF)
+            {
+                RS.Close();
+                return false;
+            }
+            else
             {
                 cID = (short)(RS.Fields["storID"].Value ?? 0);
                 cRecNum = (short)(RS.Fields["storRecNum"].Value ?? 0);
                 cNumber = (int)(RS.Fields["storNum"].Value ?? 0);
                 cDescription = (string)(RS.Fields["storDescription"].Value ?? "");
+                NewRecord = false;
+                RS.Close();
+                return true;
             }
-            RS.Close();
         }
 
         public void Save()

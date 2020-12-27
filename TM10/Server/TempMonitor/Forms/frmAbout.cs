@@ -36,6 +36,7 @@ namespace TempMonitor
             lbSize.Text = mf.Dbase.DBsize();
             lbFileDate.Text = mf.Dbase.DBdate();
             lbFolder.Text = mf.Dbase.DBfolder();
+            lbIP.Text = mf.UDP.BroadcastIP();
         }
 
         private void lbIPaddress_Click(object sender, EventArgs e)

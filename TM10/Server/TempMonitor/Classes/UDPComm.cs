@@ -2,6 +2,8 @@
 using System.Net;
 using System.Net.Sockets;
 using TempMonitor.Classes;
+using System.Diagnostics;
+using System.Net.NetworkInformation;
 
 namespace TempMonitor
 {
@@ -9,15 +11,10 @@ namespace TempMonitor
     {
         public bool isUDPSendConnected;
         private readonly FormMain mf;
-
         private byte[] buffer = new byte[1024];
 
-        private string cLocalIP;
-
-        private IPAddress epIP = IPAddress.Parse(Properties.Settings.Default.DestinationIP);
-
+        private IPAddress epIP;
         private HandleDataDelegateObj HandleDataDelegate = null;
-
         private Socket recvSocket;
 
         private Socket sendSocket;
@@ -25,15 +22,12 @@ namespace TempMonitor
         public UDPComm(FormMain CallingForm)
         {
             mf = CallingForm;
+            SetEpIP();
+            NetworkChange.NetworkAddressChanged += new NetworkAddressChangedEventHandler(AddressChanged);
         }
-
-        // new data event
-        public delegate void NewDataDelegate(byte[] Data);
 
         // Status delegate
         private delegate void HandleDataDelegateObj(int port, byte[] msg);
-
-        public string LocalIP { get { return cLocalIP; } }
 
         //sends byte array
         public void SendUDPMessage(byte[] byteData)
@@ -70,7 +64,6 @@ namespace TempMonitor
 
                 // Initialise the IPEndPoint for the server and listen on port 2388
                 IPEndPoint recv = new IPEndPoint(IPAddress.Any, 2388);
-                cLocalIP = recv.Address.ToString();
 
                 // Associate the socket with this IP address and port
                 recvSocket.Bind(recv);
@@ -132,13 +125,65 @@ namespace TempMonitor
         {
             try
             {
-                sendSocket.EndSend(asyncResult);
+                int BytesSent = sendSocket.EndSend(asyncResult);
+                Debug.WriteLine(DateTime.Now.TimeOfDay + " Sent " + BytesSent.ToString());
             }
             catch (Exception e)
             {
                 mf.Tls.WriteErrorLog(" UDP Send Data" + e.ToString());
                 mf.Tls.TimedMessageBox("SendData Error", e.Message);
             }
+        }
+
+        public string LocalIP()
+        {
+            try
+            {
+                using(Socket socket=new Socket(AddressFamily.InterNetwork,SocketType.Dgram,0))
+                {
+                    socket.Connect("8.8.8.8", 65530);
+                    IPEndPoint endPoint = socket.LocalEndPoint as IPEndPoint;
+                    return endPoint.Address.ToString();
+                }
+            }
+            catch (Exception)
+            {
+                return "127.0.0.1";
+            }
+        }
+
+        private string GetBroadcastIP()
+        {
+            string IP = LocalIP();
+            string Result = "";
+            string[] data = IP.Split('.');
+            if (data.Length == 4)
+            {
+                Result = data[0] + "." + data[1] + "." + data[2] + ".255";
+            }
+
+            if (IPAddress.TryParse(Result, out IPAddress Tmp))
+            {
+                return Result;
+            }
+            else
+            {
+                return "127.0.0.255";
+            }
+        }
+        private void SetEpIP()
+        {
+            epIP = IPAddress.Parse(GetBroadcastIP());
+        }
+
+        private void AddressChanged(object sender, EventArgs e)
+        {
+            SetEpIP();
+        }
+
+        public string BroadcastIP()
+        {
+            return epIP.ToString();
         }
     }
 }

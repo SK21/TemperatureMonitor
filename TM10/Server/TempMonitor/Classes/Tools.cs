@@ -14,10 +14,11 @@ namespace TempMonitor
         private readonly FormMain mf;
         private string cAppName = "TemperatureMonitor";
         private int cCurrentDBversion = 100;
-        private string cVersionDate = "22-Nov-2020";
+        private string cVersionDate = "27-Dec-2020";
         private string DataDir;
         private string PropertiesFile;
         private string SettingsDir;
+        private string BackupDir;
 
         public Tools(FormMain CallingForm)
         {
@@ -181,6 +182,10 @@ namespace TempMonitor
         {
             try
             {
+                // BackupDir
+                BackupDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + "\\" + cAppName + "\\Backup";
+                if (!Directory.Exists(BackupDir)) Directory.CreateDirectory(BackupDir);
+
                 // SettingsDir
                 SettingsDir = Environment.GetFolderPath(Environment.SpecialFolder.CommonDocuments) + "\\" + cAppName + "\\Settings";
                 if (!Directory.Exists(SettingsDir)) Directory.CreateDirectory(SettingsDir);
@@ -305,7 +310,7 @@ namespace TempMonitor
         public string HexAddressFromBytes(byte[] addr)
         {
             string Result = "";
-            if(addr.Length==8)
+            if (addr.Length == 8)
             {
                 // converts array of bytes to hex representation ex: "28 29 91 3C 07 00 00 64"
                 Result = BitConverter.ToString(addr).Replace("-", " ");
@@ -340,5 +345,89 @@ namespace TempMonitor
             return Result;
         }
 
+
+        public bool StringToBool(string Val)
+        {
+            return (Val == "1" | Val == "true" | Val == "True");
+        }
+
+        public string NV(DataGridViewRow RW, int Cell, bool ReturnNumber = false)
+        {
+            //Null value of cell
+            string Val = "";
+            try
+            {
+                Val = RW.Cells[Cell].Value.ToString();
+            }
+            catch (Exception)
+            {
+
+            }
+
+            if (ReturnNumber & (Val == "")) Val = "0";
+
+            return Val;
+        }
+
+        public int FindRecord(DataGridView DGV, int Cell, int Key)
+        {
+            try
+            {
+                foreach (DataGridViewRow RW in DGV.Rows)
+                {
+                    if (Convert.ToInt32(RW.Cells[Cell].Value) == Key)
+                    {
+                        return RW.Index;
+                    }
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+            return 0;
+        }
+
+        public bool BackupFile(string FileName)
+        {
+            FileName += ".mdb";
+            string Destination = BackupDir + "\\" + FileName;
+            string Source = DataDir + "\\" + FileName;
+            bool Result = false;
+            mf.Dbase.DB.Close();
+            try
+            {
+                if (File.Exists(Destination)) File.Delete(Destination);
+                File.Copy(Source, Destination);
+                Result = true;
+            }
+            catch (Exception ex)
+            {
+                WriteErrorLog("Tools:BackupFile" + ex.Message);
+            }
+            mf.Dbase.OpenDatabase();
+            return Result;
+        }
+
+        public bool RestoreFile(string FileName)
+        {
+            FileName += ".mdb";
+            string Destination = DataDir + "\\" + FileName;
+            string Source = BackupDir + "\\" + FileName;
+            bool Result = false;
+            mf.Dbase.DB.Close();
+            try
+            {
+                if (File.Exists(Destination)) File.Delete(Destination);
+                File.Copy(Source, Destination);
+                Result = true;
+            }
+            catch (Exception ex)
+            {
+                WriteErrorLog("Tools:RestoreFile" + ex.Message);
+            }
+            mf.Dbase.OpenDatabase();
+            return Result;
+        }
     }
 }

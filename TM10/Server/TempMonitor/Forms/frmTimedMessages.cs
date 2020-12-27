@@ -16,7 +16,10 @@ namespace TempMonitor
 
             int messWidth = str1.Length;
             if (str2.Length > messWidth) messWidth = str2.Length;
-            Width = messWidth * 15 + 50;
+            int MaxWidth = System.Windows.Forms.SystemInformation.PrimaryMonitorSize.Width;
+            int NewWidth = messWidth * 15 + 50;
+            if (NewWidth > MaxWidth) NewWidth = MaxWidth;
+            Width = NewWidth;
         }
 
         private void FormTimedMessage_Load(object sender, EventArgs e)

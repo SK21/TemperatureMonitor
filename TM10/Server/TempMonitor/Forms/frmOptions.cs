@@ -33,7 +33,9 @@ namespace TempMonitor.Forms
             ckAutoSave.Checked = true;
             ckRecording.Checked = true;
             tbSaveLocation.Text = mf.Tls.DataFolder;
-            tbMaxBoxes.Text = "10";
+            tbMaxBoxes.Text = "5";
+            tbSleep.Text = "0";
+            ckListen.Checked = false;
         }
 
         private void butLocation_Click(object sender, EventArgs e)
@@ -97,8 +99,11 @@ namespace TempMonitor.Forms
             tbDelay.Text = Convert.ToString(RS.Fields["dbControlBoxDelay"].Value);
             ckAutoSave.Checked = Convert.ToBoolean(RS.Fields["dbSaveReport"].Value);
             ckRecording.Checked = Convert.ToBoolean(RS.Fields["dbRecordData"].Value);
+            ckListen.Checked = Convert.ToBoolean(RS.Fields["dbListenOnly"].Value);
             tbSaveLocation.Text = Convert.ToString(RS.Fields["dbSaveLocation"].Value);
             tbMaxBoxes.Text = Convert.ToString(RS.Fields["dbMaxBoxes"].Value);
+            int Sleep = mf.Dbase.FieldToInt(RS, "dbSleepInterval");
+            tbSleep.Text = Convert.ToString(Sleep / 60);
             RS.Close();
 
             // backup values
@@ -109,6 +114,7 @@ namespace TempMonitor.Forms
             ckRecording.Tag = ckRecording.Checked;
             tbSaveLocation.Tag = tbSaveLocation.Text;
             tbMaxBoxes.Tag = tbMaxBoxes.Text;
+            tbSleep.Tag = tbSleep.Text;
         }
 
         private void SaveData()
@@ -124,8 +130,10 @@ namespace TempMonitor.Forms
                 RS.Fields["dbControlBoxDelay"].Value = mf.Tls.StringToInt(tbDelay.Text);
                 RS.Fields["dbSaveReport"].Value = Convert.ToBoolean(ckAutoSave.Checked);
                 RS.Fields["dbRecordData"].Value = Convert.ToBoolean(ckRecording.Checked);
+                RS.Fields["dbListenOnly"].Value = Convert.ToBoolean(ckListen.Checked);
                 RS.Fields["dbSaveLocation"].Value = Convert.ToString(tbSaveLocation.Text);
                 RS.Fields["dbMaxBoxes"].Value = mf.Tls.StringToInt(tbMaxBoxes.Text);
+                RS.Fields["dbSleepInterval"].Value = mf.Tls.StringToInt(tbSleep.Text)*60;
                 RS.Update();
                 RS.Close();
 
@@ -137,6 +145,7 @@ namespace TempMonitor.Forms
                 ckRecording.Tag = ckRecording.Checked;
                 tbSaveLocation.Tag = tbSaveLocation.Text;
                 tbMaxBoxes.Tag = tbMaxBoxes.Text;
+                tbSleep.Tag = tbSleep.Text;
             }
             catch (Exception ex)
             {
@@ -245,6 +254,33 @@ namespace TempMonitor.Forms
             else
             {
                 tbMaxBoxes.Text = i.ToString();
+            }
+        }
+
+        private void ckListen_CheckedChanged(object sender, EventArgs e)
+        {
+            DataChanged = true;
+            SetButtons();
+        }
+
+        private void tbSleep_TextChanged(object sender, EventArgs e)
+        {
+            DataChanged = true;
+            SetButtons();
+        }
+
+        private void tbSleep_Validating(object sender, CancelEventArgs e)
+        {
+            int i = mf.Tls.StringToInt(tbSleep.Text);
+            if (i < 0 | i > 23)
+            {
+                mf.Tls.TimedMessageBox("Invalid entry", "Must be between 0 and 23");
+                e.Cancel = true;
+                tbSleep.Text = tbSleep.Tag.ToString();
+            }
+            else
+            {
+                tbSleep.Text = i.ToString();
             }
         }
     }

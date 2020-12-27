@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 
 // <Project><Add Reference...>, COM, Microsoft DAO 3.6 Object Library
 
@@ -16,7 +17,7 @@ namespace TempMonitor
         private bool cConnected = false;
         private string cDatabaseName = "";
         private DAO.Database cDB;
-        private DAO.DBEngine DBE;
+        private DAO.DBEngine cDBE;
 
         public delegate void DBconnectedDelegate();
         public event DBconnectedDelegate DBconnected;
@@ -24,7 +25,7 @@ namespace TempMonitor
         public clsDatabase(FormMain CallingForm)
         {
             mf = CallingForm;
-            DBE = new DAO.DBEngine();
+            cDBE = new DAO.DBEngine();
         }
 
         public bool Connected { get { return cConnected; } }
@@ -78,6 +79,8 @@ namespace TempMonitor
 
         public DAO.Database DB { get { return cDB; } }
 
+        public DAO.DBEngine DBE { get { return cDBE; } }
+
         public bool OpenDatabase(string DBname = "", string DBpassword = "")
         {
             if (DBname == "")
@@ -103,7 +106,7 @@ namespace TempMonitor
                     string DBvalid = CheckDatabase(DBname);
                     if (DBvalid == "true")
                     {
-                        cDB = DBE.OpenDatabase(DBname, DAO.DriverPromptEnum.dbDriverNoPrompt, false, ";pwd=" + DBpassword);
+                        cDB = cDBE.OpenDatabase(DBname, DAO.DriverPromptEnum.dbDriverNoPrompt, false, ";pwd=" + DBpassword);
                         mf.Tls.SaveProperty("LastDatabase", DBname);
                         mf.Tls.SaveProperty("LastPassword", DBpassword);
                         cDatabaseName = Path.GetFileName(DBname);
@@ -177,7 +180,7 @@ namespace TempMonitor
             string Result = "";
             try
             {
-                cDB = DBE.OpenDatabase(DBname, DAO.DriverPromptEnum.dbDriverNoPrompt, false, "");
+                cDB = cDBE.OpenDatabase(DBname, DAO.DriverPromptEnum.dbDriverNoPrompt, false, "");
                 DAO.Recordset RS;
                 string SQL = "select * from tblProps";
                 RS = cDB.OpenRecordset(SQL);
@@ -267,8 +270,8 @@ namespace TempMonitor
                 OldFile.CopyTo(TmpPath);
 
                 // open new tmp database and old tmp database
-                DAO.Database DBnew = DBE.OpenDatabase(NewPath, DAO.DriverPromptEnum.dbDriverNoPrompt, false, "");
-                DAO.Database DBold = DBE.OpenDatabase(TmpPath, DAO.DriverPromptEnum.dbDriverNoPrompt, false, "");
+                DAO.Database DBnew = cDBE.OpenDatabase(NewPath, DAO.DriverPromptEnum.dbDriverNoPrompt, false, "");
+                DAO.Database DBold = cDBE.OpenDatabase(TmpPath, DAO.DriverPromptEnum.dbDriverNoPrompt, false, "");
 
                 // copy matching data from old database to new database
                 if (CopyData(DBnew, DBold))
@@ -480,9 +483,11 @@ namespace TempMonitor
                     if (!File.Exists(NewPath))
                     {
                         // copy base file
-                        string BasePath = mf.Tls.SettingsFolder + "\\TempMonBase.mdb";
-                        FileInfo BaseFile = new FileInfo(BasePath);
-                        BaseFile.CopyTo(NewPath);
+                        //string BasePath = mf.Tls.SettingsFolder + "\\TempMonBase.mdb";
+                        //FileInfo BaseFile = new FileInfo(BasePath);
+                        //BaseFile.CopyTo(NewPath);
+
+                        File.WriteAllBytes(NewPath, Properties.Resources.Base);
 
                         // check if previous database connected
                         if (cConnected)
@@ -492,7 +497,7 @@ namespace TempMonitor
                             DAO.Recordset OldRS;
                             DAO.Recordset NewRS;
                             DAO.Database NewDB;
-                            NewDB = DBE.OpenDatabase(NewPath, DAO.DriverPromptEnum.dbDriverNoPrompt, false, "");
+                            NewDB = cDBE.OpenDatabase(NewPath, DAO.DriverPromptEnum.dbDriverNoPrompt, false, "");
 
                             // database properties
                             SQL = "select * from tblProps";
@@ -581,8 +586,9 @@ namespace TempMonitor
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
+                mf.Tls.WriteErrorLog("clsDatabase:NewDatabase " + ex.Message);
                 Result = false;
             }
             return Result;
@@ -626,5 +632,97 @@ namespace TempMonitor
                 return true;
             }
         }
+
+        public string ToAccessDate(DateTime Date)
+        {
+            // date format for Access 97 database
+            return "#" + Date.ToString("MM/dd/yyyy") + "#";
+        }
+
+        public void DeleteTable(string TBname)
+        {
+            try
+            {
+                mf.Dbase.DBE.BeginTrans();
+                mf.Dbase.DB.Execute("Drop Table " + TBname);
+                mf.Dbase.DBE.CommitTrans((int)DAO.CommitTransOptionsEnum.dbForceOSFlush);   // dbForceOSFlush = 1, DBE finishes before returning
+            }
+            catch (Exception ex)
+            {
+                mf.Tls.WriteErrorLog("clsDatabase:DeleteTable " + ex.Message);
+            }
+        }
+
+        public void EraseTable(string TBname)
+        {
+            try
+            {
+                string SQL = "Delete from " + TBname;
+                mf.Dbase.DB.Execute(SQL);
+            }
+            catch (Exception ex)
+            {
+
+                mf.Tls.WriteErrorLog("clsDatabase:EraseTable " + ex.Message);
+            }
+        }
+
+        public int FieldToInt(DAO.Recordset RS, string FieldName)
+        {
+            int Result = 0;
+            try
+            {
+                if (!DBNull.Value.Equals(RS.Fields[FieldName].Value)) Result = (int)(RS.Fields[FieldName].Value);
+            }
+            catch (Exception)
+            {
+
+
+            }
+            return Result;
+        }
+
+        public string FieldToString(DAO.Recordset RS, string FieldName)
+        {
+            string Result = "";
+            try
+            {
+                if (!DBNull.Value.Equals(RS.Fields[FieldName].Value)) Result = (string)(RS.Fields[FieldName].Value);
+            }
+            catch (Exception)
+            {
+
+            }
+            return Result;
+        }
+
+        public bool FieldToBool(DAO.Recordset RS, string FieldName)
+        {
+            bool Result = false;
+            try
+            {
+                if (!DBNull.Value.Equals(RS.Fields[FieldName].Value)) Result = (bool)(RS.Fields[FieldName].Value);
+            }
+            catch (Exception)
+            {
+
+            }
+            return Result;
+        }
+
+        public float FieldToFloat(DAO.Recordset RS, string FieldName)
+        {
+            float Result = 0;
+            try
+            {
+                if (!DBNull.Value.Equals(RS.Fields[FieldName].Value)) Result = (float)(RS.Fields[FieldName].Value);
+            }
+            catch (Exception)
+            {
+
+            }
+            return Result;
+        }
+
     }
 }

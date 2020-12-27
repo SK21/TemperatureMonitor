@@ -10,18 +10,15 @@ namespace TempMonitor
         AllSensorsReport = 1,
         SingleSensorReport = 2,
         SetUserData = 3,
-        ReadSensors = 4
     }
 
     public partial class FormMain : Form
     {
-        public int ControlBoxCount;
         public clsDatabase Dbase;
-        public int MaxBoxes;
 
+        public clsPackets OutgoingPackets;
         public PGN25100 ReceiveInfo;
-        public bool RecordData;
-        public PGN25000 SendInfo;
+        public PGN25000 SendSensorData;
 
         public clsSensors Sensors;
         public Tools Tls;
@@ -31,21 +28,25 @@ namespace TempMonitor
         private DateTime LastReading;
         private DateTime LastReport;
 
-        public clsPackets OutgoingPackets;
-
-        private bool RefreshReadings = false;
-        
+        private int SaveInterval;  // hours, for auto report
+        public bool RecordData;     // save to database?
         private int RecordInterval; // minutes, for sensor readings
-        private int SaveInterval;  // hour, for auto report
-        public int ReadSensorsDelay = 10; // seconds after Read Sensors command to delay
-        public int ControlBoxDelay; // seconds between controlbox messages
 
-                                  
+        public bool ListenOnly;        // listen for PGNs from controlboxes but don't request temperatures
+        public int ReadSensorsDelay = 10;   // seconds after Read Sensors command to delay
+        public int ControlBoxDelay;     // seconds between controlbox messages
+
+        public int MaxBoxes;
+        public int ControlBoxCount;
+        private bool RefreshReadings = false;
+
+        public int SleepInterval;
+
         public FormMain()
         {
             InitializeComponent();
 
-            SendInfo = new PGN25000(this);
+            SendSensorData = new PGN25000(this);
             ReceiveInfo = new PGN25100(this);
 
             Tls = new Tools(this);
@@ -56,11 +57,6 @@ namespace TempMonitor
             Dbase = new clsDatabase(this);
             Dbase.DBconnected += new clsDatabase.DBconnectedDelegate(Start);
             ReceiveInfo.NewMessage += ReceiveInfo_NewMessage;
-        }
-
-        private void ReceiveInfo_NewMessage(object sender, string e)
-        {
-            WriteEvent(e);
         }
 
         public void WriteEvent(string Message)
@@ -90,7 +86,7 @@ namespace TempMonitor
             frmOptions frm = new frmOptions(this);
             frm.ShowDialog(this);
             frm.Dispose();
-            LoadIntervals();
+            UpdateOptions();
         }
 
         private void butRefresh_Click(object sender, EventArgs e)
@@ -100,6 +96,9 @@ namespace TempMonitor
 
         private void butReports_Click(object sender, EventArgs e)
         {
+            frmBinReport frm = new frmBinReport(this);
+            frm.ShowDialog(this);
+            frm.Dispose();
         }
 
         private void butSensors_Click(object sender, EventArgs e)
@@ -107,21 +106,6 @@ namespace TempMonitor
             frmSensors frm = new frmSensors(this);
             frm.ShowDialog(this);
             frm.Dispose();
-        }
-
-        private void CheckRecord()
-        {
-            try
-            {
-                DAO.Recordset RS;
-                string SQL = "Select * from tblProps";
-                RS = Dbase.DB.OpenRecordset(SQL);
-                RecordData = Convert.ToBoolean(RS.Fields["dbRecordData"].Value);
-                RS.Close();
-            }
-            catch (Exception)
-            {
-            }
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -148,7 +132,7 @@ namespace TempMonitor
             }
 
             if (!Dbase.OpenDatabase()) WriteEvent("Could not open last database.");
-            CheckRecord();
+            UpdateOptions();
         }
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
@@ -163,25 +147,6 @@ namespace TempMonitor
                 {
                 }
                 Tls.SaveFormData(this);
-            }
-        }
-
-        private void LoadIntervals()
-        {
-            try
-            {
-                DAO.Recordset RS;
-                string SQL = "select * from tblProps";
-                RS = Dbase.DB.OpenRecordset(SQL);
-                RecordInterval = (int)(RS.Fields["dbRecordInterval"].Value ?? 0);
-                SaveInterval = (int)(RS.Fields["dbSaveInterval"].Value ?? 0);
-                ControlBoxDelay = (int)(RS.Fields["dbControlBoxDelay"].Value ?? 0);
-                MaxBoxes = (int)(RS.Fields["dbMaxBoxes"].Value ?? 0);
-                RS.Close();
-            }
-            catch (Exception Ex)
-            {
-                Tls.WriteErrorLog("frmMain: LoadIntervals: " + Ex.Message);
             }
         }
 
@@ -202,6 +167,22 @@ namespace TempMonitor
                 DBname = openFileDialog1.FileName;
             } while (!Dbase.OpenDatabase(DBname));
             openFileDialog1.Dispose();
+        }
+
+        private void ReceiveInfo_NewMessage(object sender, string e)
+        {
+            WriteEvent(e);
+            if (ReceiveInfo.Finished())
+            {
+                // send reply
+                PGN25020 Reply = new PGN25020(this);
+                Reply.ControlBoxID = ReceiveInfo.ControlBoxID();
+                clsControlBox Box = new clsControlBox(this);
+                Box.Load(Reply.ControlBoxID);
+                Reply.UseSleep = Box.UseSleep;
+                Reply.SleepInterval = SleepInterval;
+                Reply.Send();
+            }
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
@@ -226,8 +207,7 @@ namespace TempMonitor
 
         private void Start()
         {
-            WriteEvent("Database connected.");
-            LoadIntervals();
+            UpdateOptions();
             try
             {
                 LastDay = Convert.ToDateTime(Tls.GetProperty("LastDay"));
@@ -254,11 +234,18 @@ namespace TempMonitor
         {
             // add packet to for all sensors to report at record interval or refresh command
             int ElapsedMinutes = (int)(DateTime.Now - LastReading).TotalMinutes;
-            if ((ElapsedMinutes >= RecordInterval) | (RefreshReadings))
+            if (((ElapsedMinutes >= RecordInterval) & !ListenOnly) | (RefreshReadings))
             {
                 RefreshReadings = false;
                 LastReading = DateTime.Now;
+
+                // issue read command
+                PGN25010 Update = new PGN25010(this);
+                Update.ReadSensors();
+
+                // create packets for each controlbox
                 OutgoingPackets.Add(PacketType.AllSensorsReport);
+
                 WriteEvent("Refreshing.");
             }
 
@@ -288,7 +275,7 @@ namespace TempMonitor
             frmOptions frm = new frmOptions(this);
             frm.ShowDialog(this);
             frm.Dispose();
-            CheckRecord();
+            UpdateOptions();
         }
 
         private void toolStripMenuItem1_Click(object sender, EventArgs e)
@@ -307,6 +294,80 @@ namespace TempMonitor
             frmBins frm = new frmBins(this);
             frm.ShowDialog(this);
             frm.Dispose();
+        }
+
+        private void UpdateOptions()
+        {
+            try
+            {
+                DAO.Recordset RS;
+                string SQL = "select * from tblProps";
+                RS = Dbase.DB.OpenRecordset(SQL);
+                RecordInterval = Dbase.FieldToInt(RS, "dbRecordInterval");
+                SaveInterval = Dbase.FieldToInt(RS, "dbSaveInterval");
+                ControlBoxDelay = Dbase.FieldToInt(RS, "dbControlBoxDelay");
+                MaxBoxes = Dbase.FieldToInt(RS, "dbMaxBoxes");
+                RecordData = Convert.ToBoolean(RS.Fields["dbRecordData"].Value);
+                ListenOnly = Convert.ToBoolean(RS.Fields["dbListenOnly"].Value);
+                SleepInterval = Dbase.FieldToInt(RS, "dbSleepInterval");
+                RS.Close();
+            }
+            catch (Exception Ex)
+            {
+                Tls.WriteErrorLog("frmMain: UpdateOptions: " + Ex.Message);
+            }
+        }
+
+        private void toolStripMenuItem1_Click_1(object sender, EventArgs e)
+        {
+            frmControlBoxes frm = new frmControlBoxes(this);
+            frm.ShowDialog(this);
+            frm.Dispose();
+        }
+
+        private void butControlBoxes_Click(object sender, EventArgs e)
+        {
+            frmControlBoxes frm = new frmControlBoxes(this);
+            frm.ShowDialog(this);
+            frm.Dispose();
+        }
+
+        private void toolStripMenuItem11_Click(object sender, EventArgs e)
+        {
+            frmBinReport frm = new frmBinReport(this);
+            frm.ShowDialog(this);
+            frm.Dispose();
+        }
+
+        private void backupToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            string Name = Dbase.DBname(true);
+            if (Tls.BackupFile(Name))
+            {
+                WriteEvent("File backed up.");
+            }
+            else
+            {
+                WriteEvent("Failed to backup File.");
+            }
+        }
+
+        private void restoreToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            DialogResult Result;
+            Result = MessageBox.Show("Confirm restore File.", "Restore File", MessageBoxButtons.YesNo);
+            if (Result == System.Windows.Forms.DialogResult.Yes)
+            {
+                string Name = Dbase.DBname(true);
+                if (Tls.RestoreFile(Name))
+                {
+                    WriteEvent("File restored.");
+                }
+                else
+                {
+                    WriteEvent("Failed to Restore File.");
+                }
+            }
         }
     }
 }

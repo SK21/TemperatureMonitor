@@ -3,6 +3,7 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Diagnostics;
+using DGVPrinterHelper;
 
 namespace TempMonitor.Forms
 {
@@ -26,21 +27,6 @@ namespace TempMonitor.Forms
             mf.ReceiveInfo.NewMessage += ReceiveInfo_NewMessage;
         }
 
-        public bool CellCheckedValue(int Row, String Col)
-        {
-            bool Result = false;
-            try
-            {
-                string Val = DGV.Rows[Row].Cells[Col].Value.ToString();
-                Result = (Val == "True");
-            }
-            catch (Exception ex)
-            {
-                mf.Tls.WriteErrorLog("frmSensors:CellCheckedValue " + ex.Message);
-            }
-            return Result;
-        }
-
         public void WriteEvent(string Message, bool ShowTime = true)
         {
             if (ShowTime)
@@ -60,12 +46,23 @@ namespace TempMonitor.Forms
 
         private void btPrint_Click(object sender, EventArgs e)
         {
+            DGVPrinter printer = new DGVPrinter();
+            printer.Title = "Sensors";
+            //printer.SubTitle = "An Easy to Use DataGridView Printing Object";
+            printer.SubTitleFormatFlags = StringFormatFlags.LineLimit |
+            StringFormatFlags.NoClip;
+            printer.PageNumbers = true;
+            printer.PageNumberInHeader = false;
+            printer.ColumnWidth = DGVPrinter.ColumnWidthSetting.Porportional;
+            printer.HeaderCellAlignment = StringAlignment.Near;
+            //printer.Footer = "Your Company Name Here";
+            printer.FooterSpacing = 15;
+            printer.PrintPreviewDataGridView(DGV);
         }
 
         private void btReload_Click(object sender, EventArgs e)
         {
             LoadData();
-            LoadBins();
             UpdateDisplay();
         }
 
@@ -128,30 +125,31 @@ namespace TempMonitor.Forms
             {
                 try
                 {
-                    //clsSensor Sen = Sensors.Item((short)CellIntValue(CurrentRow, "ID"));
                     clsSensor Sen = Sensors.Item(Convert.ToInt16(NV(0)));
 
-                    short Rslt = 0;
-                    short.TryParse(tbCable.Text, out Rslt);
-                    Sen.CableID = Rslt;
+                    byte Rslt = 0;
+                    byte.TryParse(tbCable.Text, out Rslt);
+                    Sen.CableNum = Rslt;
 
                     Rslt = 0;
-                    short.TryParse(tbSensor.Text, out Rslt);
-                    Sen.SensorID = Rslt;
+                    byte.TryParse(tbSensor.Text, out Rslt);
+                    Sen.SensorNum = Rslt;
 
                     float Flt = 0;
                     float.TryParse(tbOffset.Text, out Flt);
                     Sen.OffSet = Flt;
 
                     Rslt = 0;
-                    short.TryParse(cbBin.Text, out Rslt);
+                    byte.TryParse(tbBin.Text, out Rslt);
                     Sen.BinNum = Rslt;
 
                     Sen.Enabled = ckEnabled.Checked;
 
                     Sen.Save();
                     LoadData();
-                    DGV.Rows[CurrentRow].Selected = true;
+
+                    CurrentRow = mf.Tls.FindRecord(DGV, 0, Sen.ID);
+                    DGV.CurrentCell = DGV[2, CurrentRow];
                 }
                 catch (Exception ex)
                 {
@@ -168,11 +166,6 @@ namespace TempMonitor.Forms
                 UpdateDisplay();
                 SetButtons(false);
             }
-        }
-
-        private void cbBin_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            SetButtons(true);
         }
 
         private void CheckSensor()
@@ -197,14 +190,6 @@ namespace TempMonitor.Forms
             }
         }
 
-        private void DGV_RowValidated(object sender, DataGridViewCellEventArgs e)
-        {
-            if (butSaveEdit.Text == "Save")
-            {
-                butSaveEdit.PerformClick();
-            }
-        }
-
         private void frmSensors_Load(object sender, EventArgs e)
         {
             DGV.BackgroundColor = DGV.DefaultCellStyle.BackColor;
@@ -214,7 +199,6 @@ namespace TempMonitor.Forms
             tbEvents.BackColor = DGV.DefaultCellStyle.BackColor;
 
             LoadData();
-            LoadBins();
             UpdateDisplay();
         }
 
@@ -224,28 +208,6 @@ namespace TempMonitor.Forms
 
         private void label4_Click(object sender, EventArgs e)
         {
-        }
-
-        private void LoadBins()
-        {
-            Updating = true;
-            try
-            {
-                dsBins.Clear();
-
-                foreach (clsStorage Stor in Bins.Items)
-                {
-                    DataRow Rw = dsBins.Tables[0].NewRow();
-                    Rw[0] = Stor.ID;
-                    Rw[1] = Stor.Number;
-                    dsBins.Tables[0].Rows.Add(Rw);
-                }
-            }
-            catch (Exception ex)
-            {
-                mf.Tls.WriteErrorLog("frmSensors:LoadBins " + ex.Message);
-            }
-            Updating = false;
         }
 
         private void LoadData()
@@ -260,8 +222,8 @@ namespace TempMonitor.Forms
                     DataRow Rw = dataSet1.Tables[0].NewRow();
                     Rw[0] = Sen.ID;
                     Rw[1] = Sen.BinNum;
-                    Rw[2] = Sen.CableID;
-                    Rw[3] = Sen.SensorID;
+                    Rw[2] = Sen.CableNum;
+                    Rw[3] = Sen.SensorNum;
                     Rw[4] = Sen.Enabled;
                     Rw[5] = Sen.OffSet;
                     Rw[6] = Sen.LastTemp();
@@ -327,21 +289,6 @@ namespace TempMonitor.Forms
             }
         }
 
-        private void SetSelectedBin(int BinNum)
-        {
-            bool Found = false;
-            for (int i = 0; i < cbBin.Items.Count; i++)
-            {
-                cbBin.SelectedIndex = i;
-                if (Convert.ToInt32(cbBin.Text) == BinNum)
-                {
-                    Found = true;
-                    break;
-                }
-            }
-            if (!Found) cbBin.SelectedIndex = -1;
-        }
-
         private void tbCable_TextChanged(object sender, EventArgs e)
         {
             SetButtons(true);
@@ -370,6 +317,7 @@ namespace TempMonitor.Forms
             {
                 Updating = true;
 
+                tbBin.Text = DGV.Rows[CurrentRow].Cells[1].Value.ToString();
                 tbSensor.Text = DGV.Rows[CurrentRow].Cells[4].Value.ToString();
                 tbCable.Text = DGV.Rows[CurrentRow].Cells[3].Value.ToString();
 
@@ -381,14 +329,15 @@ namespace TempMonitor.Forms
                 float.TryParse(DGV.Rows[CurrentRow].Cells[6].Value.ToString(), out Offset);
                 tbOffset.Text = Offset.ToString("N1");
 
-                int BinNum = 0;
-                int.TryParse(DGV.Rows[CurrentRow].Cells[1].Value.ToString(), out BinNum);
-                SetSelectedBin(BinNum);
-
                 lbSelected.Text = DGV.Rows[CurrentRow].Cells[9].Value.ToString();
 
                 Updating = false;
             }
+        }
+
+        private void tbBin_TextChanged(object sender, EventArgs e)
+        {
+            SetButtons(true);
         }
     }
 }
