@@ -1,0 +1,31 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>KiCad BOM Example 5</title>
+    </head>
+    <body>
+    <h1>E:\MyDocs\Ardunio\Projects\Temp Monitor\PCB\TempMon Wemos\TempMon Wemos.sch</h1>
+    <p>8/16/2019 4:11:49 PM</p>
+    <p>Eeschema (5.1.2)-2</p>
+    <p><b>Component Count:</b>15</p>
+    <table>
+    <tr><th style='width:640px'>Ref</th><th>Qnty</th><th>Value</th><th>Part</th><th>Footprint</th><th>Description</th><th>Vendor</th></tr>
+    <tr><td>C1</td><td>1</td><td>1000</td><td>Device:CP</td><td>Capacitor_THT:CP_Radial_D10.0mm_P5.00mm</td><td>Polarized capacitor</td><td></td></tr>
+    <tr><td>D1</td><td>1</td><td>1N5400</td><td>MyLib:1N5400</td><td>my library:DO201-15</td><td></td><td></td></tr>
+    <tr><td>J1</td><td>1</td><td>RJ45</td><td>Connector:RJ45</td><td>Connector_RJ:RJ45_Amphenol_54602-x08_Horizontal</td><td>RJ connector, 8P8C (8 positions 8 connected)</td><td></td></tr>
+    <tr><td>J2</td><td>1</td><td>Power In</td><td>Connector:Screw_Terminal_01x02</td><td>my library:2pin-3.5mm</td><td>Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</td><td></td></tr>
+    <tr><td>J3</td><td>1</td><td>Parasitic Bus</td><td>Connector:Screw_Terminal_01x02</td><td>my library:2pin-3.5mm</td><td>Generic screw terminal, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</td><td></td></tr>
+    <tr><td>J4</td><td>1</td><td>Wake</td><td>Connector:Conn_01x02_Female</td><td>Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical</td><td>Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)</td><td></td></tr>
+    <tr><td>J6</td><td>1</td><td>Mode</td><td>Connector:Conn_01x03_Female</td><td>Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical</td><td>Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)</td><td></td></tr>
+    <tr><td>L1</td><td>1</td><td>LLC</td><td>MyLib:LLC</td><td>my library:LLC</td><td></td><td></td></tr>
+    <tr><td>R4, R5</td><td>2</td><td>4K7</td><td>Device:R</td><td>Resistor_THT:R_Axial_DIN0207_L6.3mm_D2.5mm_P10.16mm_Horizontal</td><td>Resistor</td><td></td></tr>
+    <tr><td>RG1</td><td>1</td><td>DD4012SA_5V</td><td>MyLib:DD4012SA_5V</td><td>my library:DD4012SA_5V</td><td></td><td></td></tr>
+    <tr><td>RV1, RV2, RV3</td><td>3</td><td>Trim 10K</td><td>Device:R_POT_TRIM_US</td><td>my library:Trimmer_Pot</td><td>Trim-potentiometer, US symbol</td><td></td></tr>
+    <tr><td>U1</td><td>1</td><td>WeMos_D1_mini Pro</td><td>MCU_Module:WeMos_D1_mini</td><td>Module:WEMOS_D1_mini_light</td><td>32-bit microcontroller module with WiFi</td><td></td></tr><!--TABLEROW-->
+    </table>
+    </body>
+</html>
+    
