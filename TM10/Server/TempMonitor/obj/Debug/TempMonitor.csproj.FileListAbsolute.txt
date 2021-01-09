@@ -442,3 +442,28 @@ E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMoni
 E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.application
 E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.exe
 E:\MyFiles\MyDocs\Temperature Monitor\TM10\Server\TempMonitor\obj\Debug\TempMonitor.pdb
+E:\MyFiles\Temp\ServerOld\TempMonitor\bin\Debug\Resources\Base.mdb
+E:\MyFiles\Temp\ServerOld\TempMonitor\bin\Debug\TempMonitor.exe.config
+E:\MyFiles\Temp\ServerOld\TempMonitor\bin\Debug\TempMonitor.exe.manifest
+E:\MyFiles\Temp\ServerOld\TempMonitor\bin\Debug\TempMonitor.application
+E:\MyFiles\Temp\ServerOld\TempMonitor\bin\Debug\TempMonitor.exe
+E:\MyFiles\Temp\ServerOld\TempMonitor\bin\Debug\TempMonitor.pdb
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.csprojAssemblyReference.cache
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\Interop.DAO.dll
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.csproj.ResolveComReference.cache
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.frmBinReport.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.FormMain.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.Forms.frmNewFile.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.Forms.frmOptions.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.Forms.frmSensors.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.FormTimedMessage.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.frmAbout.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.frmBins.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.frmControlBoxes.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.Properties.Resources.resources
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.csproj.GenerateResource.cache
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.csproj.CoreCompileInputs.cache
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.exe.manifest
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.application
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.exe
+E:\MyFiles\Temp\ServerOld\TempMonitor\obj\Debug\TempMonitor.pdb

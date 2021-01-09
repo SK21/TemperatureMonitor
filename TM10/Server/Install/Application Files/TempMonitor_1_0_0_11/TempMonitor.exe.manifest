@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<asmv1:assembly xsi:schemaLocation="urn:schemas-microsoft-com:asm.v1 assembly.adaptive.xsd" manifestVersion="1.0" xmlns:asmv1="urn:schemas-microsoft-com:asm.v1" xmlns="urn:schemas-microsoft-com:asm.v2" xmlns:asmv2="urn:schemas-microsoft-com:asm.v2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:co.v1="urn:schemas-microsoft-com:clickonce.v1" xmlns:asmv3="urn:schemas-microsoft-com:asm.v3" xmlns:dsig="http://www.w3.org/2000/09/xmldsig#" xmlns:co.v2="urn:schemas-microsoft-com:clickonce.v2">
+  <asmv1:assemblyIdentity name="TempMonitor.exe" version="1.0.0.11" publicKeyToken="6d74e62c5043769a" language="neutral" processorArchitecture="msil" type="win32" />
+  <description asmv2:iconFile="iconfinder_83_Thermometer_Three_Quarter_Full_183499.ico" xmlns="urn:schemas-microsoft-com:asm.v1" />
+  <application />
+  <entryPoint>
+    <assemblyIdentity name="TempMonitor" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+    <commandLine file="TempMonitor.exe" parameters="" />
+  </entryPoint>
+  <trustInfo>
+    <security>
+      <applicationRequestMinimum>
+        <PermissionSet Unrestricted="true" ID="Custom" SameSite="site" />
+        <defaultAssemblyRequest permissionSetReference="Custom" />
+      </applicationRequestMinimum>
+      <requestedPrivileges xmlns="urn:schemas-microsoft-com:asm.v3">
+        <!--
+          UAC Manifest Options
+          If you want to change the Windows User Account Control level replace the
+          requestedExecutionLevel node with one of the following.
+
+        <requestedExecutionLevel  level="asInvoker" uiAccess="false" />
+        <requestedExecutionLevel  level="requireAdministrator" uiAccess="false" />
+        <requestedExecutionLevel  level="highestAvailable" uiAccess="false" />
+
+         If you want to utilize File and Registry Virtualization for backward
+         compatibility then delete the requestedExecutionLevel node.
+    -->
+        <requestedExecutionLevel level="asInvoker" uiAccess="false" />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+  <dependency>
+    <dependentOS>
+      <osVersionInfo>
+        <os majorVersion="5" minorVersion="1" buildNumber="2600" servicePackMajor="0" />
+      </osVersionInfo>
+    </dependentOS>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="preRequisite" allowDelayedBinding="true">
+      <assemblyIdentity name="Microsoft.Windows.CommonLanguageRuntime" version="4.0.30319.0" />
+    </dependentAssembly>
+  </dependency>
+  <dependency>
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="TempMonitor.exe" size="865728">
+      <assemblyIdentity name="TempMonitor" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
+      <hash>
+        <dsig:Transforms>
+          <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+        </dsig:Transforms>
+        <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+        <dsig:DigestValue>lRVBmpYZ8wOVMIJA2Nj0G7M+ux9oNEnJSF0fKPMxbgQ=</dsig:DigestValue>
+      </hash>
+    </dependentAssembly>
+  </dependency>
+  <file name="iconfinder_83_Thermometer_Three_Quarter_Full_183499.ico" size="67646">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>M29HIdbN0d+7LboY17Fte3Su/0v0JHPQ4iS4srjJRlc=</dsig:DigestValue>
+    </hash>
+  </file>
+  <file name="TempMonitor.exe.config" size="261">
+    <hash>
+      <dsig:Transforms>
+        <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
+      </dsig:Transforms>
+      <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
+      <dsig:DigestValue>NgzKN1LP4rwQbYB5gP+8NPQQvYjC1i56sV3WRQIZAqQ=</dsig:DigestValue>
+    </hash>
+  </file>
+<publisherIdentity name="CN=COMPUTER1\CoxDa" issuerKeyHash="1346c1ef4bc158a2c3e72f566c21d5118f25593a" /><Signature Id="StrongNameSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>DVxCjYDxSyfaELJMN59sAF37jngj+wUWTAcnlqVlVyE=</DigestValue></Reference></SignedInfo><SignatureValue>r1NqK8JZY9S3zBMDQrby0ThVnScGdc61Q7Id7fTzqDYMKObuU8vuCKqBMLGfECIs4fzUaniyO3sY3TIP5HDA/DCe01IV+Kq6IyFFIK5EX3eB+mahf3lJs29w1z6jvs0iI0EtQ7HGX/M0KhW4lCAxK3JTSJl1UXzPqtbvhidq6aI=</SignatureValue><KeyInfo Id="StrongNameKeyInfo"><KeyValue><RSAKeyValue><Modulus>tps+IBnYlxbegM6GaMiG0o/tUkQKZyP+PBW0gVVEylJRjTLXy/mlGuAfE6yzGEvQvdWf0IxYLB6RjHwdw7pVyrq2xb+OyMb3EnSCbRzpnGjphQnYCRNmeXTDY2tHxcfR8Dls5JFXeqtklt3ahhQbUuYZhZnELpHzoyyo8Ep1N3U=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><msrel:RelData xmlns:msrel="http://schemas.microsoft.com/windows/rel/2005/reldata"><r:license xmlns:r="urn:mpeg:mpeg21:2003:01-REL-R-NS" xmlns:as="http://schemas.microsoft.com/windows/pki/2005/Authenticode"><r:grant><as:ManifestInformation Hash="215765a59627074c1605fb23788efb5d006c9f374cb210da274bf1808d425c0d" Description="" Url=""><as:assemblyIdentity name="TempMonitor.exe" version="1.0.0.11" publicKeyToken="6d74e62c5043769a" language="neutral" processorArchitecture="msil" type="win32" /></as:ManifestInformation><as:SignedBy /><as:AuthenticodePublisher><as:X509SubjectName>CN=COMPUTER1\CoxDa</as:X509SubjectName></as:AuthenticodePublisher></r:grant><r:issuer><Signature Id="AuthenticodeSignature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha256" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /><Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" /><DigestValue>o6cgdBasc87CUZD6VRZA2oXFCVBCERZyhNo5b8yzuPw=</DigestValue></Reference></SignedInfo><SignatureValue>ev0S4cBW6K8Wmb99QdH8EaX2vb6FP6ceNG5rmhCjPD3T+qH5zfaNHMI2h9ieKIIPtrBP8lUkJNpWs+oJ9LxYmcanGIPv22JSHci+k38xldyRTRGfbEiSz956ceJ4LTejEicFRdsjFL4YK/2Um5/a1Qkz4Qgk6ytGuwWb1QymG58=</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>tps+IBnYlxbegM6GaMiG0o/tUkQKZyP+PBW0gVVEylJRjTLXy/mlGuAfE6yzGEvQvdWf0IxYLB6RjHwdw7pVyrq2xb+OyMb3EnSCbRzpnGjphQnYCRNmeXTDY2tHxcfR8Dls5JFXeqtklt3ahhQbUuYZhZnELpHzoyyo8Ep1N3U=</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue><X509Data><X509Certificate>MIIB1TCCAT6gAwIBAgIQGFt9dmHD+opE9m9yCw6UpTANBgkqhkiG9w0BAQsFADApMScwJQYDVQQDHh4AQwBPAE0AUABVAFQARQBSADEAXABDAG8AeABEAGEwHhcNMjEwMTA5MDQ1OTM1WhcNMjIwMTA5MTA1OTM1WjApMScwJQYDVQQDHh4AQwBPAE0AUABVAFQARQBSADEAXABDAG8AeABEAGEwgZ8wDQYJKoZIhvcNAQEBBQADgY0AMIGJAoGBALabPiAZ2JcW3oDOhmjIhtKP7VJECmcj/jwVtIFVRMpSUY0y18v5pRrgHxOssxhL0L3Vn9CMWCwekYx8HcO6Vcq6tsW/jsjG9xJ0gm0c6Zxo6YUJ2AkTZnl0w2NrR8XH0fA5bOSRV3qrZJbd2oYUG1LmGYWZxC6R86MsqPBKdTd1AgMBAAEwDQYJKoZIhvcNAQELBQADgYEAMHohq79xpCRjPNf1NliqEni8BW92eZMS2gdBVxK+lyz5FycL/ZllyXgTwT+0HjqM+7YzMiI40teQkypaZ8iwAVGwPRExK/bolqKZTD/g35EvSYnDbvnfw8xBfWo05g6/sYoIfhzNnHdFF/LexYm6qy9drlpH6c2hezOEAzm+gmY=</X509Certificate></X509Data></KeyInfo></Signature></r:issuer></r:license></msrel:RelData></KeyInfo></Signature></asmv1:assembly>

@@ -2141,7 +2141,7 @@ namespace DGVPrinterHelper //AllocationRequest
                 {
                     fixedcolumns.Add(GetColumnIndex(colname));
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     // missing column, so add it to print list and retry
                     colstoprint.Add(dgv.Columns[colname]);

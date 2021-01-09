@@ -200,6 +200,7 @@ namespace TempMonitor.Forms
 
             LoadData();
             UpdateDisplay();
+            mf.ReceiveInfo.ShowOnChipData = true;
         }
 
         private void label3_Click(object sender, EventArgs e)
@@ -338,6 +339,11 @@ namespace TempMonitor.Forms
         private void tbBin_TextChanged(object sender, EventArgs e)
         {
             SetButtons(true);
+        }
+
+        private void frmSensors_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            mf.ReceiveInfo.ShowOnChipData = false;
         }
     }
 }

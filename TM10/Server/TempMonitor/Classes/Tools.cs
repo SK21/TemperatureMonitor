@@ -14,7 +14,7 @@ namespace TempMonitor
         private readonly FormMain mf;
         private string cAppName = "TemperatureMonitor";
         private int cCurrentDBversion = 100;
-        private string cVersionDate = "27-Dec-2020";
+        private string cVersionDate = "08-Jan-2021";
         private string DataDir;
         private string PropertiesFile;
         private string SettingsDir;
@@ -291,18 +291,18 @@ namespace TempMonitor
             return (short)((BinNum << 8) | byte2);
         }
 
-        public byte BinNumFromUserData(short UD)
+        public byte BinNumFromUserData(int UD)
         {
             return (byte)(UD >> 8); // shift right to lower 8 bits
         }
 
-        public byte CableNumFromUserData(short UD)
+        public byte CableNumFromUserData(int UD)
         {
             int Tmp = (UD & 240) >> 4;  // remove top 8 and lower 4 bits, 0000 0000 1111 0000
             return (byte)Tmp;
         }
 
-        public byte SensorNumFromUserData(short UD)
+        public byte SensorNumFromUserData(int UD)
         {
             return (byte)(UD & 15); // remove top 12 bits, 0000 0000 0000 1111
         }

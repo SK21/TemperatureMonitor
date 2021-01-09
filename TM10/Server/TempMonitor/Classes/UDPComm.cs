@@ -14,10 +14,15 @@ namespace TempMonitor
         private byte[] buffer = new byte[1024];
 
         private IPAddress epIP;
-        private HandleDataDelegateObj HandleDataDelegate = null;
         private Socket recvSocket;
-
         private Socket sendSocket;
+
+        private HandleDataDelegateObj HandleDataDelegate = null;
+
+        // local ports must be unique for each app on same pc
+        private int ListenPort = 1688;      // arduino sends on
+        private int SendToPort = 8120;      // arduino listens on
+        private int SendFromPort = 1680;    
 
         public UDPComm(FormMain CallingForm)
         {
@@ -36,7 +41,7 @@ namespace TempMonitor
             {
                 try
                 {
-                    IPEndPoint EndPt = new IPEndPoint(epIP, 8120);
+                    IPEndPoint EndPt = new IPEndPoint(epIP, SendToPort);
 
                     // Send packet to the zero
                     if (byteData.Length != 0)
@@ -62,14 +67,14 @@ namespace TempMonitor
                 sendSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
                 recvSocket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
 
-                // Initialise the IPEndPoint for the server and listen on port 2388
-                IPEndPoint recv = new IPEndPoint(IPAddress.Any, 2388);
+                // Initialise the IPEndPoint for the server and listen on 
+                IPEndPoint recv = new IPEndPoint(IPAddress.Any, ListenPort);
 
                 // Associate the socket with this IP address and port
                 recvSocket.Bind(recv);
 
-                // Initialise the IPEndPoint for the server to send on port 2188
-                IPEndPoint server = new IPEndPoint(IPAddress.Any, 2188);
+                // Initialise the IPEndPoint for the server to send on 
+                IPEndPoint server = new IPEndPoint(IPAddress.Any, SendFromPort);
                 sendSocket.Bind(server);
 
                 // Initialise the IPEndPoint for the client - async listner client only!
@@ -125,13 +130,11 @@ namespace TempMonitor
         {
             try
             {
-                int BytesSent = sendSocket.EndSend(asyncResult);
-                Debug.WriteLine(DateTime.Now.TimeOfDay + " Sent " + BytesSent.ToString());
+                sendSocket.EndSend(asyncResult);
             }
             catch (Exception e)
             {
                 mf.Tls.WriteErrorLog(" UDP Send Data" + e.ToString());
-                mf.Tls.TimedMessageBox("SendData Error", e.Message);
             }
         }
 
@@ -152,10 +155,10 @@ namespace TempMonitor
             }
         }
 
-        private string GetBroadcastIP()
+        private void SetEpIP()
         {
-            string IP = LocalIP();
             string Result = "";
+            string IP = LocalIP();
             string[] data = IP.Split('.');
             if (data.Length == 4)
             {
@@ -164,16 +167,12 @@ namespace TempMonitor
 
             if (IPAddress.TryParse(Result, out IPAddress Tmp))
             {
-                return Result;
+                epIP = Tmp;
             }
             else
             {
-                return "127.0.0.255";
+                epIP = IPAddress.Parse("127.0.0.255");
             }
-        }
-        private void SetEpIP()
-        {
-            epIP = IPAddress.Parse(GetBroadcastIP());
         }
 
         private void AddressChanged(object sender, EventArgs e)

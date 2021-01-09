@@ -176,9 +176,9 @@ namespace TempMonitor
             {
                 // send reply
                 PGN25020 Reply = new PGN25020(this);
-                Reply.ControlBoxID = ReceiveInfo.ControlBoxID();
+                Reply.ControlBoxNumber = ReceiveInfo.ControlBoxNumber();
                 clsControlBox Box = new clsControlBox(this);
-                Box.Load(Reply.ControlBoxID);
+                Box.Load(0, Reply.ControlBoxNumber);
                 Reply.UseSleep = Box.UseSleep;
                 Reply.SleepInterval = SleepInterval;
                 Reply.Send();
@@ -368,6 +368,11 @@ namespace TempMonitor
                     WriteEvent("Failed to Restore File.");
                 }
             }
+        }
+
+        private void indexToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

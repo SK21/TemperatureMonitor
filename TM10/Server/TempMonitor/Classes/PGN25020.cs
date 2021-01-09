@@ -36,7 +36,7 @@ namespace TempMonitor
             cData[1] = HeaderLo;
         }
 
-        public byte ControlBoxID
+        public byte ControlBoxNumber
         {
             get { return cData[2]; }
             set { cData[2] = value; }

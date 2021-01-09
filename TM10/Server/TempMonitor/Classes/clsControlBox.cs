@@ -68,12 +68,12 @@ namespace TempMonitor
             return Result;
         }
 
-        public bool Load(byte ID = 0, byte ControlboxID = 0)
+        public bool Load(byte ID = 0, byte ControlboxNumber = 0)
         {
             string SQL;
             if (ID == 0)
             {
-                SQL = "select * from tblControlBoxes where cbNumber = " + ControlboxID.ToString();
+                SQL = "select * from tblControlBoxes where cbNumber = " + ControlboxNumber.ToString();
             }
             else
             {
