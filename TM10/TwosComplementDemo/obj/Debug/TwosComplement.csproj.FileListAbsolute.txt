@@ -1,0 +1,20 @@
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\bin\Debug\TwosComplement.exe.config
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\bin\Debug\TwosComplement.exe
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\bin\Debug\TwosComplement.pdb
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\obj\Debug\TwosComplement.csprojAssemblyReference.cache
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\obj\Debug\TwosComplement.Form1.resources
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\obj\Debug\TwosComplement.Properties.Resources.resources
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\obj\Debug\TwosComplement.csproj.GenerateResource.cache
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\obj\Debug\TwosComplement.csproj.CoreCompileInputs.cache
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\obj\Debug\TwosComplement.exe
+E:\MyFiles\MyDocs\C#\Projects\TwosComplement\TwosComplement\obj\Debug\TwosComplement.pdb
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\bin\Debug\TwosComplement.exe.config
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\bin\Debug\TwosComplement.exe
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\bin\Debug\TwosComplement.pdb
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\obj\Debug\TwosComplement.csprojAssemblyReference.cache
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\obj\Debug\TwosComplement.Form1.resources
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\obj\Debug\TwosComplement.Properties.Resources.resources
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\obj\Debug\TwosComplement.csproj.GenerateResource.cache
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\obj\Debug\TwosComplement.csproj.CoreCompileInputs.cache
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\obj\Debug\TwosComplement.exe
+E:\MyFiles\MyDocs\Temperature Monitor\ds2482\TwosComplement\TwosComplement\obj\Debug\TwosComplement.pdb
