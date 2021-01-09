@@ -9,7 +9,7 @@
 #include <ESP8266mDNS.h>
 
 #define AppName "Temperature Monitor"
-#define AppVersion "27-Dec-2020"
+#define AppVersion "08-Jan-2021"
 
 //bool UseWebPage = true;
 bool UseWebPage = false;
@@ -30,11 +30,11 @@ unsigned int ReceiveFromPort = 8120;      // local port to listen on
 
 //sending back to where and which port
 IPAddress ipDestination;
-unsigned int SendToPort = 2388; //port that listens
+unsigned int SendToPort = 1688; //port that listens
 
 // sensors
 // Wemos D1
-OneWire OWbus[3] = { OneWire(12),OneWire(13),OneWire(14) };
+OneWire OWbus[] = { OneWire(12),OneWire(13),OneWire(14) };
 int BusCount = 3;
 
  //ESP-01
@@ -107,9 +107,13 @@ int TimeSlot = 15;	// time (minutes) allocated to a controlbox to transmit data
 bool ReceivedReply = false;
 bool UDPstarted = false;
 
-IPAddress SourceIP;
-String UpdateURL;
 unsigned long UpdateTime;
+
+byte LineUDS;
+byte LineASR;
+byte LineSensors;
+
+unsigned long DiagTime;
 
 void setup()
 {
@@ -141,83 +145,6 @@ void loop()
 	{
 		DoClientMode();
 	}
-}
 
-bool WifiConnected()
-{
-	return ((WiFi.status() == WL_CONNECTED) && (WiFi.RSSI() > -90) && (WiFi.RSSI() != 0));
-}
-
-bool CheckWifi(int NumberTries = 1)
-{
-	if ((millis() - CommTime > 5000) || NumberTries > 1)
-	{
-		int Count = 0;
-		do
-		{
-			Count++;
-
-			Serial.println();
-			Serial.println("Controlbox: " + String(Props.ID));
-			Serial.print("Network: ");
-			Serial.println(Props.SSID);
-			Serial.print("Wifi status: ");
-			Serial.println(WiFi.status());
-			Serial.print("RSSI: ");
-			Serial.println(WiFi.RSSI());
-			Serial.print("IP: ");
-			Serial.println(WiFi.localIP());
-			Serial.print("UDP Destination IP: ");
-			Serial.println(ipDestination);
-			Serial.println("Update URL: " + UpdateURL);
-			Serial.println();
-
-			if (!WifiConnected())
-			{
-				Serial.print("Connecting to ");
-				Serial.println(Props.SSID);
-
-				WiFi.disconnect();
-				delay(500);
-				WiFi.mode(WIFI_STA);
-				WiFi.begin(Props.SSID, Props.Password);
-				delay(5000);
-				ReconnectCount++;
-				ConnectedCount = 0;
-				Serial.print("RSSI: ");
-				Serial.println(WiFi.RSSI());
-				if (ReconnectCount > 10) ESP.restart();
-				UDPstarted = false;
-			}
-			else
-			{
-				ConnectedCount++;
-				ReconnectCount = 0;
-			}
-			Serial.println("Reconnect count: " + String(ReconnectCount));
-			Serial.println("Connected count: " + String(ConnectedCount));
-			Serial.println("Minutes connected: " + String(ConnectedCount * 5 / 60));
-			Serial.println();
-			CommTime = millis();
-
-		} while (Count < NumberTries && !WifiConnected());
-	}
-
-	if (!UDPstarted)
-	{
-		UDPstarted = UDP.begin(ReceiveFromPort);
-
-		// UDP destination
-		ipDestination = WiFi.localIP();
-		ipDestination[3] = 255;		// change to broadcast
-	}
-
-	if (WifiConnected())
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
+	//SendDiagnostics();
 }

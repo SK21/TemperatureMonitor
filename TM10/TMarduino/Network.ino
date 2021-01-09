@@ -90,6 +90,7 @@ void LoadProperties()
 	{
 		Props = tmp;
 	}
+	Serial.println("Sleep property Load " + String(Props.UseSleep));
 }
 
 void SaveProperties()
@@ -105,6 +106,7 @@ void SaveProperties()
 	{
 		Serial.println("Properties not saved.");
 	}
+	Serial.println("Sleep property Save " + String(Props.UseSleep));
 }
 
 

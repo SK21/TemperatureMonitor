@@ -2,6 +2,9 @@ int CurrentSleepMinutes;
 
 void GoToSleep(int SleepMinutes = 60, RFMode WakeMode = WAKE_RF_DEFAULT)
 {
+	Serial.println("GoToSleep " + String(SleepMinutes) + " minutes.");
+	SendData(0, 3);
+	delay(100);
 	if (SleepMinutes > 60) SleepMinutes = 60;
 	if (SleepMinutes < 0) SleepMinutes = 0;
 	uint32_t SleepTime = SleepMinutes * 60 * 1000000;
@@ -11,6 +14,8 @@ void GoToSleep(int SleepMinutes = 60, RFMode WakeMode = WAKE_RF_DEFAULT)
 void DoSleepMode()
 {
 	// get sleep time left from RTC memory
+	Serial.println();
+	Serial.print("Sleep Mode");
 	WT.MinutesRemaining = 0;
 	WakeTimeData Tmp;
 	system_rtc_mem_read(RTCMEMORYSTART, &Tmp, sizeof(Tmp));

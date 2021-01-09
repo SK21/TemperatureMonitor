@@ -1,5 +1,8 @@
 // adapted from https://playground.arduino.cc/Learning/OneWire/
 
+byte MSB;
+byte LSB;
+
 void UpdateSensors()
 {
 	Serial.println("Updating sensors on " + String(BusCount) + " buses.");
@@ -11,7 +14,8 @@ void UpdateSensors()
 		OWbus[i].reset_search();
 		delay(500);
 		while (OWbus[i].search(Addr) && SensorCount < 256)
-		{      
+		{ 
+			LineSensors++;
 			SensorTemp = GetTemp(Addr, i);
 			if (ValidTemp(SensorTemp))
 			{
@@ -20,48 +24,50 @@ void UpdateSensors()
 					Sensors[SensorCount].ID[i] = Addr[i];
 				}
 				Sensors[SensorCount].BusID = i;
-				int temp = SensorTemp * 10;
-				Sensors[SensorCount].Temperature[0] = (byte)(temp >> 8);
-				Sensors[SensorCount].Temperature[1] = (byte)(temp);
+				Sensors[SensorCount].Temperature[0] = MSB;
+				Sensors[SensorCount].Temperature[1] = LSB;
 
 				Sensors[SensorCount].UserData[0] = (byte)(UserData >> 8);
 				Sensors[SensorCount].UserData[1] = (byte)(UserData);
 				SensorCount++;
 			}
-
-			delay(1000);
+			delay(500);
 		}
 	}
   Serial.println("Sensor count: " + String(SensorCount));
+  LineUDS++;
 }
 
 float GetTemp(byte Addr[], byte BusID)
 {
 	Result = -127;
 	UserData = 0;
-
-	OWbus[BusID].reset();
-	OWbus[BusID].select(Addr);
-	OWbus[BusID].write(0x44, 1);	// parasite power on
-
-	delay(1000);
-	OWbus[BusID].reset();
-	OWbus[BusID].select(Addr);
-	OWbus[BusID].write(0xBE);	// Issue read scratchpad cmd
-
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		dsScratchPadMem[i] = OWbus[BusID].read();
-	}
+		OWbus[BusID].reset();
+		OWbus[BusID].select(Addr);
+		OWbus[BusID].write(0x44, 1);  // parasite power on
+		
+		delay(1000);
+		OWbus[BusID].reset();
+		OWbus[BusID].select(Addr);
+		OWbus[BusID].write(0xBE);	// Issue read scratchpad cmd
+		for (int i = 0; i < 9; i++)
+		{
+			dsScratchPadMem[i] = OWbus[BusID].read();
+		}
 
-	// check if valid frame
-	if (dsCRC8(dsScratchPadMem, 8) == dsScratchPadMem[8])
-	{
-		RawTemp = (dsScratchPadMem[1] << 8) | dsScratchPadMem[0];
-		Result = (float)RawTemp / 16.0;
-		UserData = (dsScratchPadMem[2] << 8 | dsScratchPadMem[3]);
+		// check if valid frame
+		if (dsCRC8(dsScratchPadMem, 8) == dsScratchPadMem[8])
+		{
+			MSB = dsScratchPadMem[1];
+			LSB = dsScratchPadMem[0];
+			Result = FromTwos(MSB, LSB);
+			UserData = (dsScratchPadMem[2] << 8 | dsScratchPadMem[3]);
+		}
+		if (Result > -127) break;	// loop up to 3 times to get valid data
+		delay(1000);
 	}
-
 	return Result;
 }
 
@@ -110,12 +116,24 @@ byte dsCRC8(const uint8_t* addr, uint8_t len)//begins from LS-bit of LS-byte (On
 
 void AllSensorsReport()
 {
-	bool Last;
-	for (byte i = 0; i < SensorCount; i++)
+	if (SensorCount == 0)
 	{
-		Last = ((i + 1) == SensorCount);
-		SendData(i, Last);
+		// report no sensors
+		SendData(0, 2);
 	}
+	else
+	{
+		// report available sensors
+		bool Last;
+		for (byte i = 0; i < SensorCount; i++)
+		{
+			Last = ((i + 1) == SensorCount);
+			SendData(i, Last);
+			delay(150);
+		}
+	}
+
+	LineASR++;
 }
 
 void SingleSensorReport()
@@ -137,7 +155,29 @@ void SetNewUserData()
 		if (memcmp(Sensors[i].ID, SensorAddress, 8) == 0)
 		{
 			SetUserData(SensorAddress, Sensors[i].BusID, UserData);
+			UpdateSensors(); // to update array
 			break;	// exit loop
 		}
 	}
 }
+
+float FromTwos(byte MSB, byte LSB)
+{
+	float r = 0;
+	uint16_t t = 0;
+	uint16_t s = MSB << 8 | LSB;
+	if ((s & 32768) == 32768)
+	{
+		// negative number
+		t = ~s + 1; // complement + 1
+		r = t * -1.0; // multiply by -1 to result in two's complement
+		r = (float)(r / 16.0); //convert one-wire temperature
+	}
+	else
+	{
+		// positive number
+		r = (float)(s / 16.0);
+	}
+	return r;
+}
+

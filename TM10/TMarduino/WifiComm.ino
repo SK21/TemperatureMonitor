@@ -18,7 +18,6 @@ void ReceiveData()
 	int PacketSize = UDP.parsePacket();
 	if (PacketSize)
 	{
-		SourceIP = UDP.remoteIP();
 		int Len = UDP.read(InBuffer, 255);
 		if (Len > 15)
 		{
@@ -79,9 +78,9 @@ void ReceiveData()
 //12	user data low, cable bits 7 - 4, sensor # bits 3 - 0, (0 - 15 each)
 //13	Temp high
 //14	Temp low
-//15	0 - data remaining, 1 - finished
+//15	0 - data remaining, 1 - finished, 2 - no sensors, 3 - GoToSleep
 
-void SendData(byte SensorID, byte Finished)
+void SendData(byte SensorID, byte Status)
 {
 	if (SendEnabled)
 	{
@@ -89,19 +88,22 @@ void SendData(byte SensorID, byte Finished)
 		OutBuffer[0] = 98;
 		OutBuffer[1] = 12;
 		OutBuffer[2] = Props.ID;
+		OutBuffer[15] = Status;
 
-		for (byte i = 0; i < 8; i++)
+		if ((Status == 0) || (Status == 1))
 		{
-			OutBuffer[i + 3] = Sensors[SensorID].ID[i];
+			// report sensor
+			for (byte i = 0; i < 8; i++)
+			{
+				OutBuffer[i + 3] = Sensors[SensorID].ID[i];
+			}
+
+			OutBuffer[11] = Sensors[SensorID].UserData[0];
+			OutBuffer[12] = Sensors[SensorID].UserData[1];
+
+			OutBuffer[13] = Sensors[SensorID].Temperature[0];
+			OutBuffer[14] = Sensors[SensorID].Temperature[1];
 		}
-
-		OutBuffer[11] = Sensors[SensorID].UserData[0];
-		OutBuffer[12] = Sensors[SensorID].UserData[1];
-
-		OutBuffer[13] = Sensors[SensorID].Temperature[0];
-		OutBuffer[14] = Sensors[SensorID].Temperature[1];
-
-		OutBuffer[15] = Finished;
 
 		UDP.beginPacket(ipDestination, SendToPort);
 		UDP.write(OutBuffer, sizeof(OutBuffer));
@@ -109,3 +111,99 @@ void SendData(byte SensorID, byte Finished)
 		Serial.println("SendData");
 	}
 }
+
+bool WifiConnected()
+{
+	return ((WiFi.status() == WL_CONNECTED) && (WiFi.RSSI() > -90) && (WiFi.RSSI() != 0));
+}
+
+bool CheckWifi(int NumberTries)
+{
+	if ((millis() - CommTime > 5000) || NumberTries > 1)
+	{
+		int Count = 0;
+		do
+		{
+			Count++;
+
+			Serial.println();
+			Serial.println("Controlbox: " + String(Props.ID));
+			Serial.print("Network: ");
+			Serial.println(Props.SSID);
+			Serial.print("Wifi status: ");
+			Serial.println(WiFi.status());
+			Serial.print("RSSI: ");
+			Serial.println(WiFi.RSSI());
+			Serial.print("IP: ");
+			Serial.println(WiFi.localIP());
+			Serial.print("UDP Destination IP: ");
+			Serial.println(ipDestination);
+			Serial.println();
+
+			if (!WifiConnected())
+			{
+				Serial.print("Connecting to ");
+				Serial.println(Props.SSID);
+
+				WiFi.disconnect();
+				delay(500);
+				WiFi.mode(WIFI_STA);
+				WiFi.begin(Props.SSID, Props.Password);
+				delay(5000);
+				ReconnectCount++;
+				ConnectedCount = 0;
+				Serial.print("RSSI: ");
+				Serial.println(WiFi.RSSI());
+				if (ReconnectCount > 10) ESP.restart();
+				UDPstarted = false;
+			}
+			else
+			{
+				ConnectedCount++;
+				ReconnectCount = 0;
+			}
+			Serial.println("Reconnect count: " + String(ReconnectCount));
+			Serial.println("Connected count: " + String(ConnectedCount));
+			Serial.println("Minutes connected: " + String(ConnectedCount * 5 / 60));
+			Serial.println();
+			CommTime = millis();
+
+		} while (Count < NumberTries && !WifiConnected());
+	}
+
+	if (!UDPstarted)
+	{
+		UDPstarted = UDP.begin(ReceiveFromPort);
+
+		// UDP destination
+		ipDestination = WiFi.localIP();
+		ipDestination[3] = 255;		// change to broadcast
+	}
+
+	return WifiConnected();
+}
+
+void SendDiagnostics()
+{
+	if (millis() - DiagTime > 30000)
+	{
+		DiagTime = millis();
+
+		// PGN 25100
+		OutBuffer[0] = 98;
+		OutBuffer[1] = 12;
+		OutBuffer[2] = Props.ID;
+		OutBuffer[15] = 4;
+
+		OutBuffer[3] = LineUDS;
+		OutBuffer[4] = LineASR;
+		OutBuffer[5] = WiFi.RSSI() + 100;
+		OutBuffer[6] = LineSensors;
+
+		UDP.beginPacket(ipDestination, SendToPort);
+		UDP.write(OutBuffer, sizeof(OutBuffer));
+		UDP.endPacket();
+		Serial.println("Send Diagnostics");
+	}
+}
+

@@ -2,7 +2,7 @@ void DoClientMode()
 {
 	FlashLED();
 
-	CheckWifi();
+	CheckWifi(1);
 
 	if ((ConnectedCount == 1) && !SensorsCounted)
 	{
