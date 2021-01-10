@@ -10,6 +10,7 @@ namespace TempMonitor.Forms
         private readonly FormMain mf;
 
         private bool DataChanged = false;
+        private int SleepInterval = 0;
 
         public frmOptions(FormMain CallingForm)
         {
@@ -102,8 +103,8 @@ namespace TempMonitor.Forms
             ckListen.Checked = Convert.ToBoolean(RS.Fields["dbListenOnly"].Value);
             tbSaveLocation.Text = Convert.ToString(RS.Fields["dbSaveLocation"].Value);
             tbMaxBoxes.Text = Convert.ToString(RS.Fields["dbMaxBoxes"].Value);
-            int Sleep = mf.Dbase.FieldToInt(RS, "dbSleepInterval");
-            tbSleep.Text = Convert.ToString(Sleep / 60);
+            SleepInterval = mf.Dbase.FieldToInt(RS, "dbSleepInterval");
+            tbSleep.Text = (SleepInterval ).ToString();
             RS.Close();
 
             // backup values
@@ -133,7 +134,7 @@ namespace TempMonitor.Forms
                 RS.Fields["dbListenOnly"].Value = Convert.ToBoolean(ckListen.Checked);
                 RS.Fields["dbSaveLocation"].Value = Convert.ToString(tbSaveLocation.Text);
                 RS.Fields["dbMaxBoxes"].Value = mf.Tls.StringToInt(tbMaxBoxes.Text);
-                RS.Fields["dbSleepInterval"].Value = mf.Tls.StringToInt(tbSleep.Text)*60;
+                RS.Fields["dbSleepInterval"].Value = SleepInterval;
                 RS.Update();
                 RS.Close();
 
@@ -245,7 +246,7 @@ namespace TempMonitor.Forms
         private void tbMaxBoxes_Validating(object sender, CancelEventArgs e)
         {
             int i = mf.Tls.StringToInt(tbMaxBoxes.Text);
-            if(i<1|i>255)
+            if (i < 1 | i > 255)
             {
                 mf.Tls.TimedMessageBox("Invalid entry", "Must be between 1 and 255");
                 e.Cancel = true;
@@ -271,16 +272,17 @@ namespace TempMonitor.Forms
 
         private void tbSleep_Validating(object sender, CancelEventArgs e)
         {
-            int i = mf.Tls.StringToInt(tbSleep.Text);
-            if (i < 0 | i > 23)
+            int i = 0;
+            if (int.TryParse(tbSleep.Text, out i) && (i < 0 | i > 1439))
             {
-                mf.Tls.TimedMessageBox("Invalid entry", "Must be between 0 and 23");
+                mf.Tls.TimedMessageBox("Invalid entry", "Must be between 0 and 1439");
                 e.Cancel = true;
                 tbSleep.Text = tbSleep.Tag.ToString();
             }
             else
             {
-                tbSleep.Text = i.ToString();
+                SleepInterval = i;
+                tbSleep.Text = SleepInterval.ToString();
             }
         }
     }

@@ -19,7 +19,8 @@ namespace TempMonitor
         // 6    new controlbox ID
         // 7    Current Time Hi
         // 8    Current Time Lo
-        // 9-15 -
+        // 9    ControlBox count
+        // 10   TimeSlot length in minutes
 
         private const byte cByteCount = 16;
         private const byte HeaderHi = 97;
@@ -34,6 +35,7 @@ namespace TempMonitor
             mf = CalledFrom;
             cData[0] = HeaderHi;
             cData[1] = HeaderLo;
+            cData[10] = 5;  // TimeSlot
         }
 
         public byte ControlBoxNumber
@@ -81,6 +83,18 @@ namespace TempMonitor
                 cData[7] = (byte)(value >> 8);
                 cData[8] = (byte)value;
             }
+        }
+
+        public byte ControlBoxCount
+        {
+            get { return cData[9]; }
+            set { cData[9] = value; }
+        }
+
+        public byte TimeSlot
+        {
+            get { return cData[10]; }
+            set { cData[10] = value; }
         }
 
         public void Send()

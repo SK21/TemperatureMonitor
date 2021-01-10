@@ -37,7 +37,6 @@ namespace TempMonitor
         public int ControlBoxDelay;     // seconds between controlbox messages
 
         public int MaxBoxes;
-        public int ControlBoxCount;
         private bool RefreshReadings = false;
 
         public int SleepInterval;
@@ -181,6 +180,7 @@ namespace TempMonitor
                 Box.Load(0, Reply.ControlBoxNumber);
                 Reply.UseSleep = Box.UseSleep;
                 Reply.SleepInterval = SleepInterval;
+                Reply.ControlBoxCount = Dbase.ControlBoxCount();
                 Reply.Send();
             }
         }

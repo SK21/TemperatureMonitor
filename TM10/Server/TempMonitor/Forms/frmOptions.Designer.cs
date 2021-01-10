@@ -271,9 +271,9 @@
             this.label8.AutoSize = true;
             this.label8.Location = new System.Drawing.Point(8, 157);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(107, 13);
+            this.label8.Size = new System.Drawing.Size(117, 13);
             this.label8.TabIndex = 20;
-            this.label8.Text = "Sleep Interval (hours)";
+            this.label8.Text = "Sleep Interval (minutes)";
             // 
             // frmOptions
             // 

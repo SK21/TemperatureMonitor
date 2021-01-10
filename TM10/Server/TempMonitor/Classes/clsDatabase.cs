@@ -32,11 +32,11 @@ namespace TempMonitor
 
         public byte DBversion { get { return cDBversion; } }
 
-        public string DBname(bool ShortName=false)
+        public string DBname(bool ShortName = false)
         {
-            if(cConnected)
+            if (cConnected)
             {
-                if(ShortName)
+                if (ShortName)
                 {
                     return Path.GetFileNameWithoutExtension(cDB.Name);
                 }
@@ -70,7 +70,7 @@ namespace TempMonitor
 
         public string DBfolder()
         {
-            if(cConnected)
+            if (cConnected)
             {
                 return Path.GetDirectoryName(cDB.Name);
             }
@@ -120,7 +120,7 @@ namespace TempMonitor
 
                         // raise database connected event
                         DBconnected?.Invoke();
-                        
+
                         return true;
                     }
                     else
@@ -723,6 +723,25 @@ namespace TempMonitor
             }
             return Result;
         }
+
+        public byte ControlBoxCount()
+        {
+            byte Result = 0;
+            try
+            {
+                DAO.Recordset RS;
+                string SQL = "Select * from tblProps";
+                RS = cDB.OpenRecordset(SQL);
+                Result = (byte)FieldToInt(RS, "dbMaxBoxes");
+                RS.Close();
+            }
+            catch (Exception)
+            {
+
+            }
+            return Result;
+        }
+
 
     }
 }

@@ -14,7 +14,7 @@ namespace TempMonitor
         private readonly FormMain mf;
         private string cAppName = "TemperatureMonitor";
         private int cCurrentDBversion = 100;
-        private string cVersionDate = "08-Jan-2021";
+        private string cVersionDate = "10-Jan-2021";
         private string DataDir;
         private string PropertiesFile;
         private string SettingsDir;
