@@ -9,7 +9,7 @@
 #include <ESP8266mDNS.h>
 
 #define AppName "Temperature Monitor"
-#define AppVersion "08-Jan-2021"
+#define AppVersion "10-Jan-2021"
 
 //bool UseWebPage = true;
 bool UseWebPage = false;
@@ -34,6 +34,7 @@ unsigned int SendToPort = 1688; //port that listens
 
 // sensors
 // Wemos D1
+// board: Wemos D1 R2 & mini
 OneWire OWbus[] = { OneWire(12),OneWire(13),OneWire(14) };
 int BusCount = 3;
 
@@ -86,6 +87,7 @@ struct Properties
 	char Password[32];
 	byte UseSleep;
 	int SleepInterval;
+	byte ControlBoxCount;
 	byte Check;	// validity check
 };
 
@@ -102,7 +104,7 @@ struct WakeTimeData
 WakeTimeData WT;
 
 unsigned long SendTime;
-int TimeSlot = 15;	// time (minutes) allocated to a controlbox to transmit data
+int TimeSlot = 1;	// time (minutes) allocated to a controlbox to transmit data
 
 bool ReceivedReply = false;
 bool UDPstarted = false;
@@ -125,6 +127,8 @@ void setup()
 	Serial.print("  :  ");
 	Serial.println(AppVersion);
 	Serial.println();
+
+	pinMode(D0, WAKEUP_PULLUP);
 
 	NetConnect();
 

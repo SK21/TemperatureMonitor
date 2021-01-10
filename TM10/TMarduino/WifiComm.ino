@@ -60,10 +60,11 @@ void ReceiveData()
 					Props.SleepInterval = InBuffer[4] << 8 | InBuffer[5];
 					Props.ID = InBuffer[6];
 					CurrentTime = InBuffer[7] << 8 | InBuffer[8];
+					Props.ControlBoxCount = InBuffer[9];
+					TimeSlot = InBuffer[10];
 					ReceivedReply = true;
 					SaveProperties();
 				}
-
 			}
 		}
 	}
