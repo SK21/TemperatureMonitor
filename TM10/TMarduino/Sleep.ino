@@ -88,8 +88,8 @@ void DoSleepMode()
 int MinutesLeft()
 {
 	// Each controlbox has an exclusive timeslot to send data within each
-	// sleep interval. The sleep intervals are over the course of one day,
-	// 24 hrs, or 0-1439 minutes.
+	// reporting cycle. The reporting cycles are over the course of one day,
+	// 24 hrs, or 0-1439 minutes. One cycle is when all sensors have reported.
 	// Example with a 15 minute timeslot and a 6 hour sleep interval
 	// and the current time is 750 minutes:
 	// Controlbox 0 first timeslot is 0-14 minutes in the first report cycle.
@@ -103,13 +103,12 @@ int MinutesLeft()
 	int Result = 0;
 	int AddTime = Props.ControlBoxCount * TimeSlot;
 	if (AddTime < Props.SleepInterval) AddTime = Props.SleepInterval;
-	AddTime += 1;
-
+	
 	do
 	{
 		StartTime = (CycleCount * AddTime) + Props.ID * TimeSlot;
 		CycleCount++;
-	} while (StartTime < CurrentTime);
+	} while (StartTime <= CurrentTime);
 
 	Result = StartTime - CurrentTime;
 

@@ -34,7 +34,7 @@ unsigned int SendToPort = 1688; //port that listens
 
 // sensors
 // Wemos D1
-// board: Wemos D1 R2 & mini
+// board: LOLIN(Wemos) D1 R2 & mini
 OneWire OWbus[] = { OneWire(12),OneWire(13),OneWire(14) };
 int BusCount = 3;
 
@@ -104,7 +104,7 @@ struct WakeTimeData
 WakeTimeData WT;
 
 unsigned long SendTime;
-int TimeSlot = 1;	// time (minutes) allocated to a controlbox to transmit data
+int TimeSlot = 5;	// time (minutes) allocated to a controlbox to transmit data
 
 bool ReceivedReply = false;
 bool UDPstarted = false;

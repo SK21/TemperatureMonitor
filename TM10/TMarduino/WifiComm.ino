@@ -109,6 +109,7 @@ void SendData(byte SensorID, byte Status)
 		UDP.beginPacket(ipDestination, SendToPort);
 		UDP.write(OutBuffer, sizeof(OutBuffer));
 		UDP.endPacket();
+		Serial.println("WifiComm:SendData time " + String(millis()));
 		Serial.println("SendData");
 	}
 }
