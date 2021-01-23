@@ -61,12 +61,12 @@ void handleTemps()
 
 	for (byte i = 0; i < SensorCount; i++)
 	{
-		UD = Sensors[i].UserData[0] << 8 | Sensors[i].UserData[1];
+		UD = Sensors[i].UserData[1] << 8 | Sensors[i].UserData[0];
 		BinNum = UD >> 8;   // shift right to lower 8 bits
 		Cable = (UD & 240) >> 4;    // remove top 8 and lower 4 bits, 0000 0000 1111 0000
 		SensorNum = (UD & 15);  // remove top 12 bits, 0000 0000 0000 1111
 
-		Tmp = (float)((Sensors[i].Temperature[0] << 8 | Sensors[i].Temperature[1]) / 10.0);
+		Tmp = (float)((int16_t)(Sensors[i].Temperature[1] << 8 | Sensors[i].Temperature[0]) / 16.0);	// twos complement conversion
 
 		st += "      <tr>";
 		st += "        <td style='text-align:center'>" + String(BinNum) + "</td>";

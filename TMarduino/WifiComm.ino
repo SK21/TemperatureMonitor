@@ -10,6 +10,7 @@
 //13		-
 //14		-
 //15		command byte
+//16		CRC8
 
 
 void ReceiveData()
@@ -19,7 +20,7 @@ void ReceiveData()
 	if (PacketSize)
 	{
 		int Len = UDP.read(InBuffer, 255);
-		if (Len > 15)
+		if (Len >= CommLength)
 		{
 			PGN = InBuffer[0] << 8 | InBuffer[1];
 			Serial.println("PGN " + String(PGN) + " received for Controlbox	" + String(InBuffer[2]));
@@ -30,23 +31,29 @@ void ReceiveData()
 				{
 					if (InBuffer[2] == BoxData.ID)
 					{
-						Serial.println("PGN " + String(PGN) + "  for this ControlBox.");
-						SendEnabled = true;
-						CommandByte = InBuffer[15];
-						for (byte i = 0; i < 8; i++)
+						if (CRCmatch(InBuffer, CommLength))
 						{
-							CurrentSensorAddress[i] = InBuffer[i + 3];
+							Serial.println("PGN " + String(PGN) + "  for this ControlBox.");
+							SendEnabled = true;
+							CommandByte = InBuffer[15];
+							for (byte i = 0; i < 8; i++)
+							{
+								CurrentSensorAddress[i] = InBuffer[i + 3];
+							}
+							UserData = InBuffer[11] << 8 | InBuffer[12];
 						}
-						UserData = InBuffer[11] << 8 | InBuffer[12];
 					}
 				}
 			}
 
 			if (PGN == 25010)
 			{
-				// pre-read sensors
-				SendEnabled = false;
-				if (InBuffer[15] == 4) UpdateSensors();
+				if (CRCmatch(InBuffer, CommLength))
+				{
+					// pre-read sensors
+					SendEnabled = false;
+					if (InBuffer[15] == 4) UpdateSensors();
+				}
 			}
 
 			if (PGN == 25020)
@@ -55,20 +62,23 @@ void ReceiveData()
 				SendEnabled = false;
 				if (InBuffer[2] == BoxData.ID)
 				{
-					Serial.println("PGN " + String(PGN) + "  for this ControlBox.");
-					BoxData.UseSleep = InBuffer[3];
-					BoxData.SleepInterval = InBuffer[4] << 8 | InBuffer[5];
+					if (CRCmatch(InBuffer, CommLength))
+					{
+						Serial.println("PGN " + String(PGN) + "  for this ControlBox.");
+						BoxData.UseSleep = InBuffer[3];
+						BoxData.SleepInterval = InBuffer[4] << 8 | InBuffer[5];
 
-					BoxData.ID = InBuffer[6];
-					CurrentTime = InBuffer[7] << 8 | InBuffer[8];
-					BoxData.ControlBoxCount = InBuffer[9];
+						BoxData.ID = InBuffer[6];
+						CurrentTime = InBuffer[7] << 8 | InBuffer[8];
+						BoxData.ControlBoxCount = InBuffer[9];
 
-					TimeSlot = InBuffer[10];
-					SendDiag = InBuffer[11];
-					Restart = InBuffer[12];
+						TimeSlot = InBuffer[10];
+						SendDiag = InBuffer[11];
+						Restart = InBuffer[12];
 
-					ReceivedReply = true;
-					SaveCBproperties();
+						ReceivedReply = true;
+						SaveCBproperties();
+					}
 				}
 			}
 		}
@@ -85,6 +95,7 @@ void ReceiveData()
 //13	Temp high
 //14	Temp low
 //15	0 - data remaining, 1 - finished, 2 - no sensors, 3 - GoToSleep
+//16	CRC8
 
 void SendData(byte SensorID, byte Status)
 {
@@ -110,6 +121,8 @@ void SendData(byte SensorID, byte Status)
 			OutBuffer[13] = Sensors[SensorID].Temperature[0];
 			OutBuffer[14] = Sensors[SensorID].Temperature[1];
 		}
+
+		OutBuffer[16] = CRC8(&OutBuffer[0], CommLength - 1);
 
 		UDP.beginPacket(ipDestination, SendToPort);
 		UDP.write(OutBuffer, sizeof(OutBuffer));
@@ -182,10 +195,47 @@ void SendDiagnostics()
 		OutBuffer[12] = LineASR;
 		OutBuffer[13] = LineSensors;
 
+		OutBuffer[16] = CRC8(&OutBuffer[0], CommLength - 1);
+
 		UDP.beginPacket(ipDestination, SendToPort);
 		UDP.write(OutBuffer, sizeof(OutBuffer));
 		UDP.endPacket();
 		Serial.println("Send Diagnostics");
 	}
 }
+
+// http://www.leonardomiliani.com/en/2013/un-semplice-crc8-per-arduino/
+byte CRC8(const byte* data, byte len)
+{
+	byte crc = 0x00;
+	while (len--)
+	{
+		byte extract = *data++;
+		for (byte tempI = 8; tempI; tempI--)
+		{
+			byte sum = (crc ^ extract) & 0x01;
+			crc >>= 1;
+			if (sum)
+			{
+				crc ^= 0x8C;
+			}
+			extract >>= 1;
+		}
+	}
+	return crc;
+}
+
+bool CRCmatch(byte Data[], byte Len)
+{
+	bool Result = false;
+	if (Len > 0)
+	{
+		byte CRC = CRC8(&Data[0], Len - 1);
+		Result = (CRC == Data[Len - 1]);
+	}
+	return Result;
+}
+
+
+
 

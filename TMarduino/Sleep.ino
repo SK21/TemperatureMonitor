@@ -51,7 +51,7 @@ void DoSleepMode()
 				AllSensorsReport();
 
 				// wait for reply
-				SendTime = millis();
+				unsigned long SendTime = millis();
 				do
 				{
 					ReceivedReply = false;

@@ -13,7 +13,7 @@
 //bool ForceWebPage = true;
 bool ForceWebPage = false;
 
-#define UseDS2482	0	// 0 don't use, 1 use
+#define UseDS2482	1	// 0 don't use, 1 use
 
 #define SDApin  12
 #define SCLpin  14
@@ -21,7 +21,7 @@ bool ForceWebPage = false;
 int BusCount = 3;
 
 #define AppName "Temperature Monitor"
-#define AppVersion "20-Jan-2021"
+#define AppVersion "23-Jan-2021"
 
 #if UseDS2482
 
@@ -45,8 +45,9 @@ extern "C"
 #define RTCMEMORYSTART 65
 
 // wifi
+#define CommLength 17
+byte OutBuffer[CommLength];	 // Array to send data back
 byte InBuffer[255];	 //buffer to hold incoming packet
-byte OutBuffer[16];	 // Array to send data back
 WiFiUDP UDP;
 unsigned int ReceiveFromPort = 8120;      // local port to listen on
 
@@ -66,13 +67,7 @@ unsigned long CommTime;
 unsigned long ConnectedCount = 0;
 unsigned long ReconnectCount = 0;
 
-byte data[8];
 int UserData;
-float SensorTemp;
-
-long RawTemp = 0;
-float Result = 0;
-byte dsScratchPadMem[9];
 
 byte SensorCount = 0;
 bool SendEnabled = false; // if last PGN received was for this node send is enabled
@@ -81,7 +76,7 @@ struct SensorData
 {
 	byte ID[8];
 	byte BusID;
-	byte Temperature[2];
+	byte Temperature[2];	// msb [1], lsb [0]
 	byte UserData[2];
 };
 
@@ -109,17 +104,12 @@ struct WakeTimeData
 WakeTimeData WT;
 
 int CurrentTime = 0;	// 0-1439 minutes (24 hrs)
-
 unsigned long FlashTime;
 bool FlashState;
+
 unsigned int PGN;
-
-unsigned long SendTime;
 int TimeSlot = 5;	// time (minutes) allocated to a controlbox to transmit data
-
 bool ReceivedReply = false;
-bool UDPstarted = false;
-
 unsigned long UpdateTime;
 
 byte LineUDS;

@@ -2,15 +2,14 @@
 
 // adapted from https://playground.arduino.cc/Learning/OneWire/
 
-byte MSB;
-byte LSB;
-
 void UpdateSensors()
 {
+	byte Addr[8];
+	byte Mem[2];
+	SensorCount = 0;
+
 	Serial.println();
 	Serial.println("Updating sensors on " + String(BusCount) + " buses.");
-	SensorCount = 0;
-	byte Addr[8];
 	for (int i = 0; i < BusCount; i++)
 	{
 		Serial.println("Searching one-wire bus " + String(i));
@@ -19,19 +18,18 @@ void UpdateSensors()
 		while (OWbus[i].search(Addr) && SensorCount < 256)
 		{
 			LineSensors++;
-			SensorTemp = GetTemp(Addr, i);
-			if (ValidTemp(SensorTemp))
+			if (GetTemp(Addr, i, Mem))
 			{
 				for (int i = 0; i < 8; i++)
 				{
 					Sensors[SensorCount].ID[i] = Addr[i];
 				}
 				Sensors[SensorCount].BusID = i;
-				Sensors[SensorCount].Temperature[0] = MSB;
-				Sensors[SensorCount].Temperature[1] = LSB;
+				Sensors[SensorCount].Temperature[0] = Mem[0];	// lsb
+				Sensors[SensorCount].Temperature[1] = Mem[1];	// msb
 
-				Sensors[SensorCount].UserData[0] = (byte)(UserData >> 8);
-				Sensors[SensorCount].UserData[1] = (byte)(UserData);
+				Sensors[SensorCount].UserData[0] = (byte)(UserData);		// lsb
+				Sensors[SensorCount].UserData[1] = (byte)(UserData >> 8);	// msb	
 				SensorCount++;
 			}
 			delay(500);
@@ -41,10 +39,12 @@ void UpdateSensors()
 	LineUDS++;
 }
 
-float GetTemp(byte Addr[], byte BusID)
+bool GetTemp(byte Addr[], byte BusID,byte Mem[] )
 {
-	Result = -127;
+	float Result = -127.0;
 	UserData = 0;
+	byte dsScratchPadMem[9];
+
 	for (int i = 0; i < 3; i++)
 	{
 		OWbus[BusID].reset();
@@ -63,20 +63,15 @@ float GetTemp(byte Addr[], byte BusID)
 		// check if valid frame
 		if (OWbus[BusID].crc8(dsScratchPadMem, 8) == dsScratchPadMem[8])
 		{
-			MSB = dsScratchPadMem[1];
-			LSB = dsScratchPadMem[0];
-			Result = FromTwos(MSB, LSB);
+			Mem[1] = dsScratchPadMem[1];	// msb
+			Mem[0] = dsScratchPadMem[0];	// lsb
+			Result = (float)((int16_t)(Mem[1] << 8 | Mem[0]) / 16.0);	// twos complement conversion
 			UserData = (dsScratchPadMem[2] << 8 | dsScratchPadMem[3]);
 		}
 		if (Result > -127) break;	// loop up to 3 times to get valid data
 		delay(1000);
 	}
-	return Result;
-}
-
-bool ValidTemp(float Temp)
-{
-	return (Temp > -127);	// -127 means not connected
+	return (Result > -127);
 }
 
 void SetUserData(byte Addr[], byte BusID, int NewValue)
@@ -85,11 +80,8 @@ void SetUserData(byte Addr[], byte BusID, int NewValue)
 	OWbus[BusID].select(Addr);
 	OWbus[BusID].write(0x4E, 1);	// begin write to scratchpad
 
-	data[0] = NewValue >> 8;
-	data[1] = NewValue & 255;
-
-	OWbus[BusID].write(data[0], 1);
-	OWbus[BusID].write(data[1], 1);
+	OWbus[BusID].write(NewValue >> 8, 1);
+	OWbus[BusID].write(NewValue & 255, 1);
 	OWbus[BusID].write(9, 1);		// set resolution to 0.5C
 	delay(10);
 
@@ -146,26 +138,5 @@ void SetNewUserData()
 		}
 	}
 }
-
-float FromTwos(byte MSB, byte LSB)
-{
-	float r = 0;
-	uint16_t t = 0;
-	uint16_t s = MSB << 8 | LSB;
-	if ((s & 32768) == 32768)
-	{
-		// negative number
-		t = ~s + 1; // complement + 1
-		r = t * -1.0; // multiply by -1 to result in two's complement
-		r = (float)(r / 16.0); //convert one-wire temperature
-	}
-	else
-	{
-		// positive number
-		r = (float)(s / 16.0);
-	}
-	return r;
-}
-
 #endif
 
