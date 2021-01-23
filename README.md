@@ -4,7 +4,7 @@ Temperature Monitor reads temperatures from DS18B20 sensors in grain bins. It co
 
 On startup if a network connection can't be made a web page is started at 192.168.4.1 . Here the network name, password, unique controlbox ID (0-255) and sleep interval (0-1439 minutes) can be set. The sketch can be updated with Over-The-Air wireless update.  
   
-TMarduino can use a DS2482 1-Wire Master. It is a device to connect to 1-Wire networks for improved performance. A DS2482 breakout is available at https://www.artekit.eu/products/breakout-boards/io/ak-ds2482s-100/
-  
 Hookup Schematic:
 <img src="https://user-images.githubusercontent.com/13328609/101184844-cc516980-3616-11eb-823c-0e8157ac7562.PNG" width="100%"></img> 
+
+TMarduino can use a DS2482 1-Wire Master. It is a device to connect to 1-Wire networks for improved performance. A DS2482 breakout is available at https://www.artekit.eu/products/breakout-boards/io/ak-ds2482s-100/
