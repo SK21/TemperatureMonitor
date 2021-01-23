@@ -11,13 +11,14 @@ namespace TempMonitor.Classes
         //1	Header Lo	12
         //2	Control Box ID
         //3-10	Sensor Address bytes 0-8
-        //11	User Data Hi
-        //12	User Data Lo
-        //13	Temp Hi
-        //14	Temp Lo
+        //11	User Data Lo
+        //12	User Data Hi
+        //13	Temp Lo
+        //14	Temp Hi
         //15	0 - data remaining, 1 - finished, 2 - no sensors, 3 - GoToSleep
+        //16    CRC
 
-        private const byte cByteCount = 16;
+        private const byte cByteCount = 17;
         private const byte HeaderHi = 98;
         private const byte HeaderLo = 12;
 
@@ -71,34 +72,38 @@ namespace TempMonitor.Classes
             bool Result = false;
             try
             {
-                if (Data[0] == HeaderHi & Data[1] == HeaderLo & Data.Length >= cByteCount)
+                if (Data.Length >= cByteCount)
                 {
-                    for (int i = 0; i < cByteCount; i++)
+                    if (Data[0] == HeaderHi & Data[1] == HeaderLo)
                     {
-                        cData[i] = Data[i];
-                    }
+                        if (mf.Tls.CRCmatch(Data, cByteCount))
+                        {
+                            for (int i = 0; i < cByteCount; i++)
+                            {
+                                cData[i] = Data[i];
+                            }
 
-                    switch (cData[15])
-                    {
-                        case 0: // more sensors remaining
-                        case 1: // last sensor
-                            Result = true;
-                            SaveSensorData();
-                            NewMessage?.Invoke(this, SensorMessage());
-                            break;
-                        case 2:
-                            // no sensors
-                            NewMessage?.Invoke(this, "CBX: " + cData[2].ToString() + "      no sensors available.");
-                            break;
-                        case 3:
-                            // controlbox went to sleep
-                            NewMessage?.Invoke(this, "CBX: " + cData[2].ToString() + "      went to sleep.");
-                            break;
+                            switch (cData[15])
+                            {
+                                case 0: // more sensors remaining
+                                case 1: // last sensor
+                                    Result = true;
+                                    SaveSensorData();
+                                    NewMessage?.Invoke(this, SensorMessage());
+                                    break;
+                                case 2:
+                                    // no sensors
+                                    NewMessage?.Invoke(this, "CBX: " + cData[2].ToString() + "      no sensors available.");
+                                    break;
+                                case 3:
+                                    // controlbox went to sleep
+                                    NewMessage?.Invoke(this, "CBX: " + cData[2].ToString() + "      went to sleep.");
+                                    break;
+                            }
+                            SaveControlBoxData();
+                        }
                     }
-                    SaveControlBoxData();
                 }
-                return Result;
-
             }
             catch (Exception ex)
             {
@@ -167,12 +172,12 @@ namespace TempMonitor.Classes
 
         public float Temperature()
         {
-            return (float)(mf.Tls.FromTwos(cData[13], cData[14]) / 16.0);
+            return (float)((Int16)(cData[14]<<8 | cData[13]) / 16.0);  // twos complement conversion
         }
 
         public int UserData()
         {
-            return cData[11] << 8 | cData[12];
+            return cData[12] << 8 | cData[11];
         }
 
         public bool Finished()

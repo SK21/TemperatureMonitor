@@ -14,8 +14,9 @@ namespace TempMonitor.Classes
         //4-9   Mac
         //10    RSSI
         //11-15 line markers
+        //16    CRC
 
-        private const byte cByteCount = 16;
+        private const byte cByteCount = 17;
         private const byte HeaderHi = 98;
         private const byte HeaderLo = 22;
 
@@ -37,23 +38,29 @@ namespace TempMonitor.Classes
             bool Result = false;
             try
             {
-                if (Data[0] == HeaderHi & Data[1] == HeaderLo & Data.Length >= cByteCount)
+                if (Data.Length >= cByteCount)
                 {
-                    for (int i = 0; i < cByteCount; i++)
+                    if (Data[0] == HeaderHi & Data[1] == HeaderLo)
                     {
-                        cData[i] = Data[i];
-                    }
+                        if (mf.Tls.CRCmatch(cData, cByteCount))
+                        {
+                            for (int i = 0; i < cByteCount; i++)
+                            {
+                                cData[i] = Data[i];
+                            }
 
-                    boxIP = cData[3];
-                    for (int i = 0; i < 6; i++)
-                    {
-                        boxMac[i] = cData[4 + i];
+                            boxIP = cData[3];
+                            for (int i = 0; i < 6; i++)
+                            {
+                                boxMac[i] = cData[4 + i];
+                            }
+                            boxMacAddress = BitConverter.ToString(boxMac).Replace("-", ":");
+                            PrintDebug();
+                            SaveControlBoxData();
+                            NewMessage?.Invoke(this, "");
+                            Result = true;
+                        }
                     }
-                    boxMacAddress = BitConverter.ToString(boxMac).Replace("-", ":");
-                    PrintDebug();
-                    SaveControlBoxData();
-                    NewMessage?.Invoke(this, "");
-                    Result = true;
                 }
             }
             catch (Exception ex)

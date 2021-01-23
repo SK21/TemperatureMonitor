@@ -23,8 +23,9 @@ namespace TempMonitor
         // 10   TimeSlot length in minutes
         // 11   Send Diagnostics back
         // 12   restart 
+        // 16   CRC
 
-        private const byte cByteCount = 16;
+        private const byte cByteCount = 17;
         private const byte HeaderHi = 97;
         private const byte HeaderLo = 188;
 
@@ -140,6 +141,8 @@ namespace TempMonitor
             if (!ChangedID) cData[6] = cData[2];    // make sure either new ID or current ID
             ChangedID = false;
             CurrentTime = (int)DateTime.Now.TimeOfDay.TotalMinutes;
+            cData[cByteCount - 1] = mf.Tls.CRC8(cData, cByteCount - 1);
+
             mf.UDP.SendUDPMessage(cData);
 
             // reset values

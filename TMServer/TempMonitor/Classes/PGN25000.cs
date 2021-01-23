@@ -16,8 +16,9 @@
         //			- 1 all sensors report
         //			- 2 specific sensor report
         //			- 3 set sensor userdata
+        //16    CRC
 
-        private const byte cByteCount = 16;
+        private const byte cByteCount = 17;
         private const byte HeaderHi = 97;
         private const byte HeaderLo = 168;
 
@@ -64,6 +65,7 @@
 
         private void Send()
         {
+            cData[cByteCount-1] = mf.Tls.CRC8(cData, cByteCount - 1);
             mf.UDP.SendUDPMessage(cData);
         }
     }

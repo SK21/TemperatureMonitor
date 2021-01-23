@@ -5,6 +5,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using System.Diagnostics;
 
 namespace TempMonitor
 {
@@ -14,7 +15,7 @@ namespace TempMonitor
         private readonly FormMain mf;
         private string cAppName = "TemperatureMonitor";
         private int cCurrentDBversion = 100;
-        private string cVersionDate = "20-Jan-2021";
+        private string cVersionDate = "23-Jan-2021";
         private string DataDir;
         private string PropertiesFile;
         private string SettingsDir;
@@ -430,31 +431,37 @@ namespace TempMonitor
             return Result;
         }
 
-        public Int32 FromTwos(byte MSB, byte LSB)
+        // http://www.leonardomiliani.com/en/2013/un-semplice-crc8-per-arduino/
+        public byte CRC8(byte[] data, byte len)
         {
-            // convert Twos Complement number
-            Int32 Result = 0;
-            try
+            byte crc = 0;
+            byte sum = 0;
+            byte extract = 0;
+            for (int i = 0; i < len; i++)
             {
-                UInt16 Com = 0;
-                UInt16 Tmp = (ushort)((MSB << 8) | LSB);
-                if ((Tmp & 32768) == 32768)
+                extract = data[i];
+                for (byte B = 8; B > 0; B--)
                 {
-                    // negative number
-                    Com = (ushort)(~Tmp + 1);   // complement + 1
-                    Result = (Int32)(Com * -1.0);// multiply by -1 to give two's complement
+                    sum = (byte)((crc ^ extract) & 0x01);
+                    crc >>= 1;
+                    if (sum > 0)
+                    {
+                        crc ^= 0x8C;
+                    }
+                    extract >>= 1;
                 }
-                else
-                {
-                    // positive number
-                    Result = (Int32)Tmp;
-                }
-
             }
-            catch (Exception ex)
-            {
+            return crc;
+        }
 
-                WriteErrorLog("Tools/FromTwos:" + ex.Message);
+        public bool CRCmatch(byte[] Data, byte Len) 
+        {
+            // Len is total length of array, including CRC
+            bool Result = false;
+            if (Len > 0)
+            {
+                byte CRC = CRC8(Data, (byte)(Len - 1));
+                Result = (CRC == Data[Len - 1]);
             }
             return Result;
         }
