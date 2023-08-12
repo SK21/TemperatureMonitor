@@ -1,0 +1,3 @@
+Connect to the module hotspot and open url 192.168.4.1 to change settings.
+
+Parasitic mode will only work with genuine DS18B20 temperature sensors. Powered mode needs to be used otherwise. Yellow signal, red power, black ground.

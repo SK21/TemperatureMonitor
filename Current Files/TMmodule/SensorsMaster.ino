@@ -33,6 +33,7 @@ void UpdateSensorsMaster()
 
 bool GetTempMaster(byte Addr[], byte Mem[])
 {
+	delay(500);
 	float Result = -127.0;
 	UserData = 0;
 	byte dsScratchPadMem[9];
@@ -68,6 +69,7 @@ bool GetTempMaster(byte Addr[], byte Mem[])
 
 void SetUserDataMaster(byte Addr[], int NewValue)
 {
+	delay(500);
 	OneWireMaster.wireReset();
 	OneWireMaster.wireSelect(Addr);
 	OneWireMaster.wireWriteByte(0x4E);	// begin write to scratchpad

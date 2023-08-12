@@ -108,6 +108,8 @@ String GetPage0()
 	st += "";
 	st += "    <h1 align=center>" + String(MDL.Name);
 	st += "    </h1>";
+	st += "    <h1 align=center>Sensor Count: " + String(SensorCount);
+	st += "    </h1>";
 	st += "    <form id=FORM1 method=post action='/'>&nbsp;";
 	st += "";
 	st += "";

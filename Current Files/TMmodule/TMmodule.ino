@@ -73,7 +73,7 @@ unsigned long LoopTime;
 const long pulsewait = 60000;                       // time to wait for a pulse before attempting to reconnect (milliseconds)
 unsigned long pulsetime = millis() - pulsewait;     // set to connect to server on startup
 bool ServerConnected;
-const long ServerConnectInterval = 300000;                 // time to wait to reconnect to temperature server
+const long ServerConnectInterval = 180000;                 // time to wait to reconnect to temperature server
 unsigned long LastServerConnectTime = millis() - ServerConnectInterval;
 
 WiFiClient client;
@@ -118,6 +118,9 @@ void setup()
         EEPROM.put(10, MDL);
         EEPROM.commit();
     }
+
+    Serial.print("Module name: ");
+    Serial.println(MDL.Name);
 
     if (MDL.UseWifi)
     {
