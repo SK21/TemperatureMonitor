@@ -1,9 +1,9 @@
 
 // Temperature monitor module
 // Wemos D1 mini Pro, ESP 12F    board: LOLIN(Wemos) D1 R2 & mini  or NodeMCU 1.0 (ESP-12E Module)
-# define InoDescription "TMmodule   11-Aug-2023"
+# define InoDescription "TMmodule   21-Sep-2023"
 
-#define InoID 11083  // change to load default values
+#define InoID 29093  // change to load default values
 
 // packet description:
 // start,packet type,break,data,break,sensor Rom Code,break
@@ -48,6 +48,8 @@ struct ModuleData
     byte Pin4 = 12; // D6
     bool UseDS2482 = false;
     bool UseWifi = false;
+    bool StrongPullup = false;
+    byte PullupPin = 13;
 };
 
 ModuleData MDL;
@@ -183,6 +185,13 @@ void setup()
     else
     {
         UpdateSensors();
+    }
+
+    if (MDL.StrongPullup)
+    {
+        // provide 5V for DS2842 to use for strong pullup
+        pinMode(MDL.PullupPin, OUTPUT);
+        digitalWrite(MDL.PullupPin, HIGH);
     }
 
     Serial.println("");

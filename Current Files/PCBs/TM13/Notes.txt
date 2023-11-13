@@ -1,0 +1,4 @@
+Put jumpers on Signal to DS9503P for input protection. To bypass input protection put jumpers on Signal to DS2482S.
+
+The one-wire bus can be read with the DS2482S or just using GPIO 12.
+

@@ -108,7 +108,7 @@ String GetPage2()
 	st += "      </table>";
 	st += "";
 	st += "<br>";
-	st += "<label for='prop5'>Use Wifi &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;</label>";
+	st += "<label for='prop5'>Use Wifi &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;</label>";
 	st += "<input type='checkbox' class='largerCheckbox'  name='prop5' value='" + String(MDL.UseWifi) + "'";
 	
 	if (MDL.UseWifi)
@@ -119,10 +119,21 @@ String GetPage2()
 	st += "><br>";
 	st += "";
 	st += "<br>";
-	st += "<label for='prop6'>Use DS2482 &nbsp; </label>";
+	st += "<label for='prop6'>Use DS2482 &nbsp; &nbsp;  </label>";
 	st += "<input type='checkbox' class='largerCheckbox' name='prop6' value='" + String(MDL.UseDS2482) + "'";
 
 	if (MDL.UseDS2482)
+	{
+		st += " checked";
+	}
+
+	st += "><br>";
+	st += "";
+	st += "<br>";
+	st += "<label for='prop6'>Strong pullup &nbsp; </label>";
+	st += "<input type='checkbox' class='largerCheckbox' name='prop7' value='" + String(MDL.StrongPullup) + "'";
+
+	if (MDL.StrongPullup)
 	{
 		st += " checked";
 	}

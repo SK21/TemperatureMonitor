@@ -48,6 +48,16 @@ void handleCredentials()
 		MDL.UseDS2482 = false;
 	}
 
+	if (server.hasArg("prop7"))
+	{
+		MDL.StrongPullup = true;
+		Serial.println("Using strong pullup.");
+	}
+	else
+	{
+		MDL.StrongPullup = false;
+	}
+
 	server.send(200, "text/html", GetPage0());
 
 	if (MDL.ServerIP.fromString(ServerIP))

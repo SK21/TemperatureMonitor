@@ -20,6 +20,7 @@ void ConnectWifi()
 		Serial.println("WiFi connected");
 		Serial.println("IP address: ");
 		Serial.println(WiFi.localIP());
+		Serial.printf("RSSI: %d dBm\n", WiFi.RSSI());
 		Serial.println("");
 
 		WiFi.setAutoReconnect(true);
