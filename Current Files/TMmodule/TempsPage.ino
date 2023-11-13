@@ -80,15 +80,6 @@ void HandleTemps()
 	st += "        <th>Temperature</th>";
 	st += "      </tr>";
 
-	if (DS2842Connected)
-	{
-		UpdateSensorsMaster();
-	}
-	else
-	{
-		UpdateSensors();
-	}
-
 	for (byte i = 0; i < SensorCount; i++)
 	{
 		UD = Sensors[i].UserData[1] << 8 | Sensors[i].UserData[0];

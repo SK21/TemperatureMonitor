@@ -146,15 +146,6 @@ void processchunks()
 
 	case 1:
 		// get temperatures
-		if (DS2842Connected)
-		{
-			UpdateSensorsMaster();
-		}
-		else
-		{
-			UpdateSensors();
-		}
-
 		if (P3 == "")
 		{
 			// all sensors

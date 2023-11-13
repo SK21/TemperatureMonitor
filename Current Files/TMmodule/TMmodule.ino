@@ -1,9 +1,9 @@
 
 // Temperature monitor module
 // Wemos D1 mini Pro, ESP 12F    board: LOLIN(Wemos) D1 R2 & mini  or NodeMCU 1.0 (ESP-12E Module)
-# define InoDescription "TMmodule   21-Sep-2023"
+# define InoDescription "TMmodule   13-Nov-2023"
 
-#define InoID 29093  // change to load default values
+#define InoID 13113  // change to load default values
 
 // packet description:
 // start,packet type,break,data,break,sensor Rom Code,break
@@ -34,6 +34,7 @@
 #define SCLpin  5
 
 #define MaxSensors 200
+const uint32_t SampleTime = 3600000;    // update temps every hour
 
 struct ModuleData
 {
@@ -94,6 +95,8 @@ int UserData;
 uint8_t ErrorCount;
 bool DS2842Connected = false;
 ESP8266WebServer server(80);
+
+uint32_t Readtime;
 
 void setup()
 {
@@ -178,21 +181,14 @@ void setup()
         }
     }
 
-    if (DS2842Connected)
-    {
-        UpdateSensorsMaster();
-    }
-    else
-    {
-        UpdateSensors();
-    }
-
     if (MDL.StrongPullup)
     {
         // provide 5V for DS2842 to use for strong pullup
         pinMode(MDL.PullupPin, OUTPUT);
         digitalWrite(MDL.PullupPin, HIGH);
     }
+
+    Readtime = millis() - SampleTime;
 
     Serial.println("");
     Serial.println("Finished Setup");
@@ -209,6 +205,21 @@ void loop()
         CheckTempServer();    //check server connected
         ReadTempServer();     //check for message from server
         checkchunks();    //break up and process message
+    }
+
+    if (millis() - Readtime > SampleTime);
+    {
+        Serial.println("Reading sensors.");
+
+        Readtime = millis();
+        if (DS2842Connected)
+        {
+            UpdateSensorsMaster();
+        }
+        else
+        {
+            UpdateSensors();
+        }
     }
 }
 
