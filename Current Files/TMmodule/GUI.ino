@@ -17,6 +17,12 @@ void HandlePage2()
 	server.send(200, "text/html", GetPage2());
 }
 
+void DoUpdate()
+{
+	UpdateTmps();
+	server.send(200, "text/html", GetPage0());
+}
+
 char ServerIP[32];
 void handleCredentials()
 {

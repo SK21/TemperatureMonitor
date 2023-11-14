@@ -110,17 +110,25 @@ String GetPage0()
 	st += "    </h1>";
 	st += "    <h1 align=center>Sensor Count: " + String(SensorCount);
 	st += "    </h1>";
-	st += "    <h1 align=center>Server RSSI: " + String(WiFi.RSSI());
+	st += "    <h1 align=center>Server RSSI: " + String(SignalStrength());
 	st += "    </h1>";
 	st += "    <form id=FORM1 method=post action='/'>&nbsp;";
 	st += "";
 	st += "";
 	st += "      <p> <a class='button-72' href='/page1' >Temperatures</a> </p>";
 	st += "      <p> <a class='button-72' href='/page2' >Settings</a> </p>";
+	st += "      <p> <a class='button-72' href='/update' >Update</a> </p>";
 	st += "";
 	st += "    </form>";
 	st += "";
 	st += "</HTML>";
 
 	return st;
+}
+
+int8_t SignalStrength()
+{
+	int8_t Result = 0;
+	if (WiFi.RSSI() < 0) Result = WiFi.RSSI();
+	return Result;
 }

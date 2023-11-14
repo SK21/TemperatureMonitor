@@ -102,8 +102,9 @@ void setup()
 {
     pinMode(LED_BUILTIN, OUTPUT);
 
-    Serial.begin(115200);
+    Serial.begin(38400);
     delay(5000);
+    Serial.println();
     Serial.println();
     Serial.println(InoDescription);
     Serial.println();
@@ -150,6 +151,7 @@ void setup()
     server.on("/", HandleRoot);
     server.on("/page1", HandleTemps);
     server.on("/page2", HandlePage2);
+    server.on("/update", DoUpdate);
     server.onNotFound(HandleRoot);
     server.begin();
 
@@ -180,6 +182,12 @@ void setup()
             Serial.println("DS2482 not found.");
         }
     }
+    else
+    {
+        Serial.println("");
+        Serial.println("DS2482 disabled.");
+        Serial.println("Using GPIOs for signals.");
+    }
 
     if (MDL.StrongPullup)
     {
@@ -207,19 +215,29 @@ void loop()
         checkchunks();    //break up and process message
     }
 
-    if (millis() - Readtime > SampleTime);
-    {
-        Serial.println("Reading sensors.");
+	if (millis() - Readtime > SampleTime)
+	{
+		Readtime = millis();
 
-        Readtime = millis();
-        if (DS2842Connected)
-        {
-            UpdateSensorsMaster();
-        }
-        else
-        {
-            UpdateSensors();
-        }
+        UpdateTmps();
+
+        int Min = SampleTime / 60000;
+        Serial.print("");
+        Serial.print("Updating in ");
+        Serial.print(Min);
+        Serial.println(" minutes.");
+	}
+}
+
+void UpdateTmps()
+{
+    if (DS2842Connected)
+    {
+        UpdateSensorsMaster();
+    }
+    else
+    {
+        UpdateSensors();
     }
 }
 
