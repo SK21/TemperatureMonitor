@@ -23,8 +23,8 @@ void ConnectWifi()
 		Serial.printf("RSSI: %d dBm\n", WiFi.RSSI());
 		Serial.println("");
 
-		WiFi.setAutoReconnect(true);
-		WiFi.persistent(true);
+		//WiFi.setAutoReconnect(true);
+		//WiFi.persistent(true);
 	}
 	else
 	{

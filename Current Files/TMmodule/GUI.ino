@@ -29,10 +29,21 @@ void handleCredentials()
 	int NewID;
 	int Interval;
 
-	server.arg("prop1").toCharArray(MDL.SSID, sizeof(MDL.SSID) - 1);
-	server.arg("prop2").toCharArray(MDL.Password, sizeof(MDL.Password) - 1);
-	server.arg("prop3").toCharArray(ServerIP, sizeof(ServerIP) - 1);
-	server.arg("prop4").toCharArray(MDL.Name, sizeof(MDL.Name) - 1);
+	String Val = server.arg("prop1");
+	Val.trim();	// remove leading and trailing spaces
+	Val.toCharArray(MDL.SSID, sizeof(MDL.SSID) - 1);
+
+	Val = server.arg("prop2");
+	Val.trim();
+	Val.toCharArray(MDL.Password, sizeof(MDL.Password) - 1);
+
+	Val = server.arg("prop3");
+	Val.trim();
+	Val.toCharArray(ServerIP, sizeof(ServerIP) - 1);
+
+	Val = server.arg("prop4");
+	Val.trim();
+	Val.toCharArray(MDL.Name, sizeof(MDL.Name) - 1);
 
 	if (server.hasArg("prop5"))
 	{
@@ -68,7 +79,7 @@ void handleCredentials()
 
 	if (MDL.ServerIP.fromString(ServerIP))
 	{
-		Serial.print("New Server IP: ");
+		Serial.print("Server IP: ");
 		Serial.println(IPtoString(MDL.ServerIP));
 	}
 	else

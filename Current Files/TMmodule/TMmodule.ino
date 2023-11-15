@@ -1,9 +1,9 @@
 
 // Temperature monitor module
 // Wemos D1 mini Pro, ESP 12F    board: LOLIN(Wemos) D1 R2 & mini  or NodeMCU 1.0 (ESP-12E Module)
-# define InoDescription "TMmodule   13-Nov-2023"
+# define InoDescription "TMmodule   14-Nov-2023"
 
-#define InoID 13113  // change to load default values
+#define InoID 14113  // change to load default values
 
 // packet description:
 // start,packet type,break,data,break,sensor Rom Code,break
@@ -38,7 +38,7 @@ const uint32_t SampleTime = 3600000;    // update temps every hour
 
 struct ModuleData
 {
-    char Name[20] = "Module0";
+    char Name[12] = "Module0";
     char SSID[32] = "ssid";
     char Password[32] = "password";
     IPAddress ServerIP = IPAddress(192,168,1,1);
@@ -128,18 +128,12 @@ void setup()
     Serial.print("Module name: ");
     Serial.println(MDL.Name);
 
-    if (MDL.UseWifi)
-    {
-        ConnectWifi();
-    }
-    else
-    {
-        WiFi.disconnect();
-    }
-
     StartOTA();
 
-    String AP = "TMmodule " + WiFi.macAddress();
+    String AP = MDL.Name;
+    AP += "  (";
+    AP += WiFi.macAddress();
+    AP += ")";
     WiFi.softAP(AP);
 
     Serial.print("Access Point name: ");
@@ -218,6 +212,12 @@ void loop()
 	if (millis() - Readtime > SampleTime)
 	{
 		Readtime = millis();
+
+        if (MDL.UseWifi && (WiFi.status() != WL_CONNECTED))
+        {
+            ConnectWifi();
+            CheckTempServer();
+        }
 
         UpdateTmps();
 
