@@ -23,8 +23,8 @@ void ConnectWifi()
 		Serial.printf("RSSI: %d dBm\n", WiFi.RSSI());
 		Serial.println("");
 
-		WiFi.setAutoReconnect(true);
-		WiFi.persistent(true);
+		//WiFi.setAutoReconnect(true);
+		//WiFi.persistent(true);
 	}
 	else
 	{
@@ -146,15 +146,6 @@ void processchunks()
 
 	case 1:
 		// get temperatures
-		if (DS2842Connected)
-		{
-			UpdateSensorsMaster();
-		}
-		else
-		{
-			UpdateSensors();
-		}
-
 		if (P3 == "")
 		{
 			// all sensors

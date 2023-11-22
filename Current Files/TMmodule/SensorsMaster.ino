@@ -27,6 +27,7 @@ void UpdateSensorsMaster()
 			SensorCount++;
 		}
 		delay(500);
+		yield();
 	}
 	Serial.println("Sensor count: " + String(SensorCount));
 }

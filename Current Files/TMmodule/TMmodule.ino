@@ -1,9 +1,9 @@
 
 // Temperature monitor module
 // Wemos D1 mini Pro, ESP 12F    board: LOLIN(Wemos) D1 R2 & mini  or NodeMCU 1.0 (ESP-12E Module)
-# define InoDescription "TMmodule   21-Sep-2023"
+# define InoDescription "TMmodule   14-Nov-2023"
 
-#define InoID 29093  // change to load default values
+#define InoID 14113  // change to load default values
 
 // packet description:
 // start,packet type,break,data,break,sensor Rom Code,break
@@ -34,10 +34,11 @@
 #define SCLpin  5
 
 #define MaxSensors 200
+const uint32_t SampleTime = 3600000;    // update temps every hour
 
 struct ModuleData
 {
-    char Name[20] = "Module0";
+    char Name[12] = "Module0";
     char SSID[32] = "ssid";
     char Password[32] = "password";
     IPAddress ServerIP = IPAddress(192,168,1,1);
@@ -95,12 +96,15 @@ uint8_t ErrorCount;
 bool DS2842Connected = false;
 ESP8266WebServer server(80);
 
+uint32_t Readtime;
+
 void setup()
 {
     pinMode(LED_BUILTIN, OUTPUT);
 
-    Serial.begin(115200);
+    Serial.begin(38400);
     delay(5000);
+    Serial.println();
     Serial.println();
     Serial.println(InoDescription);
     Serial.println();
@@ -124,18 +128,12 @@ void setup()
     Serial.print("Module name: ");
     Serial.println(MDL.Name);
 
-    if (MDL.UseWifi)
-    {
-        ConnectWifi();
-    }
-    else
-    {
-        WiFi.disconnect();
-    }
-
     StartOTA();
 
-    String AP = "TMmodule " + WiFi.macAddress();
+    String AP = MDL.Name;
+    AP += "  (";
+    AP += WiFi.macAddress();
+    AP += ")";
     WiFi.softAP(AP);
 
     Serial.print("Access Point name: ");
@@ -147,6 +145,7 @@ void setup()
     server.on("/", HandleRoot);
     server.on("/page1", HandleTemps);
     server.on("/page2", HandlePage2);
+    server.on("/update", DoUpdate);
     server.onNotFound(HandleRoot);
     server.begin();
 
@@ -177,14 +176,11 @@ void setup()
             Serial.println("DS2482 not found.");
         }
     }
-
-    if (DS2842Connected)
-    {
-        UpdateSensorsMaster();
-    }
     else
     {
-        UpdateSensors();
+        Serial.println("");
+        Serial.println("DS2482 disabled.");
+        Serial.println("Using GPIOs for signals.");
     }
 
     if (MDL.StrongPullup)
@@ -193,6 +189,8 @@ void setup()
         pinMode(MDL.PullupPin, OUTPUT);
         digitalWrite(MDL.PullupPin, HIGH);
     }
+
+    Readtime = millis() - SampleTime;
 
     Serial.println("");
     Serial.println("Finished Setup");
@@ -209,6 +207,37 @@ void loop()
         CheckTempServer();    //check server connected
         ReadTempServer();     //check for message from server
         checkchunks();    //break up and process message
+    }
+
+	if (millis() - Readtime > SampleTime)
+	{
+		Readtime = millis();
+
+        if (MDL.UseWifi && (WiFi.status() != WL_CONNECTED))
+        {
+            ConnectWifi();
+            CheckTempServer();
+        }
+
+        UpdateTmps();
+
+        int Min = SampleTime / 60000;
+        Serial.print("");
+        Serial.print("Updating in ");
+        Serial.print(Min);
+        Serial.println(" minutes.");
+	}
+}
+
+void UpdateTmps()
+{
+    if (DS2842Connected)
+    {
+        UpdateSensorsMaster();
+    }
+    else
+    {
+        UpdateSensors();
     }
 }
 
