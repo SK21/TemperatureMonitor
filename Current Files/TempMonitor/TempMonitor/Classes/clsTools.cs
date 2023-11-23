@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.ComTypes;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TempMonitor.Forms;
 
@@ -140,7 +136,7 @@ namespace TempMonitor
             return (short)((BinNum << 8) | byte2);
         }
 
-        public bool DatabaseFound(string Path)
+        public bool CheckDatabase(string FilePath, bool RecordPath = false, bool LoadLast=false)
         {
             bool Result = false;
             int dbVersion = 0;
@@ -148,7 +144,10 @@ namespace TempMonitor
 
             try
             {
-                string ConString = "Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=True;Connect Timeout=30;AttachDbFilename=" + Path;
+                if (LoadLast) FilePath = DataDir + "\\" + Properties.Settings.Default.FileName + ".mdf";
+                if (LoadLast || RecordPath) Properties.Settings.Default.DBfound = false;
+
+                string ConString = "Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=True;Connect Timeout=30;AttachDbFilename=" + FilePath;
 
                 using (SqlConnection con = new SqlConnection(ConString))
                 {
@@ -160,23 +159,35 @@ namespace TempMonitor
                         while (reader.Read())
                         {
                             dbVersion = reader.GetInt32(0);
-                            dbType = reader.GetString(1);
+                            dbType = reader.GetString(1).Trim();
                         }
                     }
                 }
 
-                //if (dbVersion == cDBversion && dbType == cDBtype)
-                //{
-                //    Properties.Settings.Default.connString = ConString;
-                //    Result = true;
-                //}
-
                 Result = (dbVersion == cDBversion && dbType == cDBtype);
+                if (RecordPath||LoadLast)
+                {
+                    Properties.Settings.Default.DBfound = Result;
+                    if (Result)
+                    {
+                        Properties.Settings.Default.connString = ConString;
+                        Properties.Settings.Default.FileName = Path.GetFileNameWithoutExtension(FilePath);
+                        Properties.Settings.Default.Save();
+                        DataFolder = Path.GetDirectoryName(FilePath);
+                    }
+                }
             }
             catch (Exception ex)
             {
-                WriteErrorLog("clsTools: DatabaseFound: " + ex.Message);
+                WriteErrorLog("clsTools: CheckDatabase: " + ex.Message);
             }
+            return Result;
+        }
+
+        public string FileName()
+        {
+            string Result = "";
+            if (Properties.Settings.Default.DBfound) Result = Properties.Settings.Default.FileName;
             return Result;
         }
 
@@ -358,7 +369,11 @@ namespace TempMonitor
                 {
                     DataDir = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + cAppName + "\\Data";
                     if (!Directory.Exists(DataDir)) Directory.CreateDirectory(DataDir);
-                    if (!File.Exists(DataDir + "\\Example.mdf")) File.WriteAllBytes(DataDir + "\\Example.mdf", Properties.Resources.Example);
+                    if (!File.Exists(DataDir + "\\Example.mdf"))
+                    {
+                        File.WriteAllBytes(DataDir + "\\Example.mdf", Properties.Resources.Example);
+                        CheckDatabase(DataDir + "\\Example.mdf", true);
+                    }
                     SaveProperty("DataDir", DataDir);
                 }
             }

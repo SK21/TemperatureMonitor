@@ -52,6 +52,7 @@
             this.btnReports = new System.Windows.Forms.ToolStripButton();
             this.btnSettings = new System.Windows.Forms.ToolStripButton();
             this.tbEvents = new System.Windows.Forms.TextBox();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1.SuspendLayout();
             this.toolStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -87,7 +88,7 @@
             this.newToolStripMenuItem2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.newToolStripMenuItem2.Name = "newToolStripMenuItem2";
             this.newToolStripMenuItem2.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.N)));
-            this.newToolStripMenuItem2.Size = new System.Drawing.Size(146, 22);
+            this.newToolStripMenuItem2.Size = new System.Drawing.Size(180, 22);
             this.newToolStripMenuItem2.Text = "&New";
             // 
             // openToolStripMenuItem1
@@ -96,19 +97,20 @@
             this.openToolStripMenuItem1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.openToolStripMenuItem1.Name = "openToolStripMenuItem1";
             this.openToolStripMenuItem1.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.openToolStripMenuItem1.Size = new System.Drawing.Size(146, 22);
+            this.openToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.openToolStripMenuItem1.Text = "&Open";
+            this.openToolStripMenuItem1.Click += new System.EventHandler(this.openToolStripMenuItem1_Click);
             // 
             // saveAsToolStripMenuItem1
             // 
             this.saveAsToolStripMenuItem1.Name = "saveAsToolStripMenuItem1";
-            this.saveAsToolStripMenuItem1.Size = new System.Drawing.Size(146, 22);
+            this.saveAsToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.saveAsToolStripMenuItem1.Text = "Save &As";
             // 
             // exitToolStripMenuItem1
             // 
             this.exitToolStripMenuItem1.Name = "exitToolStripMenuItem1";
-            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(146, 22);
+            this.exitToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
             this.exitToolStripMenuItem1.Text = "E&xit";
             // 
             // sensorsToolStripMenuItem
@@ -256,6 +258,12 @@
             this.tbEvents.Size = new System.Drawing.Size(460, 340);
             this.tbEvents.TabIndex = 5;
             // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.DefaultExt = "mdf";
+            this.openFileDialog1.Filter = "Database|*.mdf";
+            this.openFileDialog1.Title = "Open Database";
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -305,5 +313,6 @@
         private System.Windows.Forms.ToolStripButton btnReports;
         private System.Windows.Forms.ToolStripButton btnSettings;
         private System.Windows.Forms.TextBox tbEvents;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }

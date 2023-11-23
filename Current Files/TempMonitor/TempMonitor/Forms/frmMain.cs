@@ -1,48 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TempMonitor.Forms
 {
     public partial class frmMain : Form
     {
-        public clsTools Tls;
-        public clsControlBox CB;
         public clsControlBoxes Boxes;
-        private bool cDatabaseFound;
+        public clsTools Tls;
 
         public frmMain()
         {
             InitializeComponent();
             Tls = new clsTools(this);
             Boxes = new clsControlBoxes(this);
-
-            CB = new clsControlBox(this);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
         {
-            CB.BoxID = 98;
-            CB.Mac = "155";
-            CB.Description = "Bin 8";
-            CB.Save();
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-            CB.Load(0, 57);
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            CB.Load(0, 57);
-            //CB.Delete();
+            if (this.WindowState == FormWindowState.Normal) Tls.SaveFormData(this);
         }
 
         private void frmMain_Load(object sender, EventArgs e)
@@ -55,9 +31,8 @@ namespace TempMonitor.Forms
             Tls.LoadFormData(this);
 
             // check database connection
-            string LastCon = Tls.GetProperty("LastDatabase");
-            cDatabaseFound = Tls.DatabaseFound(LastCon);
-            if (!cDatabaseFound) Tls.ShowHelp("Database could not be loaded.", "Help", 20000, true);
+            Tls.CheckDatabase("", true, true);
+            if (!Properties.Settings.Default.DBfound) Tls.ShowHelp("Database could not be loaded.", "Help", 20000, true);
             LoadSettings();
         }
 
@@ -69,11 +44,22 @@ namespace TempMonitor.Forms
                 c.ForeColor = Color.Black;
                 c.BackColor = Properties.Settings.Default.BackColour;
             }
+            this.Text = "Temperature Monitor [" + Tls.FileName() + "]";
         }
 
-        private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
+        private void openToolStripMenuItem1_Click(object sender, EventArgs e)
         {
-            if (this.WindowState == FormWindowState.Normal) Tls.SaveFormData(this);
+            string DBname = "";
+            bool Found = false;
+            openFileDialog1.InitialDirectory = Tls.DataFolder;
+            do
+            {
+                if (openFileDialog1.ShowDialog() == DialogResult.Cancel) break;
+                DBname = openFileDialog1.FileName;
+                Found = Tls.CheckDatabase(DBname, true);
+            } while (!Found);
+            openFileDialog1.Dispose();
+            if (Found) LoadSettings();
         }
     }
 }

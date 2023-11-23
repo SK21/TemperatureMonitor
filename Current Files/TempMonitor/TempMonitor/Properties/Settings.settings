@@ -8,5 +8,11 @@
     <Setting Name="BackColour" Type="System.Drawing.Color" Scope="User">
       <Value Profile="(Default)">200, 210, 210</Value>
     </Setting>
+    <Setting Name="DBfound" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="FileName" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
   </Settings>
 </SettingsFile>
