@@ -71,5 +71,53 @@ namespace TempMonitor.Properties {
                 this["FileName"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        public int ReportInterval {
+            get {
+                return ((int)(this["ReportInterval"]));
+            }
+            set {
+                this["ReportInterval"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("6")]
+        public int SensorInterval {
+            get {
+                return ((int)(this["SensorInterval"]));
+            }
+            set {
+                this["SensorInterval"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("10")]
+        public int ControlBoxDelay {
+            get {
+                return ((int)(this["ControlBoxDelay"]));
+            }
+            set {
+                this["ControlBoxDelay"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("100")]
+        public int MaxBoxes {
+            get {
+                return ((int)(this["MaxBoxes"]));
+            }
+            set {
+                this["MaxBoxes"] = value;
+            }
+        }
     }
 }

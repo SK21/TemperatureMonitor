@@ -15,6 +15,13 @@ namespace TempMonitor.Forms
             Tls = new clsTools(this);
             Boxes = new clsControlBoxes(this);
         }
+        public void WriteEvent(string Message)
+        {
+            tbEvents.Text += DateTime.Now.ToString() + " - " + Message + "\r\n";
+            tbEvents.SelectionStart = tbEvents.Text.Length;
+            tbEvents.ScrollToCaret();
+            Tls.WriteActivityLog(Message);
+        }
 
         private void frmMain_FormClosed(object sender, FormClosedEventArgs e)
         {

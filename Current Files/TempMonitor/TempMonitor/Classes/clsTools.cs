@@ -98,6 +98,54 @@ namespace TempMonitor
             return (byte)Tmp;
         }
 
+        public bool CheckDatabase(string FilePath, bool RecordPath = false, bool LoadLast = false)
+        {
+            bool Result = false;
+            int dbVersion = 0;
+            string dbType = "";
+
+            try
+            {
+                if (LoadLast) FilePath = DataDir + "\\" + Properties.Settings.Default.FileName + ".mdf";
+                if (LoadLast || RecordPath) Properties.Settings.Default.DBfound = false;
+
+                string ConString = "Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=True;Connect Timeout=30;AttachDbFilename=" + FilePath;
+
+                using (SqlConnection con = new SqlConnection(ConString))
+                {
+                    string SQL = "Select * from tblProps";
+                    using (SqlCommand cmd = new SqlCommand(SQL, con))
+                    {
+                        con.Open();
+                        SqlDataReader reader = cmd.ExecuteReader();
+                        while (reader.Read())
+                        {
+                            dbVersion = reader.GetInt32(0);
+                            dbType = reader.GetString(1).Trim();
+                        }
+                    }
+                }
+
+                Result = (dbVersion == cDBversion && dbType == cDBtype);
+                if (RecordPath || LoadLast)
+                {
+                    Properties.Settings.Default.DBfound = Result;
+                    if (Result)
+                    {
+                        Properties.Settings.Default.connString = ConString;
+                        Properties.Settings.Default.FileName = Path.GetFileNameWithoutExtension(FilePath);
+                        Properties.Settings.Default.Save();
+                        DataFolder = Path.GetDirectoryName(FilePath);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                WriteErrorLog("clsTools: CheckDatabase: " + ex.Message);
+            }
+            return Result;
+        }
+
         public byte[] ConvertAddressString(string Adr)
         {
             // converts address string to a byte array
@@ -136,50 +184,17 @@ namespace TempMonitor
             return (short)((BinNum << 8) | byte2);
         }
 
-        public bool CheckDatabase(string FilePath, bool RecordPath = false, bool LoadLast=false)
+        public byte CRC(byte[] Data, int Length, byte Start = 0)
         {
-            bool Result = false;
-            int dbVersion = 0;
-            string dbType = "";
-
-            try
+            byte Result = 0;
+            if (Length <= Data.Length)
             {
-                if (LoadLast) FilePath = DataDir + "\\" + Properties.Settings.Default.FileName + ".mdf";
-                if (LoadLast || RecordPath) Properties.Settings.Default.DBfound = false;
-
-                string ConString = "Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=True;Connect Timeout=30;AttachDbFilename=" + FilePath;
-
-                using (SqlConnection con = new SqlConnection(ConString))
+                int CK = 0;
+                for (int i = Start; i < Length; i++)
                 {
-                    string SQL = "Select * from tblProps";
-                    using (SqlCommand cmd = new SqlCommand(SQL, con))
-                    {
-                        con.Open();
-                        SqlDataReader reader = cmd.ExecuteReader();
-                        while (reader.Read())
-                        {
-                            dbVersion = reader.GetInt32(0);
-                            dbType = reader.GetString(1).Trim();
-                        }
-                    }
+                    CK += Data[i];
                 }
-
-                Result = (dbVersion == cDBversion && dbType == cDBtype);
-                if (RecordPath||LoadLast)
-                {
-                    Properties.Settings.Default.DBfound = Result;
-                    if (Result)
-                    {
-                        Properties.Settings.Default.connString = ConString;
-                        Properties.Settings.Default.FileName = Path.GetFileNameWithoutExtension(FilePath);
-                        Properties.Settings.Default.Save();
-                        DataFolder = Path.GetDirectoryName(FilePath);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                WriteErrorLog("clsTools: CheckDatabase: " + ex.Message);
+                Result = (byte)CK;
             }
             return Result;
         }
@@ -197,6 +212,15 @@ namespace TempMonitor
             string Prop = "";
             if (ht.Contains(Key)) Prop = ht[Key].ToString();
             return Prop;
+        }
+
+        public bool GoodCRC(byte[] Data, byte Start = 0)
+        {
+            bool Result = false;
+            int Length = Data.Length;
+            byte cr = CRC(Data, Length - 1, Start);
+            Result = (cr == Data[Length - 1]);
+            return Result;
         }
 
         public string HexAddressFromBytes(byte[] addr)

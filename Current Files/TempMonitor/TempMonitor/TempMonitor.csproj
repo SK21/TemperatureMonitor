@@ -64,6 +64,7 @@
     <Compile Include="Classes\clsControlBox.cs" />
     <Compile Include="Classes\clsControlBoxes.cs" />
     <Compile Include="Classes\clsTools.cs" />
+    <Compile Include="Classes\UDPcomm.cs" />
     <Compile Include="Forms\frmHelp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -76,6 +77,7 @@
     <Compile Include="Forms\frmMain.Designer.cs">
       <DependentUpon>frmMain.cs</DependentUpon>
     </Compile>
+    <Compile Include="PGNs\PGN30820.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="Forms\frmHelp.resx">
@@ -107,9 +109,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="PGNs\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <None Include="Resources\SettingsGear64.png" />
   </ItemGroup>
