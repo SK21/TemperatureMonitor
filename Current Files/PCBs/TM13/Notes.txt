@@ -2,3 +2,7 @@ Put jumpers on Signal to DS9503P for input protection. To bypass input protectio
 
 The one-wire bus can be read with the DS2482S or just using GPIO 12.
 
+
+Antenna example:
+
+https://www.amazon.ca/Bingfu-Pigtail-Standard-Satellite-SiriusXM/dp/B00VE1XH4A/ref=sr_1_5?keywords=ipex&qid=1700834357&sr=8-5
