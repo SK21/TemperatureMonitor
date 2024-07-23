@@ -108,7 +108,7 @@ String GetPage2()
 	st += "      </table>";
 	st += "";
 	st += "<br>";
-	st += "<label for='prop5'>Use Wifi &nbsp; &nbsp; &nbsp; &nbsp;  &nbsp; &nbsp;</label>";
+	st += "<label for='prop5'>Use Wifi Server &nbsp; &nbsp;</label>";
 	st += "<input type='checkbox' class='largerCheckbox'  name='prop5' value='" + String(MDL.UseWifi) + "'";
 	
 	if (MDL.UseWifi)
@@ -119,7 +119,7 @@ String GetPage2()
 	st += "><br>";
 	st += "";
 	st += "<br>";
-	st += "<label for='prop6'>Use DS2482 &nbsp; &nbsp;  </label>";
+	st += "<label for='prop6'>Use DS2482 &nbsp; &nbsp; &nbsp;  </label>";
 	st += "<input type='checkbox' class='largerCheckbox' name='prop6' value='" + String(MDL.UseDS2482) + "'";
 
 	if (MDL.UseDS2482)
@@ -130,7 +130,7 @@ String GetPage2()
 	st += "><br>";
 	st += "";
 	st += "<br>";
-	st += "<label for='prop6'>Strong pullup &nbsp; </label>";
+	st += "<label for='prop6'>Strong pullup &nbsp; &nbsp; &nbsp; </label>";
 	st += "<input type='checkbox' class='largerCheckbox' name='prop7' value='" + String(MDL.StrongPullup) + "'";
 
 	if (MDL.StrongPullup)
@@ -143,6 +143,16 @@ String GetPage2()
 	st += "      <p> <input class='button-72' id=Submit1 type=submit value='Save/Restart'></p>";
 	st += "      <p> <a href='/page0'>Back</a> </p>";
 	st += "    </form>";
+	if (WiFi.isConnected())
+	{
+		st += "<p>Wifi Connected to: " + String(MDL.SSID) + "</p>";
+	}
+	else
+	{
+		st += "<p>Wifi Not Connected</p>";
+	}
+	st += "";
+	st += "<p>Firmware version: " + String(InoDescription) + "</p>";
 	st += "";
 	st += "</HTML>";
 

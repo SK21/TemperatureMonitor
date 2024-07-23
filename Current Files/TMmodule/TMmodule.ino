@@ -1,7 +1,7 @@
 
 // Temperature monitor module
 // Wemos D1 mini Pro, ESP 12F    board: LOLIN(Wemos) D1 R2 & mini  or NodeMCU 1.0 (ESP-12E Module)
-# define InoDescription "TMmodule   14-Nov-2023"
+# define InoDescription "TMmodule   23-Jul-2024"
 
 #define InoID 14113  // change to load default values
 
@@ -100,8 +100,6 @@ uint32_t Readtime;
 
 void setup()
 {
-    pinMode(LED_BUILTIN, OUTPUT);
-
     Serial.begin(38400);
     delay(5000);
     Serial.println();
@@ -129,6 +127,9 @@ void setup()
     Serial.println(MDL.Name);
 
     StartOTA();
+
+    // start with station mode off
+    WiFi.disconnect(true);
 
     String AP = MDL.Name;
     AP += "  (";

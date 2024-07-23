@@ -53,6 +53,7 @@ void handleCredentials()
 	else
 	{
 		MDL.UseWifi = false;
+		WiFi.disconnect(true);
 	}
 
 	if (server.hasArg("prop6"))
