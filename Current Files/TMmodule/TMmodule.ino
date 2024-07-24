@@ -3,7 +3,7 @@
 // Wemos D1 mini Pro, ESP 12F    board: LOLIN(Wemos) D1 R2 & mini  or NodeMCU 1.0 (ESP-12E Module)
 # define InoDescription "TMmodule   23-Jul-2024"
 
-#define InoID 14113  // change to load default values
+#define InoID 23074  // change to load default values
 
 // packet description:
 // start,packet type,break,data,break,sensor Rom Code,break

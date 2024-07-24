@@ -11,7 +11,7 @@ void ConnectWifi()
 	{
 		delay(1000);
 		Serial.print(".");
-		if (ErrorCount++ > 20) break;
+		if (ErrorCount++ > 15) break;
 	}
 
 	if (WiFi.status() == WL_CONNECTED)
@@ -31,6 +31,8 @@ void ConnectWifi()
 		Serial.println("");
 		Serial.println("WiFi not connected");
 		Serial.println("");
+
+		WiFi.disconnect(true);	// prevent auto-reconnect
 	}
 }
 
