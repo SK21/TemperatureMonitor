@@ -24,8 +24,8 @@ void ConnectWifi()
 		Serial.printf("RSSI: %d dBm\n", WiFi.RSSI());
 		Serial.println("");
 
-		//WiFi.setAutoReconnect(true);
-		//WiFi.persistent(true);
+		udp.begin(MDL.Port);
+		SendModuleDescription();
 	}
 	else
 	{
@@ -37,53 +37,14 @@ void ConnectWifi()
 	}
 }
 
-void CheckTempServer()
-{
-
-	ServerConnected = pulsewait > (millis() - pulsetime);
-	if (!ServerConnected)
-	{
-		// check if time between connection attempts is greater than setting
-		if (millis() - LastServerConnectTime > ServerConnectInterval)
-		{
-			LastServerConnectTime = millis();
-			uint8_t ErrorCount = 0;
-
-			Serial.print("Connecting to server at ");
-			Serial.print(IPtoString(MDL.ServerIP));
-			Serial.println(" ...");
-
-			while (!ServerConnected)
-			{
-				ServerConnected = client.connect(MDL.ServerIP, MDL.Port);
-				delay(1000);
-				Serial.print(".");
-				if (ErrorCount++ > 5) break;
-			}
-
-			if (ServerConnected)
-			{
-				pulsetime = millis();
-				Serial.println("");
-				Serial.println("Server connected.");
-			}
-			else
-			{
-				Serial.println("");
-				Serial.println("Server not connected.");
-			}
-		}
-	}
-}
-
 void ReceiveData()
 {
 	const uint16_t MaxBuffer = 50;	// bytes
-	uint16_t len = client.available();
-	if (len)
+	int len = udp.parsePacket();
+	if (len > 2)
 	{
 		static byte data[MaxBuffer];
-		uint16_t BytesRead = client.read(data, MaxBuffer);
+		int BytesRead = udp.read(data, MaxBuffer);
 		if (BytesRead > 2) ReadPGNs(data, BytesRead);
 	}
 }
@@ -125,11 +86,11 @@ void ReadPGNs(byte data[], uint16_t len)
 		{
 			if (GoodCRC(data, PGNlength))
 			{
-				byte InCommand = data[3];
-				if ((InCommand & 1) == 1) SendTemps();
-
-				if (data[2] == MDL.ID)
+				bool targeted = (data[2] == MDL.ID || data[2] == 0x00);
+				if (targeted)
 				{
+					byte InCommand = data[3];
+					if ((InCommand & 1) == 1) SendTemps();
 					if ((InCommand & 2) == 2) SendModuleDescription();
 				}
 			}
@@ -230,7 +191,9 @@ void SendTemps()
 		data[15] = SensorCount - i - 1;
 
 		data[16] = CRC(data, PGNlength, 0);
-		client.write(data, PGNlength);
+		udp.beginPacket(MDL.ServerIP, MDL.Port);
+		udp.write(data, PGNlength);
+		udp.endPacket();
 	}
 }
 
@@ -256,5 +219,7 @@ void SendModuleDescription()
 	data[20] = (byte)(InoID >> 8);
 
 	data[21] = CRC(data, PGNlength, 0);
-	client.write(data, PGNlength);
+	udp.beginPacket(MDL.ServerIP, MDL.Port);
+	udp.write(data, PGNlength);
+	udp.endPacket();
 }

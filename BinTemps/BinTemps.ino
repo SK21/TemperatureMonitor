@@ -15,7 +15,7 @@
 #include <EEPROM.h>
 
 #include <OneWire.h>            // https://github.com/PaulStoffregen/OneWire
-#include <WiFiClient.h> 
+#include <WiFiUdp.h>
 #include <Wire.h>
 #include "DS2482.h" 		    // https://github.com/paeaetech/paeae
 
@@ -63,14 +63,11 @@ struct SensorData
 
 SensorData Sensors[MaxSensors];
 
-const long pulsewait = 60000;                       // time to wait for a pulse before attempting to reconnect (milliseconds)
-unsigned long pulsetime = millis() - pulsewait;     // set to connect to server on startup
-bool ServerConnected;
-const long ServerConnectInterval = 180000;                 // time to wait to reconnect to temperature server
-unsigned long LastServerConnectTime = millis() - ServerConnectInterval;
+const long pulsewait = 90000;                       // time to wait for a heartbeat before attempting to reconnect (milliseconds)
+unsigned long pulsetime = millis() - pulsewait;     // set expired on startup so WiFi connects immediately
 
 unsigned long LoopTime;
-WiFiClient client;
+WiFiUDP udp;
 byte SensorCount = 0;
 bool DS2842Connected = false;
 ESP8266WebServer server(80);
@@ -184,21 +181,30 @@ void loop()
 	ArduinoOTA.handle();
 	server.handleClient();
 
-	if ((MDL.UseWifi) && (WiFi.status() == WL_CONNECTED))
+	if (MDL.UseWifi)
 	{
-		CheckTempServer();    //check server connected
-		ReceiveData();     //check for message from server
+		if (WiFi.status() == WL_CONNECTED)
+		{
+			ReceiveData();
+		}
+
+		if (millis() - pulsetime > pulsewait)
+		{
+			pulsetime = millis();
+			if (WiFi.status() != WL_CONNECTED)
+			{
+				ConnectWifi();
+			}
+			else
+			{
+				SendModuleDescription();	// re-announce if WiFi ok but server went quiet
+			}
+		}
 	}
 
 	if (millis() - Readtime > SampleTime)
 	{
 		Readtime = millis();
-
-		if (MDL.UseWifi && (WiFi.status() != WL_CONNECTED))
-		{
-			ConnectWifi();
-			CheckTempServer();
-		}
 
 		UpdateTmps();
 
