@@ -1,0 +1,165 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <Keyword>Linux</Keyword>
+    <RootNamespace>
+    </RootNamespace>
+    <ProjectName>BinTemps</ProjectName>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+    <ApplicationType>Linux</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
+    <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
+    <ProjectGuid>{BA69E128-4D82-FA2F-E25E-24EE8E386FFA}</ProjectGuid>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros">
+    <LinuxIncludePath>c:\visualmicro\ignore</LinuxIncludePath>
+    <wiringPiIncludePath>c:\visualmicro\pi-ignore</wiringPiIncludePath>
+    <TargetOSAndVersion>Arduino</TargetOSAndVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <ImportGroup Label="ExtensionTargets" />
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <IncludePath>C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\tools\sdk\include;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\tools\sdk\lwip2\include;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\cores\esp8266;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\variants\d1_mini;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\xtensa-lx106-elf\include\c++\10.3.0;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\xtensa-lx106-elf\include\c++\10.3.0\xtensa-lx106-elf;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\xtensa-lx106-elf\include\c++\10.3.0\backward;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\lib\gcc\xtensa-lx106-elf\10.3.0\include;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\lib\gcc\xtensa-lx106-elf\10.3.0\include-fixed;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\xtensa-lx106-elf\include;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WebServer\src;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266mDNS\src;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ArduinoOTA;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\EEPROM;D:\Sync\Documents\Arduino\libraries\OneWire;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\Wire</IncludePath>
+    <RemoteCCompileToolExe>C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\bin\xtensa-lx106-elf-g++</RemoteCCompileToolExe>
+    <RemoteCppCompileToolExe>C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\bin\xtensa-lx106-elf-g++</RemoteCppCompileToolExe>
+    <ValidateArchitecture>false</ValidateArchitecture>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectCapability Include="VisualMicro" />
+    <ProjectCapability Include="VisualMicroLinux" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="BinTemps.ino">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClCompile Include="DS2482.cpp">
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DS2482.h">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+    <ClInclude Include="__vm\.BinTemps.vsarduino.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Comm.ino">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GUI.ino">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="NetworkPage.ino">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="OTA.ino">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Sensors.ino">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="SensorsMaster.ino">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="StartPage.ino">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TempsPage.ino">
+      <FileType>CppCode</FileType>
+      <DeploymentContent>true</DeploymentContent>
+    </ClCompile>
+  </ItemGroup>
+  <PropertyGroup>
+    <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\tools\sdk\include;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\tools\sdk\lwip2\include;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\cores\esp8266;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\variants\d1_mini;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\xtensa-lx106-elf\include\c++\10.3.0;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\xtensa-lx106-elf\include\c++\10.3.0\xtensa-lx106-elf;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\xtensa-lx106-elf\include\c++\10.3.0\backward;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\lib\gcc\xtensa-lx106-elf\10.3.0\include;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\lib\gcc\xtensa-lx106-elf\10.3.0\include-fixed;c:\users\coxda\appdata\local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\xtensa-lx106-elf\include;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WiFi\src;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266WebServer\src;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ESP8266mDNS\src;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\ArduinoOTA;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\EEPROM;D:\Sync\Documents\Arduino\libraries\OneWire;C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\hardware\esp8266\3.1.2\libraries\Wire;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <GccToolChain>C:\Users\CoxDa\AppData\Local\arduino15\packages\esp8266\tools\xtensa-lx106-elf-gcc\3.1.0-gcc10.3-e5f9fec\bin\xtensa-lx106-elf-g++</GccToolChain>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
+      <CLanguageStandard>gnu11</CLanguageStandard>
+      <CAdditionalWarning />
+      <CppAdditionalWarning />
+      <ForcedIncludeFiles>c:\program files\microsoft visual studio\18\community\common7\ide\extensions\ar2twp2j.msb\Micro Platforms\default\vm-intelli-pre.h;C:\Users\CoxDa\AppData\Local\Temp\VMBuilds\BinTemps\esp8266_d1_mini\Release\.vmintelli\fc1f0bd2bd37be3f31630824514b3c8e\vm-intelli-gcc-defines.h;c:\program files\microsoft visual studio\18\community\common7\ide\extensions\ar2twp2j.msb\Micro Platforms\default\vm-intelli-post.h;$(ProjectDir)__vm\.BinTemps.vsarduino.h;%(ForcedIncludeFiles)</ForcedIncludeFiles>
+      <UndefineAllPreprocessorDefinitions>true</UndefineAllPreprocessorDefinitions>
+      <IgnoreStandardIncludePath>true</IgnoreStandardIncludePath>
+      <PreprocessorDefinitions>_VMICRO_INTELLISENSE;__ESP8266_esp8266__;__ESP8266_ESP8266__;__ets__;ICACHE_FLASH;_GNU_SOURCE;ESP8266;MMU_IRAM_SIZE=0x8000;MMU_ICACHE_SIZE=0x8000;NONOSDK22x_190703=1;F_CPU=80000000L;LWIP_OPEN_SRC;TCP_MSS=536;LWIP_FEATURES=1;LWIP_IPV6=0;ARDUINO=108019;ARDUINO_ESP8266_WEMOS_D1MINI;ARDUINO_ARCH_ESP8266;ARDUINO_BOARD=ESP8266_WEMOS_D1MINI;ARDUINO_BOARD_ID=d1_mini;FLASHMODE_DIO;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ProjectExtensions>
+    <VisualStudio>
+      <UserProperties arduino.upload.port="COM8" />
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>
