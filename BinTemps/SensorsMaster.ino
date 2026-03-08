@@ -77,7 +77,7 @@ void SetUserDataMaster(byte Addr[], int NewValue)
 
 	OneWireMaster.wireWriteByte(NewValue >> 8);
 	OneWireMaster.wireWriteByte(NewValue & 255);
-	OneWireMaster.wireWriteByte(9);		// set resolution to 0.5C
+	OneWireMaster.wireWriteByte(0x1F);		// set resolution to 0.5C
 	delay(10);
 
 	OneWireMaster.wireReset();

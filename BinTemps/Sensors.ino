@@ -81,7 +81,7 @@ void SetUserData(byte Addr[], byte BusID, int NewValue)
 
 	OWbus[BusID].write(NewValue >> 8, 1);
 	OWbus[BusID].write(NewValue & 255, 1);
-	OWbus[BusID].write(9, 1);		// set resolution to 0.5C
+	OWbus[BusID].write(0x1F, 1);		// set resolution to 0.5C
 	delay(10);
 
 	OWbus[BusID].reset();

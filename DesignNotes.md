@@ -90,7 +90,6 @@ Sent by app on a regular interval (e.g. every 30 seconds). Modules watch for thi
 Command byte bits:
 - bit 0 = send sensor temps (30830)
 - bit 1 = send module description (30831)
-- bit 2 = send sensor serials and user data (30832)
 
 Module ID 0x00 = global broadcast - all modules respond with a random delay based on MAC address to stagger responses:
 `delay_ms = (MAC[4] XOR MAC[5]) * 50`  (0 to ~12.7 seconds spread)
@@ -132,10 +131,12 @@ Module ID 0xFF = reserved.
 | 3-10 | Sensor serial / ROM code (8 bytes) |
 | 11 | Temp lo (raw DS18B20 low byte) |
 | 12 | Temp hi (raw DS18B20 high byte) |
-| 13 | Status (bit 0 = finished sending all temps) |
-| 14 | CRC |
+| 13 | Sensor user data byte 0 |
+| 14 | Sensor user data byte 1 |
+| 15 | Count of sensors remaining |
+| 16 | CRC |
 
-One packet per sensor. Final packet in sequence has status bit 0 set.
+One packet per sensor. Sensor user data (bin/cable/sensor encoding) is included inline with each reading. Count of sensors remaining decrements to 0 on the final packet.
 
 #### 30831 - Module Description
 | Byte | Field |
@@ -148,20 +149,6 @@ One packet per sensor. Final packet in sequence has status bit 0 set.
 | 19 | CRC |
 
 Sent unsolicited once on startup/reconnect. If module ID = 0, server knows it is unregistered and prompts user to assign an ID via 30822. Also sent in response to 30821 command bit 1.
-
-#### 30832 - Sensor Description
-| Byte | Field |
-|---|---|
-| 0 | 112 |
-| 1 | 120 |
-| 2 | Module ID |
-| 3-10 | Sensor serial / ROM code (8 bytes) |
-| 11 | Sensor user data byte 0 |
-| 12 | Sensor user data byte 1 |
-| 13 | Status (bit 0 = finished sending all sensor data) |
-| 14 | CRC |
-
-One packet per sensor. Final packet has status bit 0 set.
 
 ---
 
@@ -176,6 +163,22 @@ One packet per sensor. Final packet has status bit 0 set.
 public static (byte Bin, byte Cable, byte Sensor) DecodeUserData(ushort raw)
     => ((byte)(raw >> 8), (byte)((raw >> 4) & 0xF), (byte)(raw & 0xF));
 ```
+
+---
+
+## WiFi Provisioning
+
+Modules are physically installed in the field (grain bins), often too far from the server PC to reliably connect to the module's soft-AP hotspot. Provisioning is therefore done via a smartphone brought to the bin.
+
+### Provisioning Flow
+1. Module boots with no stored credentials (or fails to connect after N attempts)
+2. Module starts a soft-AP named `BinTemps-<MAC>` and serves a simple config web page
+3. Technician walks to the bin with a smartphone, connects to the module's AP
+4. Browser opens the config page, technician enters SSID + password
+5. Module saves credentials to EEPROM and reboots into station mode
+6. On reconnect, module sends unsolicited 30831 — the C# app handles registration from there
+
+The C# app has no role in provisioning. It only becomes involved once the module is on the network.
 
 ---
 
@@ -228,6 +231,5 @@ Settings     - Key, Value
 
 - Add full timestamp (hour/min/date) to heartbeat 30820 if modules ever need to self-timestamp queued data while server is offline
 - ACK/NAK response from module for 30822/30823 write commands (not yet defined)
-- Sensor count in 30831 so server knows how many 30830/30832 packets to expect
 - Error/diagnostic reporting PGN (1-Wire bus failures, CRC error counts, WiFi RSSI)
 - OTA firmware update PGN

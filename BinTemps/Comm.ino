@@ -75,7 +75,7 @@ void CheckTempServer()
 	}
 }
 
-void ReadTempServer()
+void ReceiveData()
 {
 	const uint8_t MaxBuffer = 50;	// bytes
 	uint16_t len = client.available();
@@ -131,7 +131,6 @@ void ReadPGNs(byte data[], uint16_t len)
 				if (data[2] == MDL.ID)
 				{
 					if ((InCommand & 2) == 2) SendModuleDescription();
-					if ((InCommand & 4) == 4) SendSensorDescription();
 				}
 			}
 		}
@@ -151,7 +150,12 @@ void ReadPGNs(byte data[], uint16_t len)
 		{
 			if (GoodCRC(data, PGNlength))
 			{
-
+				if (memcmp(&data[2], &MacAddr[0], 6) == 0)
+				{
+					MDL.ID = data[8];
+					memcpy(MDL.Name, &data[9], 10);
+					SaveData();
+				}
 			}
 		}
 		break;
@@ -169,9 +173,24 @@ void ReadPGNs(byte data[], uint16_t len)
 		PGNlength = 14;
 		if (len > PGNlength - 1)
 		{
-			if (GoodCRC(data, PGNlength))
+			if (GoodCRC(data, PGNlength) && data[2] == MDL.ID)
 			{
-
+				for (int i = 0; i < SensorCount; i++)
+				{
+					if (memcmp(&data[3], &Sensors[i].ID[0], 8) == 0)
+					{
+						int userdata = data[11] & data[12] << 8;
+						if (DS2842Connected)
+						{
+							SetUserDataMaster(Sensors[i].ID, userdata);
+						}
+						else
+						{
+							SetUserData(Sensors[i].ID, Sensors[i].BusID, userdata);
+						}
+						break;
+					}
+				}
 			}
 		}
 		break;
@@ -180,17 +199,19 @@ void ReadPGNs(byte data[], uint16_t len)
 
 void SendTemps()
 {
-	// temperatures
+	// PGN 30830 temperatures
 	// 0	header lo	110
 	// 1	header hi	120
 	// 2	module ID
 	// 3-10	sensor serial #
 	// 11	temp lo
 	// 12	temp hi
-	// 13	Remaining sensors 
-	// 14	CRC
+	// 13	user data 0
+	// 14	user data 1
+	// 15	Remaining sensors 
+	// 16	CRC
 
-	byte PGNlength = 15;
+	byte PGNlength = 17;
 	byte data[PGNlength];
 
 	for (int i = 0; i < SensorCount; i++)
@@ -204,7 +225,10 @@ void SendTemps()
 
 		data[11] = Sensors[i].Temperature[0];
 		data[12] = Sensors[i].Temperature[1];
-		data[13] = SensorCount - i - 1;
+		data[13] = Sensors[i].UserData[0];
+		data[14] = Sensors[i].UserData[1];
+		data[15] = SensorCount - i - 1;
+
 		data[14] = CRC(data, PGNlength, 0);
 		client.write(data, PGNlength);
 	}
@@ -212,177 +236,25 @@ void SendTemps()
 
 void SendModuleDescription()
 {
-	// module description
-	// 0	header lo	111
-	// 1	header hi	120
-	// 2	module ID
-	// 3-8	module mac
-	// 9-18	module name
-	// 19	CRC
+	// PGN 30831 module description
+	// 0		header lo	111
+	// 1		header hi	120
+	// 2		module ID
+	// 3-8		module mac
+	// 9-18		module name
+	// 19-20	InoID
+	// 21		CRC
 
-	byte PGNlength = 20;
+	byte PGNlength = 22;
 	byte data[PGNlength];
 	data[0] = 111;
 	data[1] = 120;
 	data[2] = MDL.ID;
 	memcpy(&data[3], MacAddr, 6);
 	memcpy(&data[9], MDL.Name, 10);
-	data[19] = CRC(data, PGNlength, 0);
+	data[19] = (byte)InoID;
+	data[20] = (byte)InoID >> 8;
+
+	data[21] = CRC(data, PGNlength, 0);
 	client.write(data, PGNlength);
 }
-
-void SendSensorDescription()
-{
-
-}
-
-
-
-void ReadTempServerOld()
-{
-	int Count = 0;
-	while (client.available())
-	{
-		char c = client.read();
-		Count = Count + 1;
-		if (Count > maxread) // max characters
-		{
-			return;
-		}
-		else
-		{
-			packetin = packetin + c;
-		}
-	}
-}
-
-void checkchunks()
-{
-	while (getchunks())  //break message up into parts, keep getting chunks from packet
-	{
-		processchunks();  //take action based on message
-		delay(100);
-	}
-	packetin = "";  //erase any junk
-}
-
-boolean getchunks()
-{
-	int St = packetin.indexOf("^");
-	if (St == -1)
-	{
-		// ignore message, no start character
-		return false;
-	}
-	int D1 = packetin.indexOf("|", St + 1);
-	if (D1 == -1)
-	{
-		return false;
-	}
-	int D2 = packetin.indexOf("|", D1 + 1);
-	if (D2 == -1)
-	{
-		// no second delimiter
-		return false;
-	}
-	int D3 = packetin.indexOf("|", D2 + 1);
-	if (D3 == -1)
-	{
-		// no third delimiter
-		return false;
-	}
-	P1 = packetin.substring(St + 1, D1).toInt();
-	P2 = packetin.substring(D1 + 1, D2);
-	P3 = packetin.substring(D2 + 1, D3);
-
-	packetin.remove(0, D3);  // remove processed part
-	return true;
-}
-
-float Tmp;
-void processchunks()
-{
-	switch (P1)
-	{
-	case 0:
-		// heartbeat, reset time
-		pulsetime = millis();
-		break;
-
-	case 1:
-		// get temperatures
-		if (P3 == "")
-		{
-			// all sensors
-			for (int i = 0; i < SensorCount; i++)
-			{
-				Tmp = (float)((int16_t)(Sensors[i].Temperature[1] << 8 | Sensors[i].Temperature[0]) / 16.0);
-				packetout = String(Tmp);
-				String Rom = addressTostring(Sensors[i].ID);
-				sendpacket(1, packetout, Rom);
-			}
-		}
-		else
-		{
-			// single sensor
-			for (int i = 0; i < SensorCount; i++)
-			{
-				String Rom = addressTostring(Sensors[i].ID);
-				if (P3 == Rom)
-				{
-					Tmp = (float)((int16_t)(Sensors[i].Temperature[1] << 8 | Sensors[i].Temperature[0]) / 16.0);
-					packetout = String(Tmp);
-					sendpacket(1, packetout, Rom);
-				}
-			}
-		}
-		break;
-
-	case 2:
-		//set user data
-		for (int i = 0; i < SensorCount; i++)
-		{
-			String Rom = addressTostring(Sensors[i].ID);
-			Rom.trim();
-			P3.trim();
-			if (P3.equals(Rom))
-			{
-				int userdata = P2.toInt();
-				if (DS2842Connected)
-				{
-					SetUserDataMaster(Sensors[i].ID, userdata);
-				}
-				else
-				{
-					SetUserData(Sensors[i].ID, Sensors[i].BusID, userdata);
-				}
-				break;
-			}
-		}
-		break;
-
-	case 3:
-		//get user data
-		for (int i = 0; i < SensorCount; i++)
-		{
-			String Rom = addressTostring(Sensors[i].ID);
-			Rom.trim();
-			P3.trim();
-			if (P3 == Rom)
-			{
-				uint16_t UserData = Sensors[i].UserData[1] << 8 | Sensors[i].UserData[0];
-				packetout = String(UserData);
-				sendpacket(3, packetout, Rom);
-				break;
-			}
-		}
-		break;
-	}
-}
-
-void sendpacket(int id, String data, String Rom)
-{
-	data = "^" + String(id) + "|" + data + "|" + Rom + "|";
-	client.print(data);
-}
-

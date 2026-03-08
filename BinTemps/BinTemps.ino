@@ -63,7 +63,6 @@ struct SensorData
 
 SensorData Sensors[MaxSensors];
 
-int16_t DataCheck;
 unsigned long LoopTime;
 
 const long pulsewait = 60000;                       // time to wait for a pulse before attempting to reconnect (milliseconds)
@@ -202,8 +201,7 @@ void loop()
 	if ((MDL.UseWifi) && (WiFi.status() == WL_CONNECTED))
 	{
 		CheckTempServer();    //check server connected
-		ReadTempServer();     //check for message from server
-		checkchunks();    //break up and process message
+		ReceiveData();     //check for message from server
 	}
 
 	if (millis() - Readtime > SampleTime)
@@ -243,6 +241,18 @@ byte CRC(byte Chk[], byte Length, byte Start)
 	return Result;
 }
 
+void SaveData()
+{
+	EEPROM.begin(512);
+	EEPROM.put(0, InoID);
+	EEPROM.put(10, MDL);
+	EEPROM.commit();
+
+	delay(3000);
+
+	ESP.restart();
+}
+
 
 
 void UpdateTmps()
@@ -263,67 +273,5 @@ String IPtoString(IPAddress addr)
 	return ans;
 }
 
-String addressTostring(byte addr[8])    //converts 8 byte address to hex and places a space between bytes
-{
-	String ans = "";
-	for (byte i = 0; i < 8; i++)
-	{
-		ans = ans + DecToHex(addr[i]);
-		ans = ans + " ";
-	}
-	return ans;
-}
 
-void stringToaddress(String ad)   //converts 8 hex spaced address string to 8 byte decimal
-{
-	int bcount = 0;
-	int len = ad.length() + 1;
-	char prt[len];
-	ad.toCharArray(prt, len);      // convert string to character array
-	String v = "";
-	for (int p = 0; p < len; p++)   // go through array to find hex address parts between spaces
-	{
-		if (prt[p] == ' ')          // check for space delimiter
-		{
-			RomCode[bcount] = hexToDec(v); //convert string hex address part to byte
-			v = "";
-			bcount = bcount + 1;
-			if (bcount == 8)
-			{
-				return; //done
-			}
-		}
-		else
-		{
-			v = v + String(prt[p]); //build string hex address part
-		}
-	}
-	RomCode[bcount] = hexToDec(v);  // needed if there is no last space
-}
 
-byte hexToDec(String hexString)
-{
-	byte decValue = 0;
-	int nextInt;
-	for (int i = 0; i < hexString.length(); i++)
-	{   // only allow 2 character hex address parts    
-		nextInt = int(hexString.charAt(i));
-		if (nextInt >= 48 && nextInt <= 57) nextInt = map(nextInt, 48, 57, 0, 9);
-		if (nextInt >= 65 && nextInt <= 70) nextInt = map(nextInt, 65, 70, 10, 15);
-		if (nextInt >= 97 && nextInt <= 102) nextInt = map(nextInt, 97, 102, 10, 15);
-		nextInt = constrain(nextInt, 0, 15);
-		decValue = (decValue * 16) + nextInt;
-	}
-	return decValue;
-}
-
-String DecToHex(byte dec)
-{
-	String ans = String(dec, HEX);
-	ans.toUpperCase();
-	if (ans.length() == 1)
-	{
-		ans = "0" + ans;
-	}
-	return ans;
-}

@@ -88,12 +88,5 @@ void handleCredentials()
 		Serial.println("ServerIP was invalid.");
 	}
 
-	EEPROM.begin(512);
-	EEPROM.put(0, InoID);
-	EEPROM.put(10, MDL);
-	EEPROM.commit();
-
-	delay(3000);
-
-	ESP.restart();
+	SaveData();
 }
