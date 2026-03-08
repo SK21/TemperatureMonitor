@@ -6,6 +6,7 @@ void UpdateSensors()
 	byte Mem[2];
 	byte Addr[8];
 	SensorCount = 0;
+	int UserData = 0;
 
 	Serial.println();
 	Serial.println("Updating sensors on " + String(BusCount) + " buses.");
@@ -16,18 +17,18 @@ void UpdateSensors()
 		delay(500);
 		while (OWbus[i].search(Addr) && SensorCount < MaxSensors)
 		{
-			if (GetTemp(Addr, i, Mem))
+			if (GetTemp(Addr, i, Mem, UserData))
 			{
-				for (int i = 0; i < 8; i++)
+				for (int j = 0; j < 8; j++)
 				{
-					Sensors[SensorCount].ID[i] = Addr[i];
+					Sensors[SensorCount].ID[j] = Addr[j];
 				}
 				Sensors[SensorCount].BusID = i;
 				Sensors[SensorCount].Temperature[0] = Mem[0];	// lsb
 				Sensors[SensorCount].Temperature[1] = Mem[1];	// msb
 
 				Sensors[SensorCount].UserData[0] = (byte)(UserData);		// lsb
-				Sensors[SensorCount].UserData[1] = (byte)(UserData >> 8);	// msb	
+				Sensors[SensorCount].UserData[1] = (byte)(UserData >> 8);	// msb
 
 				SensorCount++;
 			}
@@ -38,10 +39,9 @@ void UpdateSensors()
 	Serial.println("Sensor count: " + String(SensorCount));
 }
 
-bool GetTemp(byte Addr[], byte BusID, byte Mem[])
+bool GetTemp(byte Addr[], byte BusID, byte Mem[], int& UserData)
 {
 	float Result = -127.0;
-	UserData = 0;
 	byte dsScratchPadMem[9];
 
 	for (int i = 0; i < 3; i++)
@@ -54,9 +54,9 @@ bool GetTemp(byte Addr[], byte BusID, byte Mem[])
 		OWbus[BusID].reset();
 		OWbus[BusID].select(Addr);
 		OWbus[BusID].write(0xBE);	// Issue read scratchpad cmd
-		for (int i = 0; i < 9; i++)
+		for (int j = 0; j < 9; j++)
 		{
-			dsScratchPadMem[i] = OWbus[BusID].read();
+			dsScratchPadMem[j] = OWbus[BusID].read();
 		}
 
 		// check if valid frame

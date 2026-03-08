@@ -6,6 +6,7 @@ void UpdateSensorsMaster()
 	byte Addr[8];
 	byte Mem[2];
 	SensorCount = 0;
+	int UserData = 0;
 
 	Serial.println();
 	Serial.println("Searching one-wire bus... ");
@@ -13,7 +14,7 @@ void UpdateSensorsMaster()
 	delay(500);
 	while (OneWireMaster.wireSearch(Addr) && SensorCount < 256)
 	{
-		if (GetTempMaster(Addr, Mem))
+		if (GetTempMaster(Addr, Mem, UserData))
 		{
 			for (int i = 0; i < 8; i++)
 			{
@@ -32,26 +33,25 @@ void UpdateSensorsMaster()
 	Serial.println("Sensor count: " + String(SensorCount));
 }
 
-bool GetTempMaster(byte Addr[], byte Mem[])
+bool GetTempMaster(byte Addr[], byte Mem[], int& UserData)
 {
 	delay(500);
 	float Result = -127.0;
-	UserData = 0;
 	byte dsScratchPadMem[9];
 
 	for (int i = 0; i < 3; i++)
 	{
 		OneWireMaster.wireReset();
 		OneWireMaster.wireSelect(Addr);
-		OneWireMaster.wireWriteByte(0x44);  
+		OneWireMaster.wireWriteByte(0x44);
 
 		delay(1000);
 		OneWireMaster.wireReset();
 		OneWireMaster.wireSelect(Addr);
 		OneWireMaster.wireWriteByte(0xBE);	// Issue read scratchpad cmd
-		for (int i = 0; i < 9; i++)
+		for (int j = 0; j < 9; j++)
 		{
-			dsScratchPadMem[i] = OneWireMaster.wireReadByte();
+			dsScratchPadMem[j] = OneWireMaster.wireReadByte();
 		}
 
 		// check if valid frame

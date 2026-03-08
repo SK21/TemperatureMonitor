@@ -146,9 +146,10 @@ One packet per sensor. Sensor user data (bin/cable/sensor encoding) is included 
 | 2 | Module ID (0 = unregistered) |
 | 3-8 | Module MAC (6 bytes) |
 | 9-18 | Module description (10 bytes, UTF-8) |
-| 19 | CRC |
+| 19-20 | InoID / firmware version (uint16, lo byte first) |
+| 21 | CRC |
 
-Sent unsolicited once on startup/reconnect. If module ID = 0, server knows it is unregistered and prompts user to assign an ID via 30822. Also sent in response to 30821 command bit 1.
+Sent unsolicited once on startup/reconnect. If module ID = 0, server knows it is unregistered and prompts user to assign an ID via 30822. Also sent in response to 30821 command bit 1. The InoID field allows the app to detect outdated firmware.
 
 ---
 

@@ -63,37 +63,23 @@ struct SensorData
 
 SensorData Sensors[MaxSensors];
 
-unsigned long LoopTime;
-
 const long pulsewait = 60000;                       // time to wait for a pulse before attempting to reconnect (milliseconds)
 unsigned long pulsetime = millis() - pulsewait;     // set to connect to server on startup
 bool ServerConnected;
 const long ServerConnectInterval = 180000;                 // time to wait to reconnect to temperature server
 unsigned long LastServerConnectTime = millis() - ServerConnectInterval;
 
+unsigned long LoopTime;
 WiFiClient client;
-
-int maxread = 50;   // maximum # of characters to read from server
-String packetin = "";
-String packetout = "";
-int P1 = 0;       // packet type
-String P2 = "";   // packet data
-String P3 = "";   // packet sensor address
-
-byte RomCode[8];    // for sensor address
 byte SensorCount = 0;
-
-int UserData;
-uint8_t ErrorCount;
 bool DS2842Connected = false;
 ESP8266WebServer server(80);
-
 uint32_t Readtime;
-
 uint8_t MacAddr[6];
 
 void setup()
 {
+	uint8_t ErrorCount;
 	Serial.begin(38400);
 	delay(5000);
 	Serial.println();

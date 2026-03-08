@@ -1,6 +1,7 @@
 
 void ConnectWifi()
 {
+	uint8_t ErrorCount;
 	Serial.println("");
 	Serial.print("Connecting to ");
 	Serial.println(MDL.SSID);
@@ -46,7 +47,7 @@ void CheckTempServer()
 		if (millis() - LastServerConnectTime > ServerConnectInterval)
 		{
 			LastServerConnectTime = millis();
-			ErrorCount = 0;
+			uint8_t ErrorCount = 0;
 
 			Serial.print("Connecting to server at ");
 			Serial.print(IPtoString(MDL.ServerIP));
@@ -77,13 +78,13 @@ void CheckTempServer()
 
 void ReceiveData()
 {
-	const uint8_t MaxBuffer = 50;	// bytes
+	const uint16_t MaxBuffer = 50;	// bytes
 	uint16_t len = client.available();
 	if (len)
 	{
-		byte data[MaxBuffer];
-		client.read(data, MaxBuffer);
-		ReadPGNs(data, len);
+		static byte data[MaxBuffer];
+		uint16_t BytesRead = client.read(data, MaxBuffer);
+		if (BytesRead > 2) ReadPGNs(data, BytesRead);
 	}
 }
 
@@ -117,7 +118,6 @@ void ReadPGNs(byte data[], uint16_t len)
 		// 3	command
 		//		- bit 0	send sensor temps
 		//		- bit 1	send module description
-		//		- bit 2 send sensor serial # and user data
 		// 4	crc
 
 		PGNlength = 5;
@@ -179,7 +179,7 @@ void ReadPGNs(byte data[], uint16_t len)
 				{
 					if (memcmp(&data[3], &Sensors[i].ID[0], 8) == 0)
 					{
-						int userdata = data[11] & data[12] << 8;
+						int userdata = data[11] | (data[12] << 8);
 						if (DS2842Connected)
 						{
 							SetUserDataMaster(Sensors[i].ID, userdata);
@@ -229,7 +229,7 @@ void SendTemps()
 		data[14] = Sensors[i].UserData[1];
 		data[15] = SensorCount - i - 1;
 
-		data[14] = CRC(data, PGNlength, 0);
+		data[16] = CRC(data, PGNlength, 0);
 		client.write(data, PGNlength);
 	}
 }
@@ -253,7 +253,7 @@ void SendModuleDescription()
 	memcpy(&data[3], MacAddr, 6);
 	memcpy(&data[9], MDL.Name, 10);
 	data[19] = (byte)InoID;
-	data[20] = (byte)InoID >> 8;
+	data[20] = (byte)(InoID >> 8);
 
 	data[21] = CRC(data, PGNlength, 0);
 	client.write(data, PGNlength);
