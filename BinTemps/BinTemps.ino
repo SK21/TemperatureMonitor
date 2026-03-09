@@ -32,21 +32,27 @@ struct ModuleData
 {
 	byte ID = 0;
 	char Name[12] = "Module0";
-	char SSID[32] = "ssid";
-	char Password[32] = "password";
-	IPAddress ServerIP = IPAddress(192, 168, 1, 1);
 	uint16_t Port = 1600;
 	byte Pin1 = 5;  // D1
 	byte Pin2 = 4;  // D2
 	byte Pin3 = 14; // D5
 	byte Pin4 = 12; // D6
 	bool UseDS2482 = false;
-	bool UseWifi = false;
 	bool StrongPullup = false;
 	byte PullupPin = 13;
 };
 
 ModuleData MDL;
+
+struct ModuleNetwork
+{
+	uint16_t Identifier = 7654;
+	char SSID[32] = "ssid";
+	char Password[32] = "password";
+	bool UseWifi = false;
+};
+
+ModuleNetwork MDLnetwork;
 
 OneWire OWbus[] = { OneWire(MDL.Pin1),OneWire(MDL.Pin2), OneWire(MDL.Pin3),OneWire(MDL.Pin4) };
 byte BusCount = 4;
@@ -84,7 +90,8 @@ void setup()
 	Serial.println(InoDescription);
 	Serial.println();
 
-	EEPROM.begin(512);
+	EEPROM.begin(256);
+
 	int16_t StoredID;
 	EEPROM.get(0, StoredID);
 	if (StoredID == InoID)
@@ -97,6 +104,18 @@ void setup()
 		Serial.println("Updating stored settings.");
 		EEPROM.put(0, InoID);
 		EEPROM.put(10, MDL);
+		EEPROM.commit();
+	}
+
+	EEPROM.get(100, MDLnetwork);
+	if (MDLnetwork.Identifier != 7654)
+	{
+		Serial.println("Network settings not found, using defaults.");
+		MDLnetwork.Identifier = 7654;
+		strncpy(MDLnetwork.SSID, "ssid", sizeof(MDLnetwork.SSID));
+		strncpy(MDLnetwork.Password, "password", sizeof(MDLnetwork.Password));
+		MDLnetwork.UseWifi = false;
+		EEPROM.put(100, MDLnetwork);
 		EEPROM.commit();
 	}
 
@@ -117,6 +136,9 @@ void setup()
 
 	Serial.print("Access Point name: ");
 	Serial.println(AP);
+
+	Serial.print("Settings Page IP: ");
+	Serial.println(WiFi.softAPIP());
 
 	// web server
 	Serial.println();
@@ -181,7 +203,7 @@ void loop()
 	ArduinoOTA.handle();
 	server.handleClient();
 
-	if (MDL.UseWifi)
+	if (MDLnetwork.UseWifi)
 	{
 		if (WiFi.status() == WL_CONNECTED)
 		{
@@ -235,16 +257,15 @@ byte CRC(byte Chk[], byte Length, byte Start)
 
 void SaveData()
 {
-	EEPROM.begin(512);
 	EEPROM.put(0, InoID);
 	EEPROM.put(10, MDL);
+	EEPROM.put(100, MDLnetwork);
 	EEPROM.commit();
 
 	delay(3000);
 
 	ESP.restart();
 }
-
 
 
 void UpdateTmps()
@@ -259,11 +280,6 @@ void UpdateTmps()
 	}
 }
 
-String IPtoString(IPAddress addr)
-{
-	String ans = String(addr[0]) + "." + String(addr[1]) + "." + String(addr[2]) + "." + String(addr[3]);
-	return ans;
-}
 
 
 

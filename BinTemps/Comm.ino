@@ -4,9 +4,9 @@ void ConnectWifi()
 	uint8_t ErrorCount;
 	Serial.println("");
 	Serial.print("Connecting to ");
-	Serial.println(MDL.SSID);
+	Serial.println(MDLnetwork.SSID);
 	WiFi.mode(WIFI_AP_STA);
-	WiFi.begin(MDL.SSID, MDL.Password);
+	WiFi.begin(MDLnetwork.SSID, MDLnetwork.Password);
 	ErrorCount = 0;
 	while (WiFi.status() != WL_CONNECTED)
 	{
@@ -191,7 +191,7 @@ void SendTemps()
 		data[15] = SensorCount - i - 1;
 
 		data[16] = CRC(data, PGNlength, 0);
-		udp.beginPacket(MDL.ServerIP, MDL.Port);
+		udp.beginPacket(WiFi.broadcastIP(), MDL.Port);
 		udp.write(data, PGNlength);
 		udp.endPacket();
 	}
@@ -219,7 +219,7 @@ void SendModuleDescription()
 	data[20] = (byte)(InoID >> 8);
 
 	data[21] = CRC(data, PGNlength, 0);
-	udp.beginPacket(MDL.ServerIP, MDL.Port);
+	udp.beginPacket(WiFi.broadcastIP(), MDL.Port);
 	udp.write(data, PGNlength);
 	udp.endPacket();
 }

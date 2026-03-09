@@ -23,7 +23,6 @@ void DoUpdate()
 	server.send(200, "text/html", GetPage0());
 }
 
-char ServerIP[32];
 void handleCredentials()
 {
 	int NewID;
@@ -31,15 +30,11 @@ void handleCredentials()
 
 	String Val = server.arg("prop1");
 	Val.trim();	// remove leading and trailing spaces
-	Val.toCharArray(MDL.SSID, sizeof(MDL.SSID) - 1);
+	Val.toCharArray(MDLnetwork.SSID, sizeof(MDLnetwork.SSID) - 1);
 
 	Val = server.arg("prop2");
 	Val.trim();
-	Val.toCharArray(MDL.Password, sizeof(MDL.Password) - 1);
-
-	Val = server.arg("prop3");
-	Val.trim();
-	Val.toCharArray(ServerIP, sizeof(ServerIP) - 1);
+	Val.toCharArray(MDLnetwork.Password, sizeof(MDLnetwork.Password) - 1);
 
 	Val = server.arg("prop4");
 	Val.trim();
@@ -47,12 +42,12 @@ void handleCredentials()
 
 	if (server.hasArg("prop5"))
 	{
-		MDL.UseWifi = true;
+		MDLnetwork.UseWifi = true;
 		Serial.println("Using wifi.");
 	}
 	else
 	{
-		MDL.UseWifi = false;
+		MDLnetwork.UseWifi = false;
 		WiFi.disconnect(true);
 	}
 
@@ -77,16 +72,6 @@ void handleCredentials()
 	}
 
 	server.send(200, "text/html", GetPage0());
-
-	if (MDL.ServerIP.fromString(ServerIP))
-	{
-		Serial.print("Server IP: ");
-		Serial.println(IPtoString(MDL.ServerIP));
-	}
-	else
-	{
-		Serial.println("ServerIP was invalid.");
-	}
 
 	SaveData();
 }

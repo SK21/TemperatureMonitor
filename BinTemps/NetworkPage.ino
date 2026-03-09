@@ -88,17 +88,12 @@ String GetPage2()
 	st += "";
 	st += "        <tr>";
 	st += "          <td align='left'>Network</td>";
-	st += "          <td><input class='InputCell' size='20' name='prop1' value='" + String(MDL.SSID) + "' ID=Text1></td>";
+	st += "          <td><input class='InputCell' size='20' name='prop1' value='" + String(MDLnetwork.SSID) + "' ID=Text1></td>";
 	st += "        </tr>";
 	st += "";
 	st += "        <tr>";
 	st += "          <td align='left'>Password</td>";
-	st += "          <td><input class = 'InputCell' size = '20' name = 'prop2' value = '" + String(MDL.Password) + "' ID = Text2></td>";
-	st += "        </tr>";
-	st += "";
-	st += "        <tr>";
-	st += "          <td align='left'>Server IP</td>";
-	st += "          <td><input class='InputCell' size='20' name='prop3' value='" + IPtoString( MDL.ServerIP) + "' ID=Text3></td>";
+	st += "          <td><input class = 'InputCell' size = '20' name = 'prop2' value = '" + String(MDLnetwork.Password) + "' ID = Text2></td>";
 	st += "        </tr>";
 	st += "";
 	st += "        <tr>";
@@ -109,9 +104,9 @@ String GetPage2()
 	st += "";
 	st += "<br>";
 	st += "<label for='prop5'>Use Wifi Server &nbsp; &nbsp;</label>";
-	st += "<input type='checkbox' class='largerCheckbox'  name='prop5' value='" + String(MDL.UseWifi) + "'";
+	st += "<input type='checkbox' class='largerCheckbox'  name='prop5' value='" + String(MDLnetwork.UseWifi) + "'";
 	
-	if (MDL.UseWifi)
+	if (MDLnetwork.UseWifi)
 	{
 		st += " checked";
 	}
@@ -145,7 +140,8 @@ String GetPage2()
 	st += "    </form>";
 	if (WiFi.isConnected())
 	{
-		st += "<p>Wifi Connected to: " + String(MDL.SSID) + "</p>";
+		st += "<p>Wifi Connected to: " + String(MDLnetwork.SSID) + "</p>";
+		st += "<p>Signal strength: " + String(WiFi.RSSI()) + " dBm</p>";
 	}
 	else
 	{
