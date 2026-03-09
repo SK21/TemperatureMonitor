@@ -31,7 +31,13 @@ namespace BinTempsApp
             Parser.TemperatureReceived += TemperatureService.HandleTemperature;
         }
 
-        public static void Start() => UdpServer.Start();
+        public static void Start()
+        {
+            UdpServer.Start();
+            // Broadcast CmdSendModuleDescription so all online modules report back with
+            // fresh 30831 packets (updates LastKnownIp even if DHCP assigned a new address)
+            UdpServer.SendDiscovery();
+        }
 
         public static void Shutdown()
         {

@@ -19,7 +19,7 @@ void HandlePage2()
 
 void DoUpdate()
 {
-	UpdateTmps();
+	UpdateTemps();
 	server.send(200, "text/html", GetPage0());
 }
 

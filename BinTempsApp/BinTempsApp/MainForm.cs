@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
 using BinTempsApp.Data;
 using BinTempsApp.Models;
@@ -25,6 +27,27 @@ namespace BinTempsApp
         {
             InitializeComponent();
 
+            if (System.ComponentModel.LicenseManager.UsageMode == System.ComponentModel.LicenseUsageMode.Designtime) return;
+
+            // Configure chart (local variables not supported by VS Designer parser)
+            var chartArea = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            chartArea.Name = "ChartArea";
+            chartArea.AxisX.LabelStyle.Format   = "dd/MM HH:mm";
+            chartArea.AxisX.IntervalType        = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Auto;
+            chartArea.AxisX.MajorGrid.LineColor = System.Drawing.Color.LightGray;
+            chartArea.AxisY.MajorGrid.LineColor = System.Drawing.Color.LightGray;
+            chartArea.AxisY.Title               = "°C";
+            chart.ChartAreas.Add(chartArea);
+
+            var series = new System.Windows.Forms.DataVisualization.Charting.Series();
+            series.ChartArea   = "ChartArea";
+            series.ChartType   = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series.XValueType  = System.Windows.Forms.DataVisualization.Charting.ChartValueType.DateTime;
+            series.Name        = "Temperature";
+            series.Color       = System.Drawing.Color.SteelBlue;
+            series.BorderWidth = 2;
+            chart.Series.Add(series);
+
             InitializeTables();
 
             AppServices.ModuleService.ModuleUpdated += OnModuleUpdated;
@@ -35,6 +58,9 @@ namespace BinTempsApp
             LoadLatestTemperatures();
             lblStatus.Text = $"Listening on UDP port {UdpServer.DefaultPort}";
             tmrStatus.Start();
+
+            dtpHistoryFrom.Value = DateTime.Today.AddDays(-7);
+            dtpHistoryTo.Value   = DateTime.Today.AddDays(1);
         }
 
         // -------------------------------------------------------------------------
@@ -75,7 +101,7 @@ namespace BinTempsApp
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Firmware",   DataPropertyName = "Firmware",   HeaderText = "Firmware",   Width = 70 });
 
             dgvTemperatures.AutoGenerateColumns = false;
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "RomCode",     DataPropertyName = "RomCode",     HeaderText = "RomCode",     Visible = false });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "RomCode",     DataPropertyName = "RomCode",     HeaderText = "RomCode",     Width = 150 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Bin",         DataPropertyName = "Bin",         HeaderText = "Bin",         Width = 40 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Cable",       DataPropertyName = "Cable",       HeaderText = "Cable",       Width = 50 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Sensor",      DataPropertyName = "Sensor",      HeaderText = "Sensor",      Width = 55 });
@@ -126,6 +152,8 @@ namespace BinTempsApp
                         record.Timestamp, moduleName);
                 }
             }
+
+            RefreshHistorySensorList();
         }
 
         private string GetModuleNameById(AppDbContext db, string moduleMac)
@@ -174,6 +202,9 @@ namespace BinTempsApp
                 UpdateTemperatureRow(romCode, packet.BinId, packet.CableId,
                     packet.SensorNum, label, packet.Temperature,
                     DateTime.Now, moduleName ?? $"Module {packet.ModuleId}");
+
+                if (packet.SensorsRemaining == 0)
+                    SetStatusTimed($"Temperatures updated from {moduleName ?? $"Module {packet.ModuleId}"}  ({DateTime.Now:HH:mm:ss})", 10);
             }));
         }
 
@@ -203,7 +234,8 @@ namespace BinTempsApp
             byte sensorNum, string label, float temperature, DateTime timestamp, string moduleName)
         {
             var row = _temperaturesTable.Rows.Find(romCode);
-            if (row == null)
+            bool isNew = row == null;
+            if (isNew)
             {
                 row = _temperaturesTable.NewRow();
                 row["RomCode"] = romCode;
@@ -217,6 +249,37 @@ namespace BinTempsApp
             row["Temperature"] = $"{temperature:F1} °C";
             row["Timestamp"] = timestamp.ToString("HH:mm:ss dd/MM/yy");
             row["Module"] = moduleName ?? "";
+
+            if (isNew) RefreshHistorySensorList();
+        }
+
+        // -------------------------------------------------------------------------
+        // Dashboard toolbar
+        // -------------------------------------------------------------------------
+
+        private Module GetSelectedModule()
+        {
+            if (dgvModules.SelectedRows.Count == 0) return null;
+            string mac = dgvModules.SelectedRows[0].Cells["Mac"].Value?.ToString();
+            using (var db = new AppDbContext())
+                return db.Modules.Find(mac);
+        }
+
+        private void btnRequestDescription_Click(object sender, EventArgs e)
+        {
+            var module = GetSelectedModule();
+            if (module == null) return;
+            AppServices.UdpServer.SendCommand(
+                module.ModuleId, UdpServer.CmdSendModuleDescription, module.LastKnownIp);
+        }
+
+        private void btnRequestTemps_Click(object sender, EventArgs e)
+        {
+            var module = GetSelectedModule();
+            if (module == null) return;
+            AppServices.UdpServer.SendCommand(
+                module.ModuleId, UdpServer.CmdUpdateAndSendTemps, module.LastKnownIp);
+            SetStatusTimed($"Reading temperatures on {module.Name ?? module.MacAddress}… (may take several seconds)", 120);
         }
 
         // -------------------------------------------------------------------------
@@ -226,7 +289,7 @@ namespace BinTempsApp
         private void dgvModules_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
-            string mac = _modulesTable.Rows[e.RowIndex]["Mac"].ToString();
+            string mac = dgvModules.Rows[e.RowIndex].Cells["Mac"].Value?.ToString();
 
             using (var db = new AppDbContext())
             {
@@ -240,7 +303,7 @@ namespace BinTempsApp
         private void dgvTemperatures_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex < 0) return;
-            string romCode = _temperaturesTable.Rows[e.RowIndex]["RomCode"].ToString();
+            string romCode = dgvTemperatures.Rows[e.RowIndex].Cells["RomCode"].Value?.ToString();
 
             var sensor = AppServices.SensorService.GetByRomCode(romCode);
             if (sensor == null) return;
@@ -281,10 +344,18 @@ namespace BinTempsApp
         private void dgvTemperatures_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex < 0) return;
+
+            if (e.ColumnIndex == dgvTemperatures.Columns["RomCode"]?.Index
+                && e.Value is string rc && rc.Length == 16)
+            {
+                e.Value = $"{rc.Substring(0,4)} {rc.Substring(4,4)} {rc.Substring(8,4)} {rc.Substring(12,4)}";
+                e.FormattingApplied = true;
+                return;
+            }
+
             if (e.ColumnIndex != dgvTemperatures.Columns["Temperature"]?.Index) return;
 
-            var row = _temperaturesTable.Rows[e.RowIndex];
-            string romCode = row["RomCode"].ToString();
+            string romCode = dgvTemperatures.Rows[e.RowIndex].Cells["RomCode"].Value?.ToString();
 
             if (!_sensorMaxTemps.TryGetValue(romCode, out float maxTemp)) return;
 
@@ -297,30 +368,207 @@ namespace BinTempsApp
         }
 
         // -------------------------------------------------------------------------
+        // CSV Export
+        // -------------------------------------------------------------------------
+
+        private void btnExportCsv_Click(object sender, EventArgs e)
+        {
+            using (var dlg = new SaveFileDialog())
+            {
+                dlg.Filter   = "CSV files (*.csv)|*.csv";
+                dlg.FileName = $"BinTemps_{DateTime.Now:yyyyMMdd_HHmm}.csv";
+                if (dlg.ShowDialog(this) != DialogResult.OK) return;
+
+                var sensors = AppServices.SensorService.GetAll()
+                    .ToDictionary(s => s.RomCode);
+
+                var records = AppServices.TemperatureService.GetAllHistory(
+                    DateTime.MinValue, DateTime.MaxValue);
+
+                var sb = new StringBuilder();
+                sb.AppendLine("Timestamp,RomCode,Label,Bin,Cable,Sensor,Module,Temperature");
+
+                foreach (var r in records)
+                {
+                    sensors.TryGetValue(r.RomCode, out var sensor);
+                    string label  = sensor?.Label ?? "";
+                    string bin    = sensor != null ? (sensor.BinId + 1).ToString() : "";
+                    string cable  = sensor != null ? (sensor.CableId + 1).ToString() : "";
+                    string snum   = sensor != null ? (sensor.SensorNum + 1).ToString() : "";
+                    string module = sensor?.Module?.Name ?? sensor?.ModuleMac ?? "";
+
+                    sb.AppendLine(string.Join(",",
+                        r.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"),
+                        r.RomCode,
+                        $"\"{label}\"",
+                        bin, cable, snum,
+                        $"\"{module}\"",
+                        r.Temperature.ToString("F2")));
+                }
+
+                File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);
+                SetStatusTimed($"Exported {records.Count} records to {Path.GetFileName(dlg.FileName)}", 10);
+            }
+        }
+
+        // -------------------------------------------------------------------------
+        // History chart
+        // -------------------------------------------------------------------------
+
+        private void dgvTemperatures_SelectionChanged(object sender, EventArgs e)
+        {
+            if (dgvTemperatures.SelectedRows.Count == 0) return;
+            string romCode = dgvTemperatures.SelectedRows[0].Cells["RomCode"].Value?.ToString();
+            SelectHistorySensor(romCode);
+        }
+
+        private void SelectHistorySensor(string romCode)
+        {
+            for (int i = 0; i < cboHistorySensor.Items.Count; i++)
+            {
+                if (((SensorItem)cboHistorySensor.Items[i]).RomCode == romCode)
+                {
+                    cboHistorySensor.SelectedIndex = i;
+                    return;
+                }
+            }
+        }
+
+        private void btnLoadHistory_Click(object sender, EventArgs e)
+        {
+            if (cboHistorySensor.SelectedItem == null) return;
+
+            string romCode = ((SensorItem)cboHistorySensor.SelectedItem).RomCode;
+            var records = AppServices.TemperatureService.GetHistory(
+                romCode, dtpHistoryFrom.Value.Date, dtpHistoryTo.Value.Date.AddDays(1));
+
+            var series = chart.Series["Temperature"];
+            series.Points.Clear();
+
+            if (records.Count == 0)
+            {
+                chart.Titles.Clear();
+                chart.Titles.Add("No data for selected range");
+                return;
+            }
+
+            foreach (var r in records)
+                series.Points.AddXY(r.Timestamp.ToOADate(), r.Temperature);
+
+            chart.ChartAreas["ChartArea"].AxisX.LabelStyle.Format = "dd/MM HH:mm";
+            chart.ChartAreas["ChartArea"].RecalculateAxesScale();
+
+            string label = ((SensorItem)cboHistorySensor.SelectedItem).Label;
+            chart.Titles.Clear();
+            chart.Titles.Add($"{label}  —  {records.Count} readings");
+        }
+
+        // Called whenever a new sensor appears in the temperatures table
+        private void RefreshHistorySensorList()
+        {
+            string selected = (cboHistorySensor.SelectedItem as SensorItem)?.RomCode;
+            cboHistorySensor.Items.Clear();
+
+            foreach (DataRow row in _temperaturesTable.Rows)
+            {
+                string romCode = row["RomCode"].ToString();
+                string label   = row["Label"].ToString();
+                string loc     = $"Bin {row["Bin"]} / Cable {row["Cable"]} / #{row["Sensor"]}";
+                string display = string.IsNullOrEmpty(label) ? loc : $"{label}  ({loc})";
+                cboHistorySensor.Items.Add(new SensorItem(romCode, display));
+            }
+
+            if (selected != null)
+                SelectHistorySensor(selected);
+            else if (cboHistorySensor.Items.Count > 0)
+            {
+                cboHistorySensor.SelectedIndex = 0;
+                if (chart.Series["Temperature"].Points.Count == 0)
+                    btnLoadHistory_Click(null, EventArgs.Empty);
+            }
+        }
+
+        // -------------------------------------------------------------------------
         // Status timer
         // -------------------------------------------------------------------------
+
+        // Poll interval: request 30831 from each known module every 2 minutes.
+        // Offline threshold: no response for 5 minutes (> 2 poll cycles).
+        private static readonly TimeSpan PollInterval    = TimeSpan.FromMinutes(2);
+        private static readonly TimeSpan OfflineThreshold = TimeSpan.FromMinutes(5);
+        private DateTime _lastPoll = DateTime.MinValue;
+
+        private DateTime _statusClearAt = DateTime.MinValue;
+
+        private void SetStatusTimed(string text, int seconds)
+        {
+            lblStatus.Text = text;
+            _statusClearAt = DateTime.Now.AddSeconds(seconds);
+        }
 
         private void tmrStatus_Tick(object sender, EventArgs e)
         {
             var srv = AppServices.UdpServer;
             var parser = AppServices.Parser;
             lblPackets.Text = $"Packets: {srv.RawPacketsReceived} raw  |  {srv.FilteredPacketsReceived} from modules  |  {parser.ParsedCount} parsed  |  {parser.LastStatus}";
+
+            if (_statusClearAt != DateTime.MinValue && DateTime.Now >= _statusClearAt)
+            {
+                lblStatus.Text = "";
+                _statusClearAt = DateTime.MinValue;
+            }
+
+            if ((DateTime.Now - _lastPoll) < PollInterval) return;
+            _lastPoll = DateTime.Now;
+
+            // Broadcast to all subnets so modules with changed DHCP IPs can report back
+            AppServices.UdpServer.SendDiscovery();
+
+            foreach (var module in AppServices.ModuleService.GetAllModules())
+            {
+                if (!module.LastSeen.HasValue) continue;
+
+                if ((DateTime.Now - module.LastSeen.Value) > OfflineThreshold)
+                {
+                    // No response for 5 min despite discovery broadcasts — mark offline
+                    if (module.Status != "Offline")
+                        AppServices.ModuleService.SetModuleOffline(module.MacAddress);
+                }
+            }
         }
 
         private void OnUdpError(object sender, string message)
         {
             if (!IsHandleCreated || IsDisposed) return;
-            BeginInvoke(new Action(() => lblStatus.Text = $"Error: {message}"));
+            BeginInvoke(new Action(() => SetStatusTimed($"Error: {message}", 30)));
         }
 
         // -------------------------------------------------------------------------
         // Form events
         // -------------------------------------------------------------------------
 
+        private void MainForm_Resize(object sender, EventArgs e)
+        {
+            // Keep Export CSV button anchored to the right edge
+            btnExportCsv.Left = pnlTempsToolbar.Width - btnExportCsv.Width - 4;
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             tmrStatus.Stop();
             AppServices.Shutdown();
+        }
+
+        // -------------------------------------------------------------------------
+        // Helper
+        // -------------------------------------------------------------------------
+
+        private class SensorItem
+        {
+            public string RomCode { get; }
+            public string Label   { get; }
+            public SensorItem(string romCode, string label) { RomCode = romCode; Label = label; }
+            public override string ToString() => Label;
         }
     }
 }

@@ -24,6 +24,13 @@ namespace BinTempsApp.Services
             {
                 string romCode = packet.RomCodeHex;
 
+                // Resolve module MAC from the packet's module ID
+                string moduleMac = null;
+                if (packet.ModuleId != 0)
+                    moduleMac = db.Modules.Where(m => m.ModuleId == packet.ModuleId)
+                                          .Select(m => m.MacAddress)
+                                          .FirstOrDefault();
+
                 // Ensure sensor exists
                 var sensor = db.Sensors.Find(romCode);
                 if (sensor == null)
@@ -31,6 +38,7 @@ namespace BinTempsApp.Services
                     sensor = new Sensor
                     {
                         RomCode = romCode,
+                        ModuleMac = moduleMac,
                         BinId = packet.BinId,
                         CableId = packet.CableId,
                         SensorNum = packet.SensorNum,
@@ -44,6 +52,8 @@ namespace BinTempsApp.Services
                     sensor.BinId = packet.BinId;
                     sensor.CableId = packet.CableId;
                     sensor.SensorNum = packet.SensorNum;
+                    if (moduleMac != null && sensor.ModuleMac == null)
+                        sensor.ModuleMac = moduleMac;
                 }
 
                 if (!sensor.Enabled) return;
@@ -77,6 +87,17 @@ namespace BinTempsApp.Services
                           WHERE t2.RomCode = t.RomCode
                       )"
                 ).ToList();
+            }
+        }
+
+        public List<TemperatureRecord> GetAllHistory(DateTime from, DateTime to)
+        {
+            using (var db = new AppDbContext())
+            {
+                return db.Records
+                    .Where(r => r.Timestamp >= from && r.Timestamp <= to)
+                    .OrderBy(r => r.RomCode).ThenBy(r => r.Timestamp)
+                    .ToList();
             }
         }
 

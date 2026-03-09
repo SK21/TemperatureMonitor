@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
@@ -27,6 +28,7 @@ namespace BinTempsApp.Network
         // Command bits for PGN 30821
         public const byte CmdSendTemps = 0x01;
         public const byte CmdSendModuleDescription = 0x02;
+        public const byte CmdUpdateAndSendTemps = 0x04;  // read fresh temps then send
 
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
         public event EventHandler<string> Error;
@@ -76,6 +78,32 @@ namespace BinTempsApp.Network
             _client?.Close();  // unblocks ReceiveAsync
 
             IsRunning = false;
+        }
+
+        // Broadcast CmdSendModuleDescription to every local subnet's broadcast address.
+        // Called on startup and periodically so modules report their current IP via 30831.
+        public void SendDiscovery()
+        {
+            byte[] data = new byte[5];
+            data[0] = 101;
+            data[1] = 120;
+            data[2] = 0;   // moduleId=0 → all modules respond
+            data[3] = CmdSendModuleDescription;
+            data[4] = Crc(data, 4);
+
+            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+                if (ni.OperationalStatus != OperationalStatus.Up) continue;
+                foreach (var ua in ni.GetIPProperties().UnicastAddresses)
+                {
+                    if (ua.Address.AddressFamily != AddressFamily.InterNetwork) continue;
+                    byte[] addr = ua.Address.GetAddressBytes();
+                    byte[] mask = ua.IPv4Mask.GetAddressBytes();
+                    byte[] bcast = new byte[4];
+                    for (int i = 0; i < 4; i++) bcast[i] = (byte)(addr[i] | ~mask[i]);
+                    SendPacket(data, new IPEndPoint(new IPAddress(bcast), _port));
+                }
+            }
         }
 
         // PGN 30820 - Heartbeat (broadcast)

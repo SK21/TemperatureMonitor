@@ -77,8 +77,9 @@ void ReadPGNs(byte data[], uint16_t len)
 		// 1	header hi	120
 		// 2	module ID
 		// 3	command
-		//		- bit 0	send sensor temps
+		//		- bit 0	send sensor temps (cached)
 		//		- bit 1	send module description
+		//		- bit 2	read fresh temps then send
 		// 4	crc
 
 		PGNlength = 5;
@@ -92,6 +93,7 @@ void ReadPGNs(byte data[], uint16_t len)
 					byte InCommand = data[3];
 					if ((InCommand & 1) == 1) SendTemps();
 					if ((InCommand & 2) == 2) SendModuleDescription();
+					if ((InCommand & 4) == 4) { UpdateTemps(); SendTemps(); }
 				}
 			}
 		}

@@ -231,7 +231,7 @@ void loop()
 	{
 		Readtime = millis();
 
-		UpdateTmps();
+		UpdateTemps();
 
 		int Min = SampleTime / 60000;
 		Serial.print("");
@@ -271,7 +271,7 @@ void SaveData()
 }
 
 
-void UpdateTmps()
+void UpdateTemps()
 {
 	if (DS2842Connected)
 	{
