@@ -64,6 +64,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppServices.cs" />
+    <Compile Include="ModuleEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ModuleEditForm.Designer.cs">
+      <DependentUpon>ModuleEditForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="SensorEditForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SensorEditForm.Designer.cs">
+      <DependentUpon>SensorEditForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

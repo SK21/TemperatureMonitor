@@ -68,10 +68,15 @@ namespace BinTempsApp.Services
         {
             using (var db = new AppDbContext())
             {
-                return db.Records
-                    .GroupBy(r => r.RomCode)
-                    .Select(g => g.OrderByDescending(r => r.Timestamp).FirstOrDefault())
-                    .ToList();
+                // LINQ GroupBy+FirstOrDefault generates OUTER APPLY which SQLite doesn't support.
+                // Use a correlated subquery instead.
+                return db.Database.SqlQuery<TemperatureRecord>(
+                    @"SELECT * FROM TemperatureRecords t
+                      WHERE t.Timestamp = (
+                          SELECT MAX(t2.Timestamp) FROM TemperatureRecords t2
+                          WHERE t2.RomCode = t.RomCode
+                      )"
+                ).ToList();
             }
         }
 

@@ -29,8 +29,11 @@ namespace BinTempsApp.Network
         public const byte CmdSendModuleDescription = 0x02;
 
         public event EventHandler<PacketReceivedEventArgs> PacketReceived;
+        public event EventHandler<string> Error;
 
         public bool IsRunning { get; private set; }
+        public int RawPacketsReceived { get; private set; }
+        public int FilteredPacketsReceived { get; private set; }
 
         private UdpClient _client;
         private CancellationTokenSource _cts;
@@ -86,7 +89,7 @@ namespace BinTempsApp.Network
         }
 
         // PGN 30821 - Command
-        public void SendCommand(byte moduleId, byte commandBits)
+        public void SendCommand(byte moduleId, byte commandBits, string targetIp = null)
         {
             byte[] data = new byte[5];
             data[0] = 101;
@@ -94,11 +97,17 @@ namespace BinTempsApp.Network
             data[2] = moduleId;
             data[3] = commandBits;
             data[4] = Crc(data, 4);
-            SendPacket(data);
+
+            IPEndPoint endpoint = null;
+            if (targetIp != null && System.Net.IPAddress.TryParse(targetIp, out var ip))
+                endpoint = new IPEndPoint(ip, _port);
+
+            SendPacket(data, endpoint);
         }
 
         // PGN 30822 - Set Module Description
-        public void SendSetModuleDescription(byte[] mac, byte newId, string name)
+        // targetIp: send directly to the module's IP rather than broadcasting (preferred)
+        public void SendSetModuleDescription(byte[] mac, byte newId, string name, string targetIp = null)
         {
             if (mac == null || mac.Length != 6)
                 throw new ArgumentException("MAC address must be 6 bytes.", nameof(mac));
@@ -115,7 +124,12 @@ namespace BinTempsApp.Network
             Array.Copy(nameBytes, 0, data, 9, 10);
 
             data[19] = Crc(data, 19);
-            SendPacket(data);
+
+            IPEndPoint endpoint = null;
+            if (targetIp != null && System.Net.IPAddress.TryParse(targetIp, out var ip))
+                endpoint = new IPEndPoint(ip, _port);
+
+            SendPacket(data, endpoint);
         }
 
         // PGN 30823 - Set Sensor User Data
@@ -135,11 +149,11 @@ namespace BinTempsApp.Network
             SendPacket(data);
         }
 
-        private void SendPacket(byte[] data)
+        private void SendPacket(byte[] data, IPEndPoint endpoint = null)
         {
             try
             {
-                _client?.Send(data, data.Length, _broadcastEndPoint);
+                _client?.Send(data, data.Length, endpoint ?? _broadcastEndPoint);
             }
             catch (ObjectDisposedException) { }
             catch (SocketException) { }
@@ -152,16 +166,18 @@ namespace BinTempsApp.Network
                 try
                 {
                     UdpReceiveResult result = await _client.ReceiveAsync();
+                    RawPacketsReceived++;
 
                     // Ignore packets we sent ourselves
                     if (IsLocalAddress(result.RemoteEndPoint.Address)) continue;
 
+                    FilteredPacketsReceived++;
                     if (result.Buffer.Length > 2)
                         PacketReceived?.Invoke(this, new PacketReceivedEventArgs(result.Buffer, result.RemoteEndPoint));
                 }
                 catch (ObjectDisposedException) { break; }
                 catch (SocketException) { break; }
-                catch (Exception) { /* log future */ }
+                catch (Exception ex) { Error?.Invoke(this, ex.Message); }
             }
         }
 

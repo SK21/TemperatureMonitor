@@ -21,6 +21,12 @@ namespace BinTempsApp.Services
                 return db.Sensors.Include("Module").ToList();
         }
 
+        public Sensor GetByRomCode(string romCode)
+        {
+            using (var db = new AppDbContext())
+                return db.Sensors.Include("Module").FirstOrDefault(s => s.RomCode == romCode);
+        }
+
         public List<Sensor> GetByModule(string macAddress)
         {
             using (var db = new AppDbContext())

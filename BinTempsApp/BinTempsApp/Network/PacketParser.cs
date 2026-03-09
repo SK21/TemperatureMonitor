@@ -10,6 +10,9 @@ namespace BinTempsApp.Network
         public event EventHandler<TemperaturePacket> TemperatureReceived;
         public event EventHandler<ModuleDescriptionPacket> ModuleDescriptionReceived;
 
+        public int ParsedCount { get; private set; }
+        public string LastStatus { get; private set; } = "No packets";
+
         // Subscribe this to UdpServer.PacketReceived
         public void HandlePacket(object sender, PacketReceivedEventArgs e)
         {
@@ -31,6 +34,10 @@ namespace BinTempsApp.Network
                 case 30831:
                     ParseModuleDescription(data, source);
                     break;
+
+                default:
+                    LastStatus = $"Unknown PGN {pgn} ({data.Length}B)";
+                    break;
             }
         }
 
@@ -49,8 +56,8 @@ namespace BinTempsApp.Network
             // 16    CRC
 
             const int length = 17;
-            if (data.Length < length) return;
-            if (!ValidCrc(data, length)) return;
+            if (data.Length < length) { LastStatus = $"30830 too short ({data.Length}B)"; return; }
+            if (!ValidCrc(data, length)) { LastStatus = $"30830 CRC fail"; return; }
 
             byte moduleId = data[2];
 
@@ -80,8 +87,8 @@ namespace BinTempsApp.Network
             // 21    CRC
 
             const int length = 22;
-            if (data.Length < length) return;
-            if (!ValidCrc(data, length)) return;
+            if (data.Length < length) { LastStatus = $"30831 too short ({data.Length}B)"; return; }
+            if (!ValidCrc(data, length)) { LastStatus = $"30831 CRC fail (got {data[length-1]:X2}, expected {ComputeCrc(data, length):X2})"; return; }
 
             byte moduleId = data[2];
 
@@ -94,15 +101,22 @@ namespace BinTempsApp.Network
 
             var packet = new ModuleDescriptionPacket(moduleId, mac, name, firmwareVersion, source);
 
+            ParsedCount++;
+            LastStatus = $"30831 OK — ID:{moduleId} {name} fw:{firmwareVersion}";
             ModuleDescriptionReceived?.Invoke(this, packet);
         }
 
         private static bool ValidCrc(byte[] data, int length)
         {
+            return ComputeCrc(data, length) == data[length - 1];
+        }
+
+        private static byte ComputeCrc(byte[] data, int length)
+        {
             byte sum = 0;
             for (int i = 0; i < length - 1; i++)
                 sum += data[i];
-            return sum == data[length - 1];
+            return sum;
         }
     }
 }

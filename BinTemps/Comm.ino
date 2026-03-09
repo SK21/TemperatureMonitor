@@ -210,6 +210,7 @@ void SendModuleDescription()
 
 	byte PGNlength = 22;
 	byte data[PGNlength];
+	memset(data, 0, PGNlength);
 	data[0] = 111;
 	data[1] = 120;
 	data[2] = MDL.ID;

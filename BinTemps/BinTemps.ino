@@ -19,8 +19,8 @@
 #include <Wire.h>
 #include "DS2482.h" 		    // https://github.com/paeaetech/paeae
 
-# define InoDescription "BinTemps 08-Mar-2026"
-#define InoID 8036  // change to load default values
+# define InoDescription "BinTemps 09-Mar-2026"
+#define InoID 9036  // change to load default values
 
 #define SDApin  4
 #define SCLpin  5
@@ -121,6 +121,9 @@ void setup()
 
 	Serial.print("Module name: ");
 	Serial.println(MDL.Name);
+
+	Serial.print("Module ID: ");
+	Serial.println(MDL.ID);
 
 	StartOTA();
 

@@ -11,6 +11,8 @@ namespace BinTempsApp
         private System.Windows.Forms.DataGridView dgvTemperatures;
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripStatusLabel lblStatus;
+        private System.Windows.Forms.ToolStripStatusLabel lblPackets;
+        private System.Windows.Forms.Timer tmrStatus;
 
         protected override void Dispose(bool disposing)
         {
@@ -28,6 +30,8 @@ namespace BinTempsApp
             this.dgvTemperatures = new System.Windows.Forms.DataGridView();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblPackets = new System.Windows.Forms.ToolStripStatusLabel();
+            this.tmrStatus = new System.Windows.Forms.Timer();
 
             this.tabControl.SuspendLayout();
             this.tabDashboard.SuspendLayout();
@@ -64,6 +68,7 @@ namespace BinTempsApp
             this.dgvModules.RowHeadersVisible = false;
             this.dgvModules.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvModules.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvModules_CellFormatting);
+            this.dgvModules.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvModules_CellDoubleClick);
 
             // tabTemperatures
             this.tabTemperatures.Controls.Add(this.dgvTemperatures);
@@ -86,14 +91,25 @@ namespace BinTempsApp
             this.dgvTemperatures.RowHeadersVisible = false;
             this.dgvTemperatures.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dgvTemperatures.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvTemperatures_CellFormatting);
+            this.dgvTemperatures.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvTemperatures_CellDoubleClick);
 
             // statusStrip
-            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.lblStatus });
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] { this.lblStatus, this.lblPackets });
             this.statusStrip.Name = "statusStrip";
 
             // lblStatus
             this.lblStatus.Name = "lblStatus";
             this.lblStatus.Text = "Initialising...";
+
+            // lblPackets
+            this.lblPackets.Name       = "lblPackets";
+            this.lblPackets.Text       = "Packets: 0 (0 from modules)";
+            this.lblPackets.Alignment  = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.lblPackets.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+
+            // tmrStatus
+            this.tmrStatus.Interval = 1000;
+            this.tmrStatus.Tick    += new System.EventHandler(this.tmrStatus_Tick);
 
             // MainForm
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);

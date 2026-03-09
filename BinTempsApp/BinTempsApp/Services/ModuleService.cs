@@ -48,12 +48,16 @@ namespace BinTempsApp.Services
 
                 ModuleUpdated?.Invoke(this, new ModuleUpdatedEventArgs(module));
             }
+
+            // Request current temperatures — send directly to the module's source IP
+            _udpServer.SendCommand(packet.ModuleId, UdpServer.CmdSendTemps,
+                packet.Source.Address.ToString());
         }
 
         // Assign an ID and name to an unregistered module — sends PGN 30822
-        public void RegisterModule(byte[] mac, byte newId, string name)
+        public void RegisterModule(byte[] mac, byte newId, string name, string targetIp = null)
         {
-            _udpServer.SendSetModuleDescription(mac, newId, name);
+            _udpServer.SendSetModuleDescription(mac, newId, name, targetIp);
         }
 
         public void SetModuleOffline(string macAddress)
@@ -73,6 +77,20 @@ namespace BinTempsApp.Services
         {
             using (var db = new AppDbContext())
                 return db.Modules.ToArray();
+        }
+
+        // Save name/ID locally and fire ModuleUpdated (also send UDP if module is reachable)
+        public void SaveModuleLocally(string macAddress, byte newId, string name)
+        {
+            using (var db = new AppDbContext())
+            {
+                var module = db.Modules.Find(macAddress);
+                if (module == null) return;
+                module.ModuleId = newId;
+                module.Name = name;
+                db.SaveChanges();
+                ModuleUpdated?.Invoke(this, new ModuleUpdatedEventArgs(module));
+            }
         }
     }
 }

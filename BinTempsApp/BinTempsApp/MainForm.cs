@@ -29,10 +29,12 @@ namespace BinTempsApp
 
             AppServices.ModuleService.ModuleUpdated += OnModuleUpdated;
             AppServices.Parser.TemperatureReceived += OnTemperatureReceived;
+            AppServices.UdpServer.Error += OnUdpError;
 
             LoadModules();
             LoadLatestTemperatures();
             lblStatus.Text = $"Listening on UDP port {UdpServer.DefaultPort}";
+            tmrStatus.Start();
         }
 
         // -------------------------------------------------------------------------
@@ -218,6 +220,48 @@ namespace BinTempsApp
         }
 
         // -------------------------------------------------------------------------
+        // Double-click to edit
+        // -------------------------------------------------------------------------
+
+        private void dgvModules_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            string mac = _modulesTable.Rows[e.RowIndex]["Mac"].ToString();
+
+            using (var db = new AppDbContext())
+            {
+                var module = db.Modules.Find(mac);
+                if (module == null) return;
+                using (var form = new ModuleEditForm(module))
+                    form.ShowDialog(this);
+            }
+        }
+
+        private void dgvTemperatures_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0) return;
+            string romCode = _temperaturesTable.Rows[e.RowIndex]["RomCode"].ToString();
+
+            var sensor = AppServices.SensorService.GetByRomCode(romCode);
+            if (sensor == null) return;
+
+            using (var form = new SensorEditForm(sensor))
+            {
+                if (form.ShowDialog(this) == DialogResult.OK)
+                {
+                    // Refresh caches so colour coding picks up the new max temp / label
+                    _sensorMaxTemps[romCode] = sensor.MaxTemp;
+                    _sensorLabels[romCode]   = sensor.Label ?? "";
+
+                    // Refresh label in the grid row immediately
+                    var row = _temperaturesTable.Rows.Find(romCode);
+                    if (row != null)
+                        row["Label"] = sensor.Label ?? "";
+                }
+            }
+        }
+
+        // -------------------------------------------------------------------------
         // Cell formatting (colour coding)
         // -------------------------------------------------------------------------
 
@@ -253,11 +297,29 @@ namespace BinTempsApp
         }
 
         // -------------------------------------------------------------------------
+        // Status timer
+        // -------------------------------------------------------------------------
+
+        private void tmrStatus_Tick(object sender, EventArgs e)
+        {
+            var srv = AppServices.UdpServer;
+            var parser = AppServices.Parser;
+            lblPackets.Text = $"Packets: {srv.RawPacketsReceived} raw  |  {srv.FilteredPacketsReceived} from modules  |  {parser.ParsedCount} parsed  |  {parser.LastStatus}";
+        }
+
+        private void OnUdpError(object sender, string message)
+        {
+            if (!IsHandleCreated || IsDisposed) return;
+            BeginInvoke(new Action(() => lblStatus.Text = $"Error: {message}"));
+        }
+
+        // -------------------------------------------------------------------------
         // Form events
         // -------------------------------------------------------------------------
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            tmrStatus.Stop();
             AppServices.Shutdown();
         }
     }
