@@ -2,7 +2,7 @@
 
 ## Overview
 
-A new C# desktop application to replace the VB6 server. Communicates over WiFi (UDP) with ESP8266-based bin temperature modules (existing TM13 hardware). The existing firmware will need updates to support the new protocol.
+A new C# desktop application to replace the VB6 server. Communicates over WiFi (UDP) with ESP8266-based bin temperature modules (existing TM13 hardware). Firmware is complete.
 
 ---
 
@@ -10,54 +10,44 @@ A new C# desktop application to replace the VB6 server. Communicates over WiFi (
 
 | Layer | Choice |
 |---|---|
-| UI | WPF (.NET 8) |
-| Database | SQLite via EF Core |
-| Charts | LiveChartsCore or OxyPlot |
-| Network | UDP (System.Net.Sockets.UdpClient) |
+| UI | WinForms (.NET Framework 4.8) |
+| Database | SQLite via EF6 (`EntityFramework` + `System.Data.SQLite`) |
+| Charts | OxyPlot (`OxyPlot.WindowsForms`) |
+| Network | UDP (`System.Net.Sockets.UdpClient`) |
 | Async | async/await + CancellationToken |
-| Config | System.Text.Json |
+| Config | Newtonsoft.Json |
 
 ---
 
 ## Project Structure
 
 ```
-BinTemps/
-├── BinTemps.sln
-├── BinTemps.Core/              # Business logic class library
-│   ├── Models/
-│   │   ├── Sensor.cs
-│   │   ├── TemperatureRecord.cs
-│   │   ├── BinStorage.cs
-│   │   ├── Module.cs
-│   │   └── Packet.cs
-│   ├── Data/
-│   │   ├── AppDbContext.cs
-│   │   └── Migrations/
-│   ├── Network/
-│   │   ├── UdpServer.cs
-│   │   └── PacketParser.cs
-│   └── Services/
-│       ├── TemperatureService.cs
-│       ├── SensorService.cs
-│       └── ReportService.cs
-├── BinTemps.UI/                # WPF application
-│   ├── ViewModels/
-│   │   ├── MainViewModel.cs
-│   │   ├── DashboardViewModel.cs
-│   │   ├── SensorsViewModel.cs
-│   │   ├── TemperatureViewModel.cs
-│   │   └── SettingsViewModel.cs
-│   └── Views/
-│       ├── MainWindow.xaml
-│       ├── DashboardView.xaml
-│       ├── SensorsView.xaml
-│       ├── TemperatureView.xaml
-│       ├── BinMapView.xaml
-│       └── SettingsView.xaml
-└── BinTemps.Tests/
-    ├── PacketParserTests.cs
-    └── TemperatureServiceTests.cs
+BinTempsApp/
+├── BinTempsApp.slnx
+└── BinTempsApp/
+    ├── BinTempsApp.csproj        # .NET Framework 4.8 WinForms
+    ├── Program.cs
+    ├── MainForm.cs               # Main MDI or tabbed shell
+    ├── Network/
+    │   ├── UdpServer.cs          # Bind, heartbeat broadcast, receive loop
+    │   └── PacketParser.cs       # Parse raw bytes into typed packets
+    ├── Models/
+    │   ├── Module.cs
+    │   ├── Sensor.cs
+    │   ├── TemperatureRecord.cs
+    │   └── Packet.cs
+    ├── Data/
+    │   ├── AppDbContext.cs       # EF6 DbContext
+    │   └── Migrations/
+    ├── Services/
+    │   ├── TemperatureService.cs
+    │   └── SensorService.cs
+    └── Forms/
+        ├── DashboardForm.cs      # Live module/connection status
+        ├── TemperatureForm.cs    # Temperature data sheet
+        ├── ChartForm.cs          # OxyPlot trend charts
+        ├── BinMapForm.cs         # Visual bin layout
+        └── SettingsForm.cs       # App settings, sensor management
 ```
 
 ---
@@ -76,7 +66,7 @@ Temperature lo/hi = raw DS18B20 16-bit value (signed, divide by 16.0 for Celsius
 | 1 | 120 |
 | 2 | CRC |
 
-Sent by app on a regular interval (e.g. every 30 seconds). Modules watch for this. If 3 consecutive heartbeats are missed, module attempts WiFi reconnect and re-announces itself with PGN 30831 (ID=0).
+Sent by app on a regular interval (e.g. every 30 seconds) to the subnet broadcast address. Modules track the last heartbeat time. If no heartbeat is received for 90 seconds (~3 missed), the module attempts WiFi reconnect and re-announces itself with PGN 30831.
 
 #### 30821 - Command (app to module)
 | Byte | Field |
@@ -91,9 +81,7 @@ Command byte bits:
 - bit 0 = send sensor temps (30830)
 - bit 1 = send module description (30831)
 
-Module ID 0x00 = global broadcast - all modules respond with a random delay based on MAC address to stagger responses:
-`delay_ms = (MAC[4] XOR MAC[5]) * 50`  (0 to ~12.7 seconds spread)
-
+Module ID 0x00 = global broadcast — all modules respond.
 Module ID 0x01-0xFE = targeted, module responds immediately.
 Module ID 0xFF = reserved.
 
@@ -198,10 +186,11 @@ The C# app has no role in provisioning. It only becomes involved once the module
 6. If 30822 is lost, the next global 30821 (broadcast) will re-trigger the 30831 from the module
 
 ### Reconnect Flow
-1. Module misses 3 consecutive heartbeats
-2. Module attempts WiFi reconnect
-3. On reconnect, module sends unsolicited 30831 again (with its assigned ID)
-4. Server knows the module is back online
+1. Module receives no heartbeat for 90 seconds
+2. If WiFi is disconnected, module attempts reconnect
+3. On reconnect, `udp.begin(port)` is called and module sends unsolicited 30831 (with its assigned ID)
+4. If WiFi is still connected but server went quiet, module re-sends 30831 to re-announce itself
+5. Server knows the module is back online
 
 ---
 
@@ -218,13 +207,21 @@ Settings     - Key, Value
 
 ---
 
+## C# App — UDP Notes
+
+- App binds to `0.0.0.0` on port 1600 to receive UDP from any module on the network
+- Heartbeat (30820) and commands (30821) are sent to the subnet broadcast address
+- Module responses (30830, 30831) arrive from the module's IP — use `UdpReceiveResult.RemoteEndPoint` to track module IPs
+- `UdpClient` must have `EnableBroadcast = true` and `Client.SetSocketOption(SocketOptionLevel.Socket, SocketOptionName.ReuseAddress, true)`
+- Since modules broadcast their responses, the app may receive its own sent packets — filter by checking the source IP is not the local machine
+
 ## Implementation Phases
 
-1. **Phase 1** - PacketParser + unit tests, UdpServer, console test harness against real hardware
-2. **Phase 2** - EF Core models, TemperatureService, SensorService
-3. **Phase 3** - Main WPF window, Dashboard (live connections), Temperature sheet
-4. **Phase 4** - Chart view, Bin map, CSV export
-5. **Phase 5** - Settings UI, Sensor management, Installer
+1. **Phase 1** *(start here)* — `UdpServer` (bind, broadcast heartbeat, receive loop), `PacketParser` with unit tests, console test harness against real hardware
+2. **Phase 2** — EF Core models (`AppDbContext`, migrations), `TemperatureService`, `SensorService`
+3. **Phase 3** — Main WPF window, Dashboard (live module list, online/offline status), Temperature sheet
+4. **Phase 4** — Chart view, Bin map, CSV export
+5. **Phase 5** — Settings UI, Sensor management (assign bin/cable/sensor), Installer
 
 ---
 
