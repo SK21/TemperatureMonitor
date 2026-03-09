@@ -1,22 +1,41 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System;
 using System.Windows.Forms;
 
 namespace BinTempsApp
 {
     internal static class Program
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
         [STAThread]
         static void Main()
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            try
+            {
+                AppServices.Initialize();
+                AppServices.Start();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Startup error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}",
+                    "BinTemps", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            MainForm form;
+            try
+            {
+                form = new MainForm();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Form load error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}",
+                    "BinTemps", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            Application.Run(form);
         }
     }
 }
