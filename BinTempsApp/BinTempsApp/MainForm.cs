@@ -72,6 +72,8 @@ namespace BinTempsApp
 
             dtpHistoryFrom.Value = DateTime.Today.AddDays(-7);
             dtpHistoryTo.Value   = DateTime.Today.AddDays(1);
+
+            RestoreFormBounds();
         }
 
         // -------------------------------------------------------------------------
@@ -601,8 +603,34 @@ namespace BinTempsApp
             btnExportCsv.Left = pnlTempsToolbar.Width - btnExportCsv.Width - 4;
         }
 
+        private void RestoreFormBounds()
+        {
+            if (AppConfig.MainFormLeft == -1) return;  // no saved position yet
+
+            // Verify at least the title bar is visible on some screen before restoring
+            bool onScreen = false;
+            foreach (System.Windows.Forms.Screen screen in System.Windows.Forms.Screen.AllScreens)
+            {
+                if (screen.WorkingArea.Contains(AppConfig.MainFormLeft + 50, AppConfig.MainFormTop + 10))
+                {
+                    onScreen = true;
+                    break;
+                }
+            }
+            if (!onScreen) return;
+
+            StartPosition = System.Windows.Forms.FormStartPosition.Manual;
+            Left   = AppConfig.MainFormLeft;
+            Top    = AppConfig.MainFormTop;
+            if (AppConfig.MainFormWidth  > 0) Width  = AppConfig.MainFormWidth;
+            if (AppConfig.MainFormHeight > 0) Height = AppConfig.MainFormHeight;
+        }
+
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
+            if (WindowState == System.Windows.Forms.FormWindowState.Normal)
+                AppConfig.SaveFormBounds(Left, Top, Width, Height);
+
             tmrStatus.Stop();
             AppServices.Shutdown();
         }

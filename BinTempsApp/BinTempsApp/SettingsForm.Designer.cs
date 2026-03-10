@@ -21,6 +21,7 @@ namespace BinTempsApp
 
         private void InitializeComponent()
         {
+            this.components     = new System.ComponentModel.Container();
             this.lblDbPath      = new System.Windows.Forms.Label();
             this.txtDbPath      = new System.Windows.Forms.TextBox();
             this.btnBrowse      = new System.Windows.Forms.Button();

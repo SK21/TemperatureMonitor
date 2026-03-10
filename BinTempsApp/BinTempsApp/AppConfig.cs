@@ -12,6 +12,8 @@ namespace BinTempsApp
         private static readonly string FilePath =
             Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BinTemps.ini");
 
+        // ── Database ──────────────────────────────────────────────────────────────
+
         /// <summary>
         /// Explicit path to the database file. Empty string means use the default
         /// (BinTemps.db in the same folder as the exe).
@@ -27,14 +29,11 @@ namespace BinTempsApp
 
         /// <summary>
         /// When true, Program.Main will copy CopyDbSource to ResolvedDbPath on
-        /// startup, then clear this flag. Set by SettingsForm when the user
-        /// requests a database copy to the new location.
+        /// startup, then clear this flag.
         /// </summary>
         public static bool CopyDbOnStart { get; set; } = false;
 
-        /// <summary>
-        /// The database file to copy from when CopyDbOnStart is true.
-        /// </summary>
+        /// <summary>The database file to copy from when CopyDbOnStart is true.</summary>
         public static string CopyDbSource { get; set; } = "";
 
         /// <summary>
@@ -44,6 +43,16 @@ namespace BinTempsApp
             string.IsNullOrWhiteSpace(DbPath)
                 ? Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BinTemps.db")
                 : DbPath;
+
+        // ── Main form bounds ──────────────────────────────────────────────────────
+        // -1 means not yet saved; form falls back to its default CenterScreen position.
+
+        public static int MainFormLeft   { get; set; } = -1;
+        public static int MainFormTop    { get; set; } = -1;
+        public static int MainFormWidth  { get; set; } = -1;
+        public static int MainFormHeight { get; set; } = -1;
+
+        // ── Load / Save ───────────────────────────────────────────────────────────
 
         public static void Load()
         {
@@ -56,27 +65,57 @@ namespace BinTempsApp
                 string key = line.Substring(0, eq).Trim();
                 string val = line.Substring(eq + 1).Trim();
 
-                if      (key == "DbPath")        DbPath        = val;
-                else if (key == "PassiveMode")   PassiveMode   = val.Equals("true", StringComparison.OrdinalIgnoreCase);
-                else if (key == "CopyDbOnStart") CopyDbOnStart = val.Equals("true", StringComparison.OrdinalIgnoreCase);
-                else if (key == "CopyDbSource")  CopyDbSource  = val;
+                if      (key == "DbPath")          DbPath        = val;
+                else if (key == "PassiveMode")     PassiveMode   = val.Equals("true", StringComparison.OrdinalIgnoreCase);
+                else if (key == "CopyDbOnStart")   CopyDbOnStart = val.Equals("true", StringComparison.OrdinalIgnoreCase);
+                else if (key == "CopyDbSource")    CopyDbSource  = val;
+                else if (key == "MainForm.Left")   { if (int.TryParse(val, out int v)) MainFormLeft   = v; }
+                else if (key == "MainForm.Top")    { if (int.TryParse(val, out int v)) MainFormTop    = v; }
+                else if (key == "MainForm.Width")  { if (int.TryParse(val, out int v)) MainFormWidth  = v; }
+                else if (key == "MainForm.Height") { if (int.TryParse(val, out int v)) MainFormHeight = v; }
             }
         }
 
         /// <summary>
-        /// Writes settings to BinTemps.ini without changing the in-memory values.
-        /// The in-memory values only update on the next startup when Load() is called,
-        /// so the running app is unaffected until restarted.
+        /// Writes database/mode settings to BinTemps.ini without changing those
+        /// in-memory values (they take effect on next start). Form bounds from
+        /// memory are preserved as-is.
         /// </summary>
         public static void Save(string dbPath, bool passiveMode,
             bool copyDbOnStart = false, string copyDbSource = "")
+        {
+            WriteIni(dbPath, passiveMode, copyDbOnStart, copyDbSource,
+                MainFormLeft, MainFormTop, MainFormWidth, MainFormHeight);
+        }
+
+        /// <summary>
+        /// Saves the main form position and size immediately (called on FormClosing).
+        /// Updates in-memory bounds and writes the full ini.
+        /// </summary>
+        public static void SaveFormBounds(int left, int top, int width, int height)
+        {
+            MainFormLeft   = left;
+            MainFormTop    = top;
+            MainFormWidth  = width;
+            MainFormHeight = height;
+            WriteIni(DbPath, PassiveMode, CopyDbOnStart, CopyDbSource,
+                left, top, width, height);
+        }
+
+        private static void WriteIni(string dbPath, bool passiveMode,
+            bool copyDbOnStart, string copyDbSource,
+            int left, int top, int width, int height)
         {
             File.WriteAllLines(FilePath, new[]
             {
                 $"DbPath={dbPath}",
                 $"PassiveMode={passiveMode.ToString().ToLower()}",
                 $"CopyDbOnStart={copyDbOnStart.ToString().ToLower()}",
-                $"CopyDbSource={copyDbSource}"
+                $"CopyDbSource={copyDbSource}",
+                $"MainForm.Left={left}",
+                $"MainForm.Top={top}",
+                $"MainForm.Width={width}",
+                $"MainForm.Height={height}"
             });
         }
     }
