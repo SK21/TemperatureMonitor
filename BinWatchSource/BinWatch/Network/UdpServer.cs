@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using BinWatch;
 
 namespace BinWatch.Network
 {
@@ -183,8 +184,8 @@ namespace BinWatch.Network
             {
                 _client?.Send(data, data.Length, endpoint ?? _broadcastEndPoint);
             }
-            catch (ObjectDisposedException) { }
-            catch (SocketException) { }
+            catch (ObjectDisposedException) { }  // expected during shutdown
+            catch (SocketException ex) { Logger.Warning($"UDP send failed: {ex.Message}"); }
         }
 
         private async Task ReceiveLoop(CancellationToken ct)
@@ -203,9 +204,13 @@ namespace BinWatch.Network
                     if (result.Buffer.Length > 2)
                         PacketReceived?.Invoke(this, new PacketReceivedEventArgs(result.Buffer, result.RemoteEndPoint));
                 }
-                catch (ObjectDisposedException) { break; }
+                catch (ObjectDisposedException) { break; }  // expected during shutdown
                 catch (SocketException) { break; }
-                catch (Exception ex) { Error?.Invoke(this, ex.Message); }
+                catch (Exception ex)
+                {
+                    Logger.Error("UDP receive error", ex);
+                    Error?.Invoke(this, ex.Message);
+                }
             }
         }
 

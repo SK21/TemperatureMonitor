@@ -12,6 +12,25 @@ namespace BinWatch
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
+            // Catch unhandled exceptions on the UI thread
+            Application.ThreadException += (s, e) =>
+            {
+                Logger.Error("Unhandled UI thread exception", e.Exception);
+                MessageBox.Show(
+                    $"An unexpected error occurred:\n\n{e.Exception.Message}\n\nDetails have been logged to BinWatch.log.",
+                    "BinWatch", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            };
+            Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
+
+            // Catch unhandled exceptions on background threads
+            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            {
+                var ex = e.ExceptionObject as Exception;
+                Logger.Error("Unhandled background thread exception" + (e.IsTerminating ? " (fatal)" : ""), ex);
+            };
+
+            Logger.Info("BinWatch starting");
+
             try
             {
                 AppConfig.Load();
@@ -21,7 +40,9 @@ namespace BinWatch
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Startup error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}",
+                Logger.Error("Startup failed", ex);
+                MessageBox.Show(
+                    $"Startup error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\nDetails have been logged to BinWatch.log.",
                     "BinWatch", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
@@ -33,12 +54,16 @@ namespace BinWatch
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Form load error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}",
+                Logger.Error("Form load failed", ex);
+                MessageBox.Show(
+                    $"Form load error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\nDetails have been logged to BinWatch.log.",
                     "BinWatch", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
+            Logger.Info("BinWatch started");
             Application.Run(form);
+            Logger.Info("BinWatch stopped");
         }
 
         private static void CopyDatabaseIfRequested()

@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AppConfig.cs" />
+    <Compile Include="Logger.cs" />
     <Compile Include="ConvertSensorsForm.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -63,21 +63,6 @@ namespace BinWatch
                 btnRequestTemps.Visible = false;
             }
 
-            // Add Convert Sensors button — available in both active and passive mode
-            var btnConvertSensors = new Button
-            {
-                Text     = "Convert Sensors",
-                Size     = new Size(145, 27),
-                Location = new Point(463, 11)
-            };
-            btnConvertSensors.Click += (s, ev) =>
-            {
-                using (var form = new ConvertSensorsForm(AppServices.SensorService))
-                    form.ShowDialog(this);
-                LoadLatestTemperatures();   // refresh grid in case locations changed
-            };
-            pnlDashToolbar.Controls.Add(btnConvertSensors);
-
             LoadModules();
             LoadLatestTemperatures();
             lblStatus.Text = AppConfig.PassiveMode
@@ -331,6 +316,13 @@ namespace BinWatch
                 else
                     SetStatusTimed("Settings saved. Restart the app to apply changes.", 10);
             }
+        }
+
+        private void btnConvertSensors_Click(object sender, EventArgs e)
+        {
+            using (var form = new ConvertSensorsForm(AppServices.SensorService))
+                form.ShowDialog(this);
+            LoadLatestTemperatures();   // refresh grid in case locations changed
         }
 
         // -------------------------------------------------------------------------
@@ -630,6 +622,7 @@ namespace BinWatch
 
         private void OnUdpError(object sender, string message)
         {
+            Logger.Error($"UDP: {message}");
             if (!IsHandleCreated || IsDisposed) return;
             BeginInvoke(new Action(() => SetStatusTimed($"Error: {message}", 30)));
         }

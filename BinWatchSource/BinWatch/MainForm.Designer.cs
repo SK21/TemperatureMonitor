@@ -15,6 +15,7 @@ namespace BinWatch
         private System.Windows.Forms.Button btnRequestDescription;
         private System.Windows.Forms.Button btnRequestTemps;
         private System.Windows.Forms.Button btnSettings;
+        private System.Windows.Forms.Button btnConvertSensors;
         private System.Windows.Forms.DataGridView dgvModules;
 
         // Temperatures tab
@@ -57,6 +58,7 @@ namespace BinWatch
             this.btnRequestDescription = new System.Windows.Forms.Button();
             this.btnRequestTemps = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
+            this.btnConvertSensors = new System.Windows.Forms.Button();
             this.tabTemperatures = new System.Windows.Forms.TabPage();
             this.dgvTemperatures = new System.Windows.Forms.DataGridView();
             this.pnlTempsToolbar = new System.Windows.Forms.Panel();
@@ -72,8 +74,8 @@ namespace BinWatch
             this.dtpHistoryTo = new System.Windows.Forms.DateTimePicker();
             this.btnLoadHistory = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblPackets = new System.Windows.Forms.ToolStripStatusLabel();
+            this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tmrStatus = new System.Windows.Forms.Timer(this.components);
             this.tabControl.SuspendLayout();
             this.tabDashboard.SuspendLayout();
@@ -137,6 +139,7 @@ namespace BinWatch
             this.pnlDashToolbar.Controls.Add(this.btnRequestDescription);
             this.pnlDashToolbar.Controls.Add(this.btnRequestTemps);
             this.pnlDashToolbar.Controls.Add(this.btnSettings);
+            this.pnlDashToolbar.Controls.Add(this.btnConvertSensors);
             this.pnlDashToolbar.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlDashToolbar.Location = new System.Drawing.Point(3, 3);
             this.pnlDashToolbar.Name = "pnlDashToolbar";
@@ -145,7 +148,7 @@ namespace BinWatch
             // 
             // btnRequestDescription
             // 
-            this.btnRequestDescription.Location = new System.Drawing.Point(321, 11);
+            this.btnRequestDescription.Location = new System.Drawing.Point(303, 11);
             this.btnRequestDescription.Name = "btnRequestDescription";
             this.btnRequestDescription.Size = new System.Drawing.Size(136, 27);
             this.btnRequestDescription.TabIndex = 0;
@@ -163,12 +166,21 @@ namespace BinWatch
             // 
             // btnSettings
             // 
-            this.btnSettings.Location = new System.Drawing.Point(197, 11);
+            this.btnSettings.Location = new System.Drawing.Point(188, 11);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(93, 27);
             this.btnSettings.TabIndex = 2;
             this.btnSettings.Text = "Settings…";
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
+            // 
+            // btnConvertSensors
+            // 
+            this.btnConvertSensors.Location = new System.Drawing.Point(461, 11);
+            this.btnConvertSensors.Name = "btnConvertSensors";
+            this.btnConvertSensors.Size = new System.Drawing.Size(145, 27);
+            this.btnConvertSensors.TabIndex = 3;
+            this.btnConvertSensors.Text = "Convert Sensors";
+            this.btnConvertSensors.Click += new System.EventHandler(this.btnConvertSensors_Click);
             // 
             // tabTemperatures
             // 
@@ -328,17 +340,17 @@ namespace BinWatch
             this.statusStrip.TabIndex = 1;
             // 
             // lblPackets
-            //
+            // 
             this.lblPackets.Name = "lblPackets";
-            this.lblPackets.Size = new System.Drawing.Size(63, 19);
+            this.lblPackets.Size = new System.Drawing.Size(59, 19);
             this.lblPackets.Text = "Packets: 0";
-            //
+            // 
             // lblStatus
-            //
+            // 
             this.lblStatus.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
             this.lblStatus.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
             this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(70, 19);
+            this.lblStatus.Size = new System.Drawing.Size(74, 19);
             this.lblStatus.Text = "Initialising...";
             // 
             // tmrStatus
