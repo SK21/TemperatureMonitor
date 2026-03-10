@@ -148,7 +148,7 @@ namespace BinWatch
             // 
             // btnRequestDescription
             // 
-            this.btnRequestDescription.Location = new System.Drawing.Point(303, 11);
+            this.btnRequestDescription.Location = new System.Drawing.Point(303, 7);
             this.btnRequestDescription.Name = "btnRequestDescription";
             this.btnRequestDescription.Size = new System.Drawing.Size(136, 27);
             this.btnRequestDescription.TabIndex = 0;
@@ -157,7 +157,7 @@ namespace BinWatch
             // 
             // btnRequestTemps
             // 
-            this.btnRequestTemps.Location = new System.Drawing.Point(5, 11);
+            this.btnRequestTemps.Location = new System.Drawing.Point(5, 7);
             this.btnRequestTemps.Name = "btnRequestTemps";
             this.btnRequestTemps.Size = new System.Drawing.Size(161, 27);
             this.btnRequestTemps.TabIndex = 1;
@@ -166,7 +166,7 @@ namespace BinWatch
             // 
             // btnSettings
             // 
-            this.btnSettings.Location = new System.Drawing.Point(188, 11);
+            this.btnSettings.Location = new System.Drawing.Point(188, 7);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(93, 27);
             this.btnSettings.TabIndex = 2;
@@ -175,7 +175,7 @@ namespace BinWatch
             // 
             // btnConvertSensors
             // 
-            this.btnConvertSensors.Location = new System.Drawing.Point(461, 11);
+            this.btnConvertSensors.Location = new System.Drawing.Point(461, 7);
             this.btnConvertSensors.Name = "btnConvertSensors";
             this.btnConvertSensors.Size = new System.Drawing.Size(145, 27);
             this.btnConvertSensors.TabIndex = 3;

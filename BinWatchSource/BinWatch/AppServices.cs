@@ -31,6 +31,7 @@ namespace BinWatch
                 UdpServer.PacketReceived += Parser.HandlePacket;
                 Parser.ModuleDescriptionReceived += ModuleService.HandleModuleDescription;
                 Parser.TemperatureReceived += TemperatureService.HandleTemperature;
+                // TemperatureService.BatchRecorded wired by MainForm after construction
             }
         }
 

@@ -19,8 +19,8 @@
 #include "DS2482.h" 		    // https://github.com/paeaetech/paeae
 #include "ESP2SOTA_RC.h"	// modified from https://github.com/pangodream/ESP2SOTA
 
-# define InoDescription "BinTempsModule 09-Mar-2026"
-#define InoID 9036  // change to load default values
+# define InoDescription "BinTempsModule 10-Mar-2026"
+#define InoID 10036  // change to load default values
 
 #define SDApin  4
 #define SCLpin  5
@@ -192,7 +192,11 @@ void setup()
 		digitalWrite(MDL.PullupPin, HIGH);
 	}
 
-	Readtime = millis() - SampleTime;
+	// Stagger first read by 5 minutes per module ID so modules don't all burst at once.
+	// Module 0 reads immediately, module 1 reads after 5 min, module 2 after 10 min, etc.
+	// After the first read each module runs on its own 1-hour cadence.
+	uint32_t staggerMs = ((uint32_t)MDL.ID * 300000UL) % SampleTime;
+	Readtime = millis() - SampleTime + staggerMs;
 
 	/* INITIALIZE ESP2SOTA LIBRARY */
 	ESP2SOTA.begin(&server);

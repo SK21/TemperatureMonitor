@@ -9,6 +9,7 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BinWatch
@@ -53,7 +54,7 @@ namespace BinWatch
             if (!AppConfig.PassiveMode)
             {
                 AppServices.ModuleService.ModuleUpdated += OnModuleUpdated;
-                AppServices.Parser.TemperatureReceived += OnTemperatureReceived;
+                AppServices.TemperatureService.BatchRecorded += OnBatchReceived;
                 AppServices.UdpServer.Error += OnUdpError;
             }
             else
@@ -197,33 +198,27 @@ namespace BinWatch
             }));
         }
 
-        private void OnTemperatureReceived(object sender, TemperaturePacket packet)
+        private void OnBatchReceived(object sender, TemperatureBatchEventArgs e)
         {
             if (!IsHandleCreated || IsDisposed) return;
             BeginInvoke(new Action(() =>
             {
-                string romCode = packet.RomCodeHex;
+                string moduleName = e.ModuleName ?? (e.ModuleId != 0 ? $"Module {e.ModuleId}" : "unknown");
 
-                // Cache max temp on first sight of this sensor
-                if (!_sensorMaxTemps.ContainsKey(romCode))
+                foreach (var (sensor, record) in e.Entries)
                 {
-                    using (var db = new AppDbContext())
-                    {
-                        var sensor = db.Sensors.Find(romCode);
-                        _sensorMaxTemps[romCode] = sensor?.MaxTemp ?? 40.0f;
-                        _sensorLabels[romCode] = sensor?.Label ?? "";
-                    }
+                    // Update caches from the already-loaded sensor — no extra DB query needed
+                    _sensorMaxTemps[sensor.RomCode] = sensor.MaxTemp;
+                    _sensorLabels[sensor.RomCode]   = sensor.Label ?? "";
+
+                    _moduleNames.TryGetValue(e.ModuleId, out string cachedName);
+
+                    UpdateTemperatureRow(sensor.RomCode, sensor.BinId, sensor.CableId,
+                        sensor.SensorNum, sensor.Label ?? "", record.Temperature,
+                        record.Timestamp, cachedName ?? moduleName);
                 }
 
-                _moduleNames.TryGetValue(packet.ModuleId, out string moduleName);
-                _sensorLabels.TryGetValue(romCode, out string label);
-
-                UpdateTemperatureRow(romCode, packet.BinId, packet.CableId,
-                    packet.SensorNum, label, packet.Temperature,
-                    DateTime.Now, moduleName ?? $"Module {packet.ModuleId}");
-
-                if (packet.SensorsRemaining == 0)
-                    SetStatusTimed($"Temperatures updated from {moduleName ?? $"Module {packet.ModuleId}"}  ({DateTime.Now:HH:mm:ss})", 10);
+                SetStatusTimed($"Temperatures updated from {moduleName}  ({DateTime.Now:HH:mm:ss})", 10);
             }));
         }
 
@@ -611,11 +606,21 @@ namespace BinWatch
             {
                 _lastTempRequest = DateTime.Now;
 
-                foreach (var module in AppServices.ModuleService.GetAllModules())
+                var modules = AppServices.ModuleService.GetAllModules()
+                    .Where(m => m.LastKnownIp != null)
+                    .ToArray();
+
+                int staggerMs = 0;
+                foreach (var module in modules)
                 {
-                    if (module.LastKnownIp == null) continue;
-                    AppServices.UdpServer.SendCommand(
-                        module.ModuleId, UdpServer.CmdUpdateAndSendTemps, module.LastKnownIp);
+                    var ip = module.LastKnownIp;
+                    var id = module.ModuleId;
+                    if (staggerMs == 0)
+                        AppServices.UdpServer.SendCommand(id, UdpServer.CmdUpdateAndSendTemps, ip);
+                    else
+                        Task.Delay(staggerMs).ContinueWith(_ =>
+                            AppServices.UdpServer.SendCommand(id, UdpServer.CmdUpdateAndSendTemps, ip));
+                    staggerMs += 5000;
                 }
             }
         }
