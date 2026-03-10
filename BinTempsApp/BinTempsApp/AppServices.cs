@@ -25,14 +25,19 @@ namespace BinTempsApp
             TemperatureService = new TemperatureService();
             SensorService = new SensorService(UdpServer);
 
-            // Wire events
-            UdpServer.PacketReceived += Parser.HandlePacket;
-            Parser.ModuleDescriptionReceived += ModuleService.HandleModuleDescription;
-            Parser.TemperatureReceived += TemperatureService.HandleTemperature;
+            if (!AppConfig.PassiveMode)
+            {
+                // Wire events — skipped in passive mode (no UDP, DB is read-only view)
+                UdpServer.PacketReceived += Parser.HandlePacket;
+                Parser.ModuleDescriptionReceived += ModuleService.HandleModuleDescription;
+                Parser.TemperatureReceived += TemperatureService.HandleTemperature;
+            }
         }
 
         public static void Start()
         {
+            if (AppConfig.PassiveMode) return;
+
             UdpServer.Start();
             // Broadcast CmdSendModuleDescription so all online modules report back with
             // fresh 30831 packets (updates LastKnownIp even if DHCP assigned a new address)

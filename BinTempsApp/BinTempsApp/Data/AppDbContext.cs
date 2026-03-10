@@ -1,18 +1,15 @@
-using System;
 using System.Data.Entity;
 using System.Data.SQLite;
-using System.IO;
 using BinTempsApp.Models;
 
 namespace BinTempsApp.Data
 {
     public class AppDbContext : DbContext
     {
-        public static string DbPath =>
-            Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BinTemps.db");
+        public static string DbPath => AppConfig.ResolvedDbPath;
 
         public AppDbContext()
-            : base(new SQLiteConnection($"Data Source={DbPath}"), contextOwnsConnection: true)
+            : base(new SQLiteConnection($"Data Source={DbPath};BusyTimeout=5000"), contextOwnsConnection: true)
         {
         }
 
@@ -27,6 +24,13 @@ namespace BinTempsApp.Data
         /// </summary>
         public void EnsureSchema()
         {
+            // WAL mode allows concurrent readers + one writer without "database is locked"
+            // errors when the background UDP thread writes while the UI thread reads.
+            // This setting is persistent — only needs to be applied once per database file.
+            Database.ExecuteSqlCommand(
+                System.Data.Entity.TransactionalBehavior.DoNotEnsureTransaction,
+                "PRAGMA journal_mode=WAL;");
+
             Database.ExecuteSqlCommand(@"
                 CREATE TABLE IF NOT EXISTS Modules (
                     MacAddress      TEXT    PRIMARY KEY NOT NULL,

@@ -77,6 +77,19 @@ namespace BinTempsApp.Services
             }
         }
 
+        public void UpdateLocation(string romCode, byte binId, byte cableId, byte sensorNum)
+        {
+            using (var db = new AppDbContext())
+            {
+                var sensor = db.Sensors.Find(romCode);
+                if (sensor == null) return;
+                sensor.BinId     = binId;
+                sensor.CableId   = cableId;
+                sensor.SensorNum = sensorNum;
+                db.SaveChanges();
+            }
+        }
+
         // Sends PGN 30823 to write updated user data to the sensor's EEPROM
         public void SendUserData(byte moduleId, byte[] romCodeBytes, byte binId,
             byte cableId, byte sensorNum)

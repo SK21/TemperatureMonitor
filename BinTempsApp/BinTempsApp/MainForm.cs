@@ -50,13 +50,24 @@ namespace BinTempsApp
 
             InitializeTables();
 
-            AppServices.ModuleService.ModuleUpdated += OnModuleUpdated;
-            AppServices.Parser.TemperatureReceived += OnTemperatureReceived;
-            AppServices.UdpServer.Error += OnUdpError;
+            if (!AppConfig.PassiveMode)
+            {
+                AppServices.ModuleService.ModuleUpdated += OnModuleUpdated;
+                AppServices.Parser.TemperatureReceived += OnTemperatureReceived;
+                AppServices.UdpServer.Error += OnUdpError;
+            }
+            else
+            {
+                // Passive mode: hide active-only controls
+                btnRequestDescription.Visible = false;
+                btnRequestTemps.Visible       = false;
+            }
 
             LoadModules();
             LoadLatestTemperatures();
-            lblStatus.Text = $"Listening on UDP port {UdpServer.DefaultPort}";
+            lblStatus.Text = AppConfig.PassiveMode
+                ? "Passive mode (read-only)"
+                : $"Listening on UDP port {UdpServer.DefaultPort}";
             tmrStatus.Start();
 
             dtpHistoryFrom.Value = DateTime.Today.AddDays(-7);
@@ -282,6 +293,23 @@ namespace BinTempsApp
             SetStatusTimed($"Reading temperatures on {module.Name ?? module.MacAddress}… (may take several seconds)", 120);
         }
 
+        private void btnSettings_Click(object sender, EventArgs e)
+        {
+            using (var form = new SettingsForm())
+            {
+                if (form.ShowDialog(this) != DialogResult.OK) return;
+
+                var result = MessageBox.Show(
+                    "Settings saved. Restart now to apply changes?",
+                    "BinTemps", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+                if (result == DialogResult.Yes)
+                    System.Windows.Forms.Application.Restart();
+                else
+                    SetStatusTimed("Settings saved. Restart the app to apply changes.", 10);
+            }
+        }
+
         // -------------------------------------------------------------------------
         // Double-click to edit
         // -------------------------------------------------------------------------
@@ -316,10 +344,16 @@ namespace BinTempsApp
                     _sensorMaxTemps[romCode] = sensor.MaxTemp;
                     _sensorLabels[romCode]   = sensor.Label ?? "";
 
-                    // Refresh label in the grid row immediately
+                    // Refresh location + label columns in the grid row immediately
                     var row = _temperaturesTable.Rows.Find(romCode);
                     if (row != null)
-                        row["Label"] = sensor.Label ?? "";
+                    {
+                        row["Bin"]    = (sensor.BinId + 1).ToString();
+                        row["Cable"]  = (sensor.CableId + 1).ToString();
+                        row["Sensor"] = (sensor.SensorNum + 1).ToString();
+                        row["Label"]  = sensor.Label ?? "";
+                    }
+                    RefreshHistorySensorList();
                 }
             }
         }
@@ -494,9 +528,11 @@ namespace BinTempsApp
 
         // Poll interval: request 30831 from each known module every 2 minutes.
         // Offline threshold: no response for 5 minutes (> 2 poll cycles).
-        private static readonly TimeSpan PollInterval    = TimeSpan.FromMinutes(2);
+        private static readonly TimeSpan PollInterval     = TimeSpan.FromMinutes(2);
         private static readonly TimeSpan OfflineThreshold = TimeSpan.FromMinutes(5);
-        private DateTime _lastPoll = DateTime.MinValue;
+        private static readonly TimeSpan PassiveRefresh   = TimeSpan.FromMinutes(1);
+        private DateTime _lastPoll          = DateTime.MinValue;
+        private DateTime _lastPassiveRefresh = DateTime.MinValue;
 
         private DateTime _statusClearAt = DateTime.MinValue;
 
@@ -508,15 +544,27 @@ namespace BinTempsApp
 
         private void tmrStatus_Tick(object sender, EventArgs e)
         {
-            var srv = AppServices.UdpServer;
-            var parser = AppServices.Parser;
-            lblPackets.Text = $"Packets: {srv.RawPacketsReceived} raw  |  {srv.FilteredPacketsReceived} from modules  |  {parser.ParsedCount} parsed  |  {parser.LastStatus}";
-
             if (_statusClearAt != DateTime.MinValue && DateTime.Now >= _statusClearAt)
             {
-                lblStatus.Text = "";
+                lblStatus.Text = AppConfig.PassiveMode ? "Passive mode (read-only)" : "";
                 _statusClearAt = DateTime.MinValue;
             }
+
+            if (AppConfig.PassiveMode)
+            {
+                lblPackets.Text = "Passive mode";
+                if ((DateTime.Now - _lastPassiveRefresh) >= PassiveRefresh)
+                {
+                    _lastPassiveRefresh = DateTime.Now;
+                    LoadModules();
+                    LoadLatestTemperatures();
+                }
+                return;
+            }
+
+            var srv    = AppServices.UdpServer;
+            var parser = AppServices.Parser;
+            lblPackets.Text = $"Packets: {srv.RawPacketsReceived} raw  |  {srv.FilteredPacketsReceived} from modules  |  {parser.ParsedCount} parsed  |  {parser.LastStatus}";
 
             if ((DateTime.Now - _lastPoll) < PollInterval) return;
             _lastPoll = DateTime.Now;
