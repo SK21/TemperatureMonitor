@@ -25,11 +25,19 @@
     </ClCompile>
     <ClCompile Include="GUI.ino" />
     <ClCompile Include="NetworkPage.ino" />
-    <ClCompile Include="OTA.ino" />
     <ClCompile Include="Sensors.ino" />
     <ClCompile Include="SensorsMaster.ino" />
     <ClCompile Include="StartPage.ino" />
     <ClCompile Include="TempsPage.ino" />
+    <ClCompile Include="ESP2SOTA_RC.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ESP2SOTA_RC.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="index_html.h">
+      <Filter>Header Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="__vm\.BinTempsModule.vsarduino.h">

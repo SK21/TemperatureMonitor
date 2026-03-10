@@ -42,7 +42,7 @@ String GetPage2()
 	st += "        font-weight: 700;";
 	st += "        justify-content: center;";
 	st += "        letter-spacing: .04em;";
-	st += "        line-height: 16px;";
+	st +="         flex-direction: column;";
 	st += "        margin: auto;";
 	st += "        padding: 18px 18px;";
 	st += "        text-align: center;";
@@ -136,6 +136,7 @@ String GetPage2()
 	st += "><br>";
 	st += "";
 	st += "      <p> <input class='button-72' id=Submit1 type=submit value='Save/Restart'></p>";
+	st += "      <p> <a class='button-72' href='/update' >Update Firmware</a> </p>";
 	st += "      <p> <a href='/page0'>Back</a> </p>";
 	st += "    </form>";
 	if (WiFi.isConnected())

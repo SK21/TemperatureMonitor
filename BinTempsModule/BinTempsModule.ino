@@ -11,13 +11,13 @@
 #include <ESP8266WiFi.h>        // Arduino IDE 'Additional Board' http://arduino.esp8266.com/stable/package_esp8266com_index.json
 #include <ESP8266WebServer.h>
 #include <ESP8266mDNS.h>
-#include <ArduinoOTA.h>
 #include <EEPROM.h>
 
 #include <OneWire.h>            // https://github.com/PaulStoffregen/OneWire
 #include <WiFiUdp.h>
 #include <Wire.h>
 #include "DS2482.h" 		    // https://github.com/paeaetech/paeae
+#include "ESP2SOTA_RC.h"	// modified from https://github.com/pangodream/ESP2SOTA
 
 # define InoDescription "BinTempsModule 09-Mar-2026"
 #define InoID 9036  // change to load default values
@@ -125,8 +125,6 @@ void setup()
 	Serial.print("Module ID: ");
 	Serial.println(MDL.ID);
 
-	StartOTA();
-
 	// start with station mode off
 	WiFi.disconnect(true);
 
@@ -149,7 +147,7 @@ void setup()
 	server.on("/", HandleRoot);
 	server.on("/page1", HandleTemps);
 	server.on("/page2", HandlePage2);
-	server.on("/update", DoUpdate);
+	server.on("/UpdateTemps", DoUpdate);
 	server.onNotFound(HandleRoot);
 	server.begin();
 
@@ -196,6 +194,11 @@ void setup()
 
 	Readtime = millis() - SampleTime;
 
+	/* INITIALIZE ESP2SOTA LIBRARY */
+	ESP2SOTA.begin(&server);
+	Serial.println("");
+	Serial.println("OTA started.");
+
 	Serial.println("");
 	Serial.println("Finished Setup");
 	Serial.println("");
@@ -203,7 +206,6 @@ void setup()
 
 void loop()
 {
-	ArduinoOTA.handle();
 	server.handleClient();
 
 	if (MDLnetwork.UseWifi)
