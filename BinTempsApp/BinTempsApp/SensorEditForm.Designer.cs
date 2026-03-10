@@ -73,7 +73,7 @@ namespace BinTempsApp
             this.lblRomCodeValue.AutoSize = true;
             this.lblRomCodeValue.Location = new System.Drawing.Point(140, 15);
             this.lblRomCodeValue.Name     = "lblRomCodeValue";
-            this.lblRomCodeValue.Font     = new System.Drawing.Font("Consolas", 9F);
+            this.lblRomCodeValue.Font     = new System.Drawing.Font("Consolas", 11F);
 
             // Module
             this.lblModule.AutoSize = true;
@@ -185,6 +185,7 @@ namespace BinTempsApp
             this.CancelButton        = this.btnCancel;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode       = System.Windows.Forms.AutoScaleMode.Font;
+            this.Font                = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ClientSize          = new System.Drawing.Size(460, 295);
             this.Controls.AddRange(new System.Windows.Forms.Control[] {
                 lblRomCode, lblRomCodeValue,

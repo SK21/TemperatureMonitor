@@ -46,7 +46,7 @@ namespace BinTempsApp
             this.lblMacValue.AutoSize = true;
             this.lblMacValue.Location = new System.Drawing.Point(170, 17);
             this.lblMacValue.Name     = "lblMacValue";
-            this.lblMacValue.Font     = new System.Drawing.Font("Consolas", 9F);
+            this.lblMacValue.Font     = new System.Drawing.Font("Consolas", 11F);
 
             // lblName
             this.lblName.AutoSize = true;
@@ -91,8 +91,9 @@ namespace BinTempsApp
             // ModuleEditForm
             this.AcceptButton        = this.btnSave;
             this.CancelButton        = this.btnCancel;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode       = System.Windows.Forms.AutoScaleMode.Font;
+            this.Font                = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ClientSize          = new System.Drawing.Size(380, 168);
             this.Controls.AddRange(new System.Windows.Forms.Control[] {
                 lblMac, lblMacValue, lblName, txtName, lblId, nudId, btnSave, btnCancel });

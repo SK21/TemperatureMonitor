@@ -75,7 +75,7 @@ namespace BinTempsApp
             this.btnSave.Click   += new System.EventHandler(this.btnSave_Click);
 
             // btnCancel
-            this.btnCancel.Location     = new System.Drawing.Point(388, 150);
+            this.btnCancel.Location     = new System.Drawing.Point(390, 150);
             this.btnCancel.Size         = new System.Drawing.Size(90, 28);
             this.btnCancel.Text         = "Cancel";
             this.btnCancel.DialogResult  = System.Windows.Forms.DialogResult.Cancel;
@@ -84,8 +84,9 @@ namespace BinTempsApp
             // SettingsForm
             this.AcceptButton        = this.btnSave;
             this.CancelButton        = this.btnCancel;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode       = System.Windows.Forms.AutoScaleMode.Font;
+            this.Font                = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ClientSize          = new System.Drawing.Size(494, 194);
             this.Controls.AddRange(new System.Windows.Forms.Control[] {
                 lblDbPath, txtDbPath, btnBrowse,

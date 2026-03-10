@@ -49,6 +49,7 @@ namespace BinTempsApp
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.tabControl = new System.Windows.Forms.TabControl();
             this.tabDashboard = new System.Windows.Forms.TabPage();
             this.dgvModules = new System.Windows.Forms.DataGridView();
@@ -104,10 +105,10 @@ namespace BinTempsApp
             this.tabDashboard.Controls.Add(this.dgvModules);
             this.tabDashboard.Controls.Add(this.pnlDashToolbar);
             this.tabDashboard.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabDashboard.Location = new System.Drawing.Point(4, 22);
+            this.tabDashboard.Location = new System.Drawing.Point(4, 25);
             this.tabDashboard.Name = "tabDashboard";
-            this.tabDashboard.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabDashboard.Size = new System.Drawing.Size(815, 470);
+            this.tabDashboard.Padding = new System.Windows.Forms.Padding(3);
+            this.tabDashboard.Size = new System.Drawing.Size(815, 467);
             this.tabDashboard.TabIndex = 0;
             this.tabDashboard.Text = "Dashboard";
             // 
@@ -120,12 +121,12 @@ namespace BinTempsApp
             this.dgvModules.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.dgvModules.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dgvModules.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dgvModules.Location = new System.Drawing.Point(3, 34);
+            this.dgvModules.Location = new System.Drawing.Point(3, 47);
             this.dgvModules.Name = "dgvModules";
             this.dgvModules.ReadOnly = true;
             this.dgvModules.RowHeadersVisible = false;
             this.dgvModules.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvModules.Size = new System.Drawing.Size(809, 433);
+            this.dgvModules.Size = new System.Drawing.Size(809, 417);
             this.dgvModules.TabIndex = 0;
             this.dgvModules.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvModules_CellDoubleClick);
             this.dgvModules.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvModules_CellFormatting);
@@ -138,32 +139,32 @@ namespace BinTempsApp
             this.pnlDashToolbar.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlDashToolbar.Location = new System.Drawing.Point(3, 3);
             this.pnlDashToolbar.Name = "pnlDashToolbar";
-            this.pnlDashToolbar.Size = new System.Drawing.Size(809, 31);
+            this.pnlDashToolbar.Size = new System.Drawing.Size(809, 44);
             this.pnlDashToolbar.TabIndex = 1;
             // 
             // btnRequestDescription
             // 
-            this.btnRequestDescription.Location = new System.Drawing.Point(3, 3);
+            this.btnRequestDescription.Location = new System.Drawing.Point(321, 11);
             this.btnRequestDescription.Name = "btnRequestDescription";
-            this.btnRequestDescription.Size = new System.Drawing.Size(137, 23);
+            this.btnRequestDescription.Size = new System.Drawing.Size(136, 27);
             this.btnRequestDescription.TabIndex = 0;
-            this.btnRequestDescription.Text = "Request Description";
+            this.btnRequestDescription.Text = "Identify Module";
             this.btnRequestDescription.Click += new System.EventHandler(this.btnRequestDescription_Click);
             // 
             // btnRequestTemps
             // 
-            this.btnRequestTemps.Location = new System.Drawing.Point(147, 3);
+            this.btnRequestTemps.Location = new System.Drawing.Point(5, 11);
             this.btnRequestTemps.Name = "btnRequestTemps";
-            this.btnRequestTemps.Size = new System.Drawing.Size(137, 23);
+            this.btnRequestTemps.Size = new System.Drawing.Size(161, 27);
             this.btnRequestTemps.TabIndex = 1;
-            this.btnRequestTemps.Text = "Read Temperatures";
+            this.btnRequestTemps.Text = "Update Temperatures";
             this.btnRequestTemps.Click += new System.EventHandler(this.btnRequestTemps_Click);
             // 
             // btnSettings
             // 
-            this.btnSettings.Location = new System.Drawing.Point(291, 3);
+            this.btnSettings.Location = new System.Drawing.Point(197, 11);
             this.btnSettings.Name = "btnSettings";
-            this.btnSettings.Size = new System.Drawing.Size(86, 23);
+            this.btnSettings.Size = new System.Drawing.Size(93, 27);
             this.btnSettings.TabIndex = 2;
             this.btnSettings.Text = "Settings…";
             this.btnSettings.Click += new System.EventHandler(this.btnSettings_Click);
@@ -173,10 +174,10 @@ namespace BinTempsApp
             this.tabTemperatures.Controls.Add(this.dgvTemperatures);
             this.tabTemperatures.Controls.Add(this.pnlTempsToolbar);
             this.tabTemperatures.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabTemperatures.Location = new System.Drawing.Point(4, 22);
+            this.tabTemperatures.Location = new System.Drawing.Point(4, 25);
             this.tabTemperatures.Name = "tabTemperatures";
-            this.tabTemperatures.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabTemperatures.Size = new System.Drawing.Size(815, 470);
+            this.tabTemperatures.Padding = new System.Windows.Forms.Padding(3);
+            this.tabTemperatures.Size = new System.Drawing.Size(815, 467);
             this.tabTemperatures.TabIndex = 1;
             this.tabTemperatures.Text = "Temperatures";
             // 
@@ -194,7 +195,7 @@ namespace BinTempsApp
             this.dgvTemperatures.ReadOnly = true;
             this.dgvTemperatures.RowHeadersVisible = false;
             this.dgvTemperatures.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dgvTemperatures.Size = new System.Drawing.Size(809, 433);
+            this.dgvTemperatures.Size = new System.Drawing.Size(809, 430);
             this.dgvTemperatures.TabIndex = 0;
             this.dgvTemperatures.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvTemperatures_CellDoubleClick);
             this.dgvTemperatures.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvTemperatures_CellFormatting);
@@ -212,9 +213,9 @@ namespace BinTempsApp
             // btnExportCsv
             // 
             this.btnExportCsv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExportCsv.Location = new System.Drawing.Point(1323, 3);
+            this.btnExportCsv.Location = new System.Drawing.Point(1285, 3);
             this.btnExportCsv.Name = "btnExportCsv";
-            this.btnExportCsv.Size = new System.Drawing.Size(94, 23);
+            this.btnExportCsv.Size = new System.Drawing.Size(113, 27);
             this.btnExportCsv.TabIndex = 0;
             this.btnExportCsv.Text = "Export CSV…";
             this.btnExportCsv.Click += new System.EventHandler(this.btnExportCsv_Click);
@@ -224,10 +225,10 @@ namespace BinTempsApp
             this.tabHistory.Controls.Add(this.chart);
             this.tabHistory.Controls.Add(this.pnlHistoryToolbar);
             this.tabHistory.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabHistory.Location = new System.Drawing.Point(4, 22);
+            this.tabHistory.Location = new System.Drawing.Point(4, 25);
             this.tabHistory.Name = "tabHistory";
-            this.tabHistory.Padding = new System.Windows.Forms.Padding(3, 3, 3, 3);
-            this.tabHistory.Size = new System.Drawing.Size(815, 470);
+            this.tabHistory.Padding = new System.Windows.Forms.Padding(3);
+            this.tabHistory.Size = new System.Drawing.Size(815, 467);
             this.tabHistory.TabIndex = 2;
             this.tabHistory.Text = "History";
             // 
@@ -236,7 +237,7 @@ namespace BinTempsApp
             this.chart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.chart.Location = new System.Drawing.Point(3, 34);
             this.chart.Name = "chart";
-            this.chart.Size = new System.Drawing.Size(809, 433);
+            this.chart.Size = new System.Drawing.Size(809, 430);
             this.chart.TabIndex = 0;
             // 
             // pnlHistoryToolbar
@@ -268,7 +269,7 @@ namespace BinTempsApp
             this.cboHistorySensor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboHistorySensor.Location = new System.Drawing.Point(57, 4);
             this.cboHistorySensor.Name = "cboHistorySensor";
-            this.cboHistorySensor.Size = new System.Drawing.Size(189, 21);
+            this.cboHistorySensor.Size = new System.Drawing.Size(189, 24);
             this.cboHistorySensor.TabIndex = 1;
             // 
             // lblHistoryFrom
@@ -285,7 +286,7 @@ namespace BinTempsApp
             this.dtpHistoryFrom.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpHistoryFrom.Location = new System.Drawing.Point(300, 4);
             this.dtpHistoryFrom.Name = "dtpHistoryFrom";
-            this.dtpHistoryFrom.Size = new System.Drawing.Size(95, 20);
+            this.dtpHistoryFrom.Size = new System.Drawing.Size(95, 23);
             this.dtpHistoryFrom.TabIndex = 3;
             // 
             // lblHistoryTo
@@ -302,14 +303,14 @@ namespace BinTempsApp
             this.dtpHistoryTo.Format = System.Windows.Forms.DateTimePickerFormat.Short;
             this.dtpHistoryTo.Location = new System.Drawing.Point(435, 4);
             this.dtpHistoryTo.Name = "dtpHistoryTo";
-            this.dtpHistoryTo.Size = new System.Drawing.Size(95, 20);
+            this.dtpHistoryTo.Size = new System.Drawing.Size(95, 23);
             this.dtpHistoryTo.TabIndex = 5;
             // 
             // btnLoadHistory
             // 
             this.btnLoadHistory.Location = new System.Drawing.Point(543, 3);
             this.btnLoadHistory.Name = "btnLoadHistory";
-            this.btnLoadHistory.Size = new System.Drawing.Size(64, 23);
+            this.btnLoadHistory.Size = new System.Drawing.Size(75, 27);
             this.btnLoadHistory.TabIndex = 6;
             this.btnLoadHistory.Text = "Load";
             this.btnLoadHistory.Click += new System.EventHandler(this.btnLoadHistory_Click);
@@ -346,14 +347,16 @@ namespace BinTempsApp
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(823, 520);
             this.Controls.Add(this.tabControl);
             this.Controls.Add(this.statusStrip);
+            this.Font = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(602, 395);
             this.Name = "MainForm";
-            this.Text = "BinTemps";
+            this.Text = "Bin Temperatures";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.tabControl.ResumeLayout(false);

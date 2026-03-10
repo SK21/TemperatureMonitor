@@ -105,7 +105,7 @@ namespace BinTempsApp
 
             // Define columns manually so they exist before the tabs are shown
             dgvModules.AutoGenerateColumns = false;
-            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Mac",        DataPropertyName = "Mac",        HeaderText = "Mac",        Visible = false });
+            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Mac",        DataPropertyName = "Mac",        HeaderText = "MAC",        Width = 135 });
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Name",       DataPropertyName = "Name",       HeaderText = "Name",       Width = 130 });
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "ID",         DataPropertyName = "ID",         HeaderText = "ID",         Width = 50 });
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "IP Address", DataPropertyName = "IP Address", HeaderText = "IP Address", Width = 115 });
@@ -239,7 +239,7 @@ namespace BinTempsApp
             row["ID"] = module.ModuleId == 0 ? "-" : module.ModuleId.ToString();
             row["IP Address"] = module.LastKnownIp ?? "";
             row["Status"] = module.Status ?? "";
-            row["Last Seen"] = module.LastSeen?.ToString("HH:mm:ss dd/MM/yy") ?? "";
+            row["Last Seen"] = module.LastSeen?.ToString("HH:mm dd/MMM/yy") ?? "";
             row["Firmware"] = module.FirmwareVersion.ToString();
         }
 
@@ -260,7 +260,7 @@ namespace BinTempsApp
             row["Sensor"] = (sensorNum + 1).ToString();
             row["Label"] = label ?? "";
             row["Temperature"] = $"{temperature:F1} °C";
-            row["Timestamp"] = timestamp.ToString("HH:mm:ss dd/MM/yy");
+            row["Timestamp"] = timestamp.ToString("HH:mm dd/MMM/yy");
             row["Module"] = moduleName ?? "";
 
             if (isNew) RefreshHistorySensorList();
