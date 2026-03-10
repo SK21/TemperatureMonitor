@@ -491,6 +491,12 @@ namespace BinWatch
             }
         }
 
+        private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl.SelectedTab == tabHistory)
+                btnLoadHistory_Click(null, EventArgs.Empty);
+        }
+
         private void btnLoadHistory_Click(object sender, EventArgs e)
         {
             if (cboHistorySensor.SelectedItem == null) return;
@@ -549,12 +555,14 @@ namespace BinWatch
         // Status timer
         // -------------------------------------------------------------------------
 
-        // Poll interval: request 30831 from each known module every 2 minutes.
-        // Offline threshold: no response for 5 minutes (> 2 poll cycles).
-        private static readonly TimeSpan PollInterval = TimeSpan.FromMinutes(2);
-        private static readonly TimeSpan OfflineThreshold = TimeSpan.FromMinutes(5);
+        // Discovery + offline check every 5 min; temperature request every 30 min.
+        // Offline threshold: no response for 10 minutes (> 2 discovery cycles).
+        private static readonly TimeSpan DiscoveryInterval = TimeSpan.FromMinutes(5);
+        private static readonly TimeSpan TempRequestInterval = TimeSpan.FromMinutes(30);
+        private static readonly TimeSpan OfflineThreshold = TimeSpan.FromMinutes(10);
         private static readonly TimeSpan PassiveRefresh = TimeSpan.FromMinutes(1);
-        private DateTime _lastPoll = DateTime.MinValue;
+        private DateTime _lastDiscovery = DateTime.MinValue;
+        private DateTime _lastTempRequest = DateTime.MinValue;
         private DateTime _lastPassiveRefresh = DateTime.MinValue;
 
         private DateTime _statusClearAt = DateTime.MinValue;
@@ -586,24 +594,36 @@ namespace BinWatch
             }
 
             var srv = AppServices.UdpServer;
-            var parser = AppServices.Parser;
-            lblPackets.Text = $"Packets: {srv.RawPacketsReceived} raw  |  {srv.FilteredPacketsReceived} from modules  |  {parser.ParsedCount} parsed  |  {parser.LastStatus}";
+            lblPackets.Text = $"Packets: {srv.FilteredPacketsReceived}";
 
-            if ((DateTime.Now - _lastPoll) < PollInterval) return;
-            _lastPoll = DateTime.Now;
-
-            // Broadcast to all subnets so modules with changed DHCP IPs can report back
-            AppServices.UdpServer.SendDiscovery();
-
-            foreach (var module in AppServices.ModuleService.GetAllModules())
+            if ((DateTime.Now - _lastDiscovery) >= DiscoveryInterval)
             {
-                if (!module.LastSeen.HasValue) continue;
+                _lastDiscovery = DateTime.Now;
 
-                if ((DateTime.Now - module.LastSeen.Value) > OfflineThreshold)
+                // Broadcast to all subnets so modules with changed DHCP IPs can report back
+                AppServices.UdpServer.SendDiscovery();
+
+                foreach (var module in AppServices.ModuleService.GetAllModules())
                 {
-                    // No response for 5 min despite discovery broadcasts — mark offline
-                    if (module.Status != "Offline")
-                        AppServices.ModuleService.SetModuleOffline(module.MacAddress);
+                    if (!module.LastSeen.HasValue) continue;
+
+                    if ((DateTime.Now - module.LastSeen.Value) > OfflineThreshold)
+                    {
+                        if (module.Status != "Offline")
+                            AppServices.ModuleService.SetModuleOffline(module.MacAddress);
+                    }
+                }
+            }
+
+            if ((DateTime.Now - _lastTempRequest) >= TempRequestInterval)
+            {
+                _lastTempRequest = DateTime.Now;
+
+                foreach (var module in AppServices.ModuleService.GetAllModules())
+                {
+                    if (module.LastKnownIp == null) continue;
+                    AppServices.UdpServer.SendCommand(
+                        module.ModuleId, UdpServer.CmdUpdateAndSendTemps, module.LastKnownIp);
                 }
             }
         }

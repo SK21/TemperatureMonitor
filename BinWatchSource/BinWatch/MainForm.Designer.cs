@@ -99,6 +99,7 @@ namespace BinWatch
             this.tabControl.SelectedIndex = 0;
             this.tabControl.Size = new System.Drawing.Size(823, 496);
             this.tabControl.TabIndex = 0;
+            this.tabControl.SelectedIndexChanged += new System.EventHandler(this.tabControl_SelectedIndexChanged);
             // 
             // tabDashboard
             // 
@@ -318,27 +319,27 @@ namespace BinWatch
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.lblStatus,
-            this.lblPackets});
+            this.lblPackets,
+            this.lblStatus});
             this.statusStrip.Location = new System.Drawing.Point(0, 496);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 12, 0);
             this.statusStrip.Size = new System.Drawing.Size(823, 24);
             this.statusStrip.TabIndex = 1;
             // 
-            // lblStatus
-            // 
-            this.lblStatus.Name = "lblStatus";
-            this.lblStatus.Size = new System.Drawing.Size(70, 19);
-            this.lblStatus.Text = "Initialising...";
-            // 
             // lblPackets
-            // 
-            this.lblPackets.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
-            this.lblPackets.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            //
             this.lblPackets.Name = "lblPackets";
             this.lblPackets.Size = new System.Drawing.Size(63, 19);
             this.lblPackets.Text = "Packets: 0";
+            //
+            // lblStatus
+            //
+            this.lblStatus.Alignment = System.Windows.Forms.ToolStripItemAlignment.Right;
+            this.lblStatus.BorderSides = System.Windows.Forms.ToolStripStatusLabelBorderSides.Left;
+            this.lblStatus.Name = "lblStatus";
+            this.lblStatus.Size = new System.Drawing.Size(70, 19);
+            this.lblStatus.Text = "Initialising...";
             // 
             // tmrStatus
             // 
