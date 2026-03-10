@@ -63,20 +63,20 @@ namespace BinWatch
                 btnRequestTemps.Visible = false;
             }
 
-            //// Add Convert Sensors button — available in both active and passive mode
-            //var btnConvertSensors = new Button
-            //{
-            //    Text     = "Convert Sensors",
-            //    Size     = new Size(145, 27),
-            //    Location = new Point(463, 11)
-            //};
-            //btnConvertSensors.Click += (s, ev) =>
-            //{
-            //    using (var form = new ConvertSensorsForm(AppServices.SensorService))
-            //        form.ShowDialog(this);
-            //    LoadLatestTemperatures();   // refresh grid in case locations changed
-            //};
-            //pnlDashToolbar.Controls.Add(btnConvertSensors);
+            // Add Convert Sensors button — available in both active and passive mode
+            var btnConvertSensors = new Button
+            {
+                Text     = "Convert Sensors",
+                Size     = new Size(145, 27),
+                Location = new Point(463, 11)
+            };
+            btnConvertSensors.Click += (s, ev) =>
+            {
+                using (var form = new ConvertSensorsForm(AppServices.SensorService))
+                    form.ShowDialog(this);
+                LoadLatestTemperatures();   // refresh grid in case locations changed
+            };
+            pnlDashToolbar.Controls.Add(btnConvertSensors);
 
             LoadModules();
             LoadLatestTemperatures();

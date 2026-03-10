@@ -12,6 +12,7 @@ namespace BinWatch
         public SettingsForm()
         {
             InitializeComponent();
+            Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
             _currentDbPath         = AppConfig.ResolvedDbPath;
             txtDbPath.Text         = AppConfig.DbPath;

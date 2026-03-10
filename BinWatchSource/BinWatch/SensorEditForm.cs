@@ -12,6 +12,7 @@ namespace BinWatch
         {
             _sensor = sensor;
             InitializeComponent();
+            Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
             lblRomCodeValue.Text = sensor.RomCode;
             lblModuleValue.Text  = sensor.Module?.Name ?? sensor.ModuleMac ?? "-";

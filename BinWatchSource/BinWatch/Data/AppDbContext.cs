@@ -17,6 +17,7 @@ namespace BinWatch.Data
         public DbSet<Sensor> Sensors { get; set; }
         public DbSet<TemperatureRecord> Records { get; set; }
         public DbSet<Setting> Settings { get; set; }
+        public DbSet<UserDataFormatDef> Formats { get; set; }
 
         /// <summary>
         /// Creates all tables if they do not already exist. Safe to call on every startup.
@@ -65,6 +66,25 @@ namespace BinWatch.Data
             catch { /* column already exists */ }
 
             Database.ExecuteSqlCommand(@"
+                CREATE TABLE IF NOT EXISTS UserDataFormats (
+                    Id     INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name   TEXT,
+                    R0Desc TEXT, R0Byte INTEGER NOT NULL DEFAULT 1, R0Low INTEGER NOT NULL DEFAULT 0, R0High INTEGER NOT NULL DEFAULT 7,
+                    R1Desc TEXT, R1Byte INTEGER NOT NULL DEFAULT 1, R1Low INTEGER NOT NULL DEFAULT 0, R1High INTEGER NOT NULL DEFAULT 7,
+                    R2Desc TEXT, R2Byte INTEGER NOT NULL DEFAULT 1, R2Low INTEGER NOT NULL DEFAULT 0, R2High INTEGER NOT NULL DEFAULT 7,
+                    R3Desc TEXT, R3Byte INTEGER NOT NULL DEFAULT 1, R3Low INTEGER NOT NULL DEFAULT 0, R3High INTEGER NOT NULL DEFAULT 7
+                )");
+
+            // Migration: add FormatId to existing Sensors tables
+            try { Database.ExecuteSqlCommand("ALTER TABLE Sensors ADD COLUMN FormatId INTEGER REFERENCES UserDataFormats(Id)"); }
+            catch { /* column already exists */ }
+
+            // Seed BinWatch format if not present
+            Database.ExecuteSqlCommand(
+                "INSERT OR IGNORE INTO UserDataFormats (Id, Name, R0Desc, R0Byte, R0Low, R0High, R1Desc, R1Byte, R1Low, R1High, R2Desc, R2Byte, R2Low, R2High) " +
+                "VALUES (1, 'BinWatch', 'Bin', 2, 0, 7, 'Cable', 1, 4, 7, 'Sensor', 1, 0, 3)");
+
+            Database.ExecuteSqlCommand(@"
                 CREATE TABLE IF NOT EXISTS TemperatureRecords (
                     Id          INTEGER PRIMARY KEY AUTOINCREMENT,
                     RomCode     TEXT,
@@ -86,6 +106,11 @@ namespace BinWatch.Data
                 .HasOptional(s => s.Module)
                 .WithMany(m => m.Sensors)
                 .HasForeignKey(s => s.ModuleMac);
+
+            modelBuilder.Entity<Sensor>()
+                .HasOptional(s => s.Format)
+                .WithMany(f => f.Sensors)
+                .HasForeignKey(s => s.FormatId);
 
             modelBuilder.Entity<TemperatureRecord>()
                 .HasOptional(r => r.Sensor)

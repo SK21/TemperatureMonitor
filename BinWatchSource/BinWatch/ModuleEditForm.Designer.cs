@@ -103,6 +103,7 @@ namespace BinWatch
             this.Name            = "ModuleEditForm";
             this.StartPosition   = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text            = "Edit Module";
+            this.ShowInTaskbar   = false;
 
             ((System.ComponentModel.ISupportInitialize)this.nudId).EndInit();
             this.ResumeLayout(false);

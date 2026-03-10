@@ -98,6 +98,7 @@ namespace BinWatch
             this.Name            = "SettingsForm";
             this.StartPosition   = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text            = "Settings";
+            this.ShowInTaskbar   = false;
 
             this.ResumeLayout(false);
             this.PerformLayout();

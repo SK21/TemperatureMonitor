@@ -77,13 +77,17 @@ namespace BinWatch
         }
 
         /// <summary>
-        /// Writes database/mode settings to BinWatch.ini without changing those
-        /// in-memory values (they take effect on next start). Form bounds from
-        /// memory are preserved as-is.
+        /// Writes database/mode settings to BinWatch.ini and updates in-memory
+        /// values so that a subsequent SaveFormBounds() call does not overwrite
+        /// them with stale data. The new DB path takes effect on next start.
         /// </summary>
         public static void Save(string dbPath, bool passiveMode,
             bool copyDbOnStart = false, string copyDbSource = "")
         {
+            DbPath        = dbPath;
+            PassiveMode   = passiveMode;
+            CopyDbOnStart = copyDbOnStart;
+            CopyDbSource  = copyDbSource;
             WriteIni(dbPath, passiveMode, copyDbOnStart, copyDbSource,
                 MainFormLeft, MainFormTop, MainFormWidth, MainFormHeight);
         }

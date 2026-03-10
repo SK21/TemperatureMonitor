@@ -6,7 +6,8 @@
       "Bash(powershell.exe:*)",
       "Bash(\"C:\\\\Program Files\\\\Microsoft Visual Studio\\\\2022\\\\Community\\\\MSBuild\\\\Current\\\\Bin\\\\MSBuild.exe\":*)",
       "Bash(cmd.exe:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(cd \"F:/Documents/GitHub/TemperatureMonitor/BinWatchApp\" && sqlite3 BinWatch.db \"SELECT RomCode, ModuleMac, BinId, CableId, SensorNum, Enabled, Offset, MaxTemp, Label, RawUserData, ManualLocation, FormatId FROM Sensors LIMIT 3;\")"
     ]
   }
 }

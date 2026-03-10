@@ -28,6 +28,11 @@ namespace BinWatch.Models
         /// </summary>
         public bool ManualLocation { get; set; } = false;
 
+        public int? FormatId { get; set; }
+
+        [ForeignKey("FormatId")]
+        public virtual UserDataFormatDef Format { get; set; }
+
         [ForeignKey("ModuleMac")]
         public virtual Module Module { get; set; }
 

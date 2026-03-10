@@ -13,6 +13,7 @@ namespace BinWatch
         {
             _module = module;
             InitializeComponent();
+            Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
             lblMacValue.Text = module.MacAddress;
             txtName.Text = module.Name ?? "";

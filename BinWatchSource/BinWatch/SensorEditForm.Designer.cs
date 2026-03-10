@@ -202,6 +202,7 @@ namespace BinWatch
             this.Name            = "SensorEditForm";
             this.StartPosition   = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text            = "Edit Sensor";
+            this.ShowInTaskbar   = false;
 
             ((System.ComponentModel.ISupportInitialize)this.nudBin).EndInit();
             ((System.ComponentModel.ISupportInitialize)this.nudCable).EndInit();
