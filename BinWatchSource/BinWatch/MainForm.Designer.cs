@@ -257,9 +257,9 @@ namespace BinWatch
             // 
             // lblHistorySensor
             // 
-            this.lblHistorySensor.Location = new System.Drawing.Point(7, 4);
+            this.lblHistorySensor.Location = new System.Drawing.Point(7, 6);
             this.lblHistorySensor.Name = "lblHistorySensor";
-            this.lblHistorySensor.Size = new System.Drawing.Size(43, 18);
+            this.lblHistorySensor.Size = new System.Drawing.Size(75, 18);
             this.lblHistorySensor.TabIndex = 0;
             this.lblHistorySensor.Text = "Sensor:";
             this.lblHistorySensor.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -267,16 +267,16 @@ namespace BinWatch
             // cboHistorySensor
             // 
             this.cboHistorySensor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboHistorySensor.Location = new System.Drawing.Point(57, 4);
+            this.cboHistorySensor.Location = new System.Drawing.Point(86, 3);
             this.cboHistorySensor.Name = "cboHistorySensor";
             this.cboHistorySensor.Size = new System.Drawing.Size(189, 24);
             this.cboHistorySensor.TabIndex = 1;
             // 
             // lblHistoryFrom
             // 
-            this.lblHistoryFrom.Location = new System.Drawing.Point(259, 4);
+            this.lblHistoryFrom.Location = new System.Drawing.Point(279, 6);
             this.lblHistoryFrom.Name = "lblHistoryFrom";
-            this.lblHistoryFrom.Size = new System.Drawing.Size(34, 18);
+            this.lblHistoryFrom.Size = new System.Drawing.Size(59, 18);
             this.lblHistoryFrom.TabIndex = 2;
             this.lblHistoryFrom.Text = "From:";
             this.lblHistoryFrom.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -284,16 +284,16 @@ namespace BinWatch
             // dtpHistoryFrom
             // 
             this.dtpHistoryFrom.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpHistoryFrom.Location = new System.Drawing.Point(300, 4);
+            this.dtpHistoryFrom.Location = new System.Drawing.Point(342, 4);
             this.dtpHistoryFrom.Name = "dtpHistoryFrom";
             this.dtpHistoryFrom.Size = new System.Drawing.Size(95, 23);
             this.dtpHistoryFrom.TabIndex = 3;
             // 
             // lblHistoryTo
             // 
-            this.lblHistoryTo.Location = new System.Drawing.Point(408, 4);
+            this.lblHistoryTo.Location = new System.Drawing.Point(441, 6);
             this.lblHistoryTo.Name = "lblHistoryTo";
-            this.lblHistoryTo.Size = new System.Drawing.Size(21, 18);
+            this.lblHistoryTo.Size = new System.Drawing.Size(41, 18);
             this.lblHistoryTo.TabIndex = 4;
             this.lblHistoryTo.Text = "To:";
             this.lblHistoryTo.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -301,14 +301,14 @@ namespace BinWatch
             // dtpHistoryTo
             // 
             this.dtpHistoryTo.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-            this.dtpHistoryTo.Location = new System.Drawing.Point(435, 4);
+            this.dtpHistoryTo.Location = new System.Drawing.Point(486, 4);
             this.dtpHistoryTo.Name = "dtpHistoryTo";
             this.dtpHistoryTo.Size = new System.Drawing.Size(95, 23);
             this.dtpHistoryTo.TabIndex = 5;
             // 
             // btnLoadHistory
             // 
-            this.btnLoadHistory.Location = new System.Drawing.Point(543, 3);
+            this.btnLoadHistory.Location = new System.Drawing.Point(585, 2);
             this.btnLoadHistory.Name = "btnLoadHistory";
             this.btnLoadHistory.Size = new System.Drawing.Size(75, 27);
             this.btnLoadHistory.TabIndex = 6;

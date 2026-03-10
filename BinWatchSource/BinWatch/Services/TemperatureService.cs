@@ -37,24 +37,31 @@ namespace BinWatch.Services
                 {
                     sensor = new Sensor
                     {
-                        RomCode = romCode,
-                        ModuleMac = moduleMac,
-                        BinId = packet.BinId,
-                        CableId = packet.CableId,
-                        SensorNum = packet.SensorNum,
-                        Enabled = true
+                        RomCode     = romCode,
+                        ModuleMac   = moduleMac,
+                        BinId       = packet.BinId,
+                        CableId     = packet.CableId,
+                        SensorNum   = packet.SensorNum,
+                        RawUserData = (packet.UserData1 << 8) | packet.UserData0,
+                        Enabled     = true
                     };
                     db.Sensors.Add(sensor);
                 }
                 else
                 {
-                    // Update position from user data if it has changed
-                    sensor.BinId = packet.BinId;
-                    sensor.CableId = packet.CableId;
-                    sensor.SensorNum = packet.SensorNum;
+                    // Update position only if not manually locked (e.g. converted from another format)
+                    if (!sensor.ManualLocation)
+                    {
+                        sensor.BinId     = packet.BinId;
+                        sensor.CableId   = packet.CableId;
+                        sensor.SensorNum = packet.SensorNum;
+                    }
                     if (moduleMac != null && sensor.ModuleMac == null)
                         sensor.ModuleMac = moduleMac;
                 }
+
+                // Always capture raw user data so ConvertSensorsForm can re-decode it later
+                sensor.RawUserData = (packet.UserData1 << 8) | packet.UserData0;
 
                 if (!sensor.Enabled) return;
 

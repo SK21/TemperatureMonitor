@@ -1,3 +1,7 @@
+using BinWatch.Data;
+using BinWatch.Models;
+using BinWatch.Network;
+using BinWatch.Services;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -6,10 +10,6 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
-using BinWatch.Data;
-using BinWatch.Models;
-using BinWatch.Network;
-using BinWatch.Services;
 
 namespace BinWatch
 {
@@ -32,19 +32,19 @@ namespace BinWatch
             // Configure chart (local variables not supported by VS Designer parser)
             var chartArea = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             chartArea.Name = "ChartArea";
-            chartArea.AxisX.LabelStyle.Format   = "dd/MM HH:mm";
-            chartArea.AxisX.IntervalType        = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Auto;
+            chartArea.AxisX.LabelStyle.Format = "dd/MM HH:mm";
+            chartArea.AxisX.IntervalType = System.Windows.Forms.DataVisualization.Charting.DateTimeIntervalType.Auto;
             chartArea.AxisX.MajorGrid.LineColor = System.Drawing.Color.LightGray;
             chartArea.AxisY.MajorGrid.LineColor = System.Drawing.Color.LightGray;
-            chartArea.AxisY.Title               = "°C";
+            chartArea.AxisY.Title = "°C";
             chart.ChartAreas.Add(chartArea);
 
             var series = new System.Windows.Forms.DataVisualization.Charting.Series();
-            series.ChartArea   = "ChartArea";
-            series.ChartType   = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
-            series.XValueType  = System.Windows.Forms.DataVisualization.Charting.ChartValueType.DateTime;
-            series.Name        = "Temperature";
-            series.Color       = System.Drawing.Color.SteelBlue;
+            series.ChartArea = "ChartArea";
+            series.ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line;
+            series.XValueType = System.Windows.Forms.DataVisualization.Charting.ChartValueType.DateTime;
+            series.Name = "Temperature";
+            series.Color = System.Drawing.Color.SteelBlue;
             series.BorderWidth = 2;
             chart.Series.Add(series);
 
@@ -60,8 +60,23 @@ namespace BinWatch
             {
                 // Passive mode: hide active-only controls
                 btnRequestDescription.Visible = false;
-                btnRequestTemps.Visible       = false;
+                btnRequestTemps.Visible = false;
             }
+
+            //// Add Convert Sensors button — available in both active and passive mode
+            //var btnConvertSensors = new Button
+            //{
+            //    Text     = "Convert Sensors",
+            //    Size     = new Size(145, 27),
+            //    Location = new Point(463, 11)
+            //};
+            //btnConvertSensors.Click += (s, ev) =>
+            //{
+            //    using (var form = new ConvertSensorsForm(AppServices.SensorService))
+            //        form.ShowDialog(this);
+            //    LoadLatestTemperatures();   // refresh grid in case locations changed
+            //};
+            //pnlDashToolbar.Controls.Add(btnConvertSensors);
 
             LoadModules();
             LoadLatestTemperatures();
@@ -71,7 +86,7 @@ namespace BinWatch
             tmrStatus.Start();
 
             dtpHistoryFrom.Value = DateTime.Today.AddDays(-7);
-            dtpHistoryTo.Value   = DateTime.Today.AddDays(1);
+            dtpHistoryTo.Value = DateTime.Today.AddDays(1);
 
             RestoreFormBounds();
         }
@@ -105,24 +120,30 @@ namespace BinWatch
 
             // Define columns manually so they exist before the tabs are shown
             dgvModules.AutoGenerateColumns = false;
-            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Mac",        DataPropertyName = "Mac",        HeaderText = "MAC",        Width = 135 });
-            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Name",       DataPropertyName = "Name",       HeaderText = "Name",       Width = 130 });
-            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "ID",         DataPropertyName = "ID",         HeaderText = "ID",         Width = 50 });
+            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Mac", DataPropertyName = "Mac", HeaderText = "MAC", Width = 135 });
+            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Name", DataPropertyName = "Name", HeaderText = "Name", Width = 130 });
+            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "ID", DataPropertyName = "ID", HeaderText = "ID", Width = 50 });
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "IP Address", DataPropertyName = "IP Address", HeaderText = "IP Address", Width = 115 });
-            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Status",     DataPropertyName = "Status",     HeaderText = "Status",     Width = 90 });
-            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Last Seen",  DataPropertyName = "Last Seen",  HeaderText = "Last Seen",  Width = 130, AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
-            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Firmware",   DataPropertyName = "Firmware",   HeaderText = "Firmware",   Width = 70 });
+            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Status", DataPropertyName = "Status", HeaderText = "Status", Width = 90 });
+            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Last Seen", DataPropertyName = "Last Seen", HeaderText = "Last Seen", Width = 130, AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
+            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Firmware", DataPropertyName = "Firmware", HeaderText = "Firmware", Width = 70 });
 
             dgvTemperatures.AutoGenerateColumns = false;
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "RomCode",     DataPropertyName = "RomCode",     HeaderText = "RomCode",     Width = 150 });
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Bin",         DataPropertyName = "Bin",         HeaderText = "Bin",         Width = 40 });
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Cable",       DataPropertyName = "Cable",       HeaderText = "Cable",       Width = 50 });
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Sensor",      DataPropertyName = "Sensor",      HeaderText = "Sensor",      Width = 55 });
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Label",       DataPropertyName = "Label",       HeaderText = "Label",       Width = 120 });
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Temperature", DataPropertyName = "Temperature", HeaderText = "Temperature", Width = 100,
-                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight } });
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Timestamp",   DataPropertyName = "Timestamp",   HeaderText = "Timestamp",   Width = 130 });
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Module",      DataPropertyName = "Module",      HeaderText = "Module",      Width = 120, AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "RomCode", DataPropertyName = "RomCode", HeaderText = "RomCode", Width = 150 });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Bin", DataPropertyName = "Bin", HeaderText = "Bin", Width = 40 });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Cable", DataPropertyName = "Cable", HeaderText = "Cable", Width = 50 });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Sensor", DataPropertyName = "Sensor", HeaderText = "Sensor", Width = 55 });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Label", DataPropertyName = "Label", HeaderText = "Label", Width = 120 });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                Name = "Temperature",
+                DataPropertyName = "Temperature",
+                HeaderText = "Temperature",
+                Width = 100,
+                DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight }
+            });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Timestamp", DataPropertyName = "Timestamp", HeaderText = "Timestamp", Width = 130 });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Module", DataPropertyName = "Module", HeaderText = "Module", Width = 120, AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
 
             dgvModules.DataSource = _modulesTable;
             dgvTemperatures.DataSource = _temperaturesTable;
@@ -344,16 +365,16 @@ namespace BinWatch
                 {
                     // Refresh caches so colour coding picks up the new max temp / label
                     _sensorMaxTemps[romCode] = sensor.MaxTemp;
-                    _sensorLabels[romCode]   = sensor.Label ?? "";
+                    _sensorLabels[romCode] = sensor.Label ?? "";
 
                     // Refresh location + label columns in the grid row immediately
                     var row = _temperaturesTable.Rows.Find(romCode);
                     if (row != null)
                     {
-                        row["Bin"]    = (sensor.BinId + 1).ToString();
-                        row["Cable"]  = (sensor.CableId + 1).ToString();
+                        row["Bin"] = (sensor.BinId + 1).ToString();
+                        row["Cable"] = (sensor.CableId + 1).ToString();
                         row["Sensor"] = (sensor.SensorNum + 1).ToString();
-                        row["Label"]  = sensor.Label ?? "";
+                        row["Label"] = sensor.Label ?? "";
                     }
                     RefreshHistorySensorList();
                 }
@@ -371,8 +392,8 @@ namespace BinWatch
 
             switch (e.Value?.ToString())
             {
-                case "Online":       e.CellStyle.ForeColor = Color.Green;  break;
-                case "Offline":      e.CellStyle.ForeColor = Color.Red;    break;
+                case "Online": e.CellStyle.ForeColor = Color.Green; break;
+                case "Offline": e.CellStyle.ForeColor = Color.Red; break;
                 case "Unregistered": e.CellStyle.ForeColor = Color.Orange; break;
             }
         }
@@ -384,7 +405,7 @@ namespace BinWatch
             if (e.ColumnIndex == dgvTemperatures.Columns["RomCode"]?.Index
                 && e.Value is string rc && rc.Length == 16)
             {
-                e.Value = $"{rc.Substring(0,4)} {rc.Substring(4,4)} {rc.Substring(8,4)} {rc.Substring(12,4)}";
+                e.Value = $"{rc.Substring(0, 4)} {rc.Substring(4, 4)} {rc.Substring(8, 4)} {rc.Substring(12, 4)}";
                 e.FormattingApplied = true;
                 return;
             }
@@ -411,7 +432,7 @@ namespace BinWatch
         {
             using (var dlg = new SaveFileDialog())
             {
-                dlg.Filter   = "CSV files (*.csv)|*.csv";
+                dlg.Filter = "CSV files (*.csv)|*.csv";
                 dlg.FileName = $"BinTemps_{DateTime.Now:yyyyMMdd_HHmm}.csv";
                 if (dlg.ShowDialog(this) != DialogResult.OK) return;
 
@@ -427,10 +448,10 @@ namespace BinWatch
                 foreach (var r in records)
                 {
                     sensors.TryGetValue(r.RomCode, out var sensor);
-                    string label  = sensor?.Label ?? "";
-                    string bin    = sensor != null ? (sensor.BinId + 1).ToString() : "";
-                    string cable  = sensor != null ? (sensor.CableId + 1).ToString() : "";
-                    string snum   = sensor != null ? (sensor.SensorNum + 1).ToString() : "";
+                    string label = sensor?.Label ?? "";
+                    string bin = sensor != null ? (sensor.BinId + 1).ToString() : "";
+                    string cable = sensor != null ? (sensor.CableId + 1).ToString() : "";
+                    string snum = sensor != null ? (sensor.SensorNum + 1).ToString() : "";
                     string module = sensor?.Module?.Name ?? sensor?.ModuleMac ?? "";
 
                     sb.AppendLine(string.Join(",",
@@ -508,8 +529,8 @@ namespace BinWatch
             foreach (DataRow row in _temperaturesTable.Rows)
             {
                 string romCode = row["RomCode"].ToString();
-                string label   = row["Label"].ToString();
-                string loc     = $"Bin {row["Bin"]} / Cable {row["Cable"]} / #{row["Sensor"]}";
+                string label = row["Label"].ToString();
+                string loc = $"Bin {row["Bin"]} / Cable {row["Cable"]} / #{row["Sensor"]}";
                 string display = string.IsNullOrEmpty(label) ? loc : $"{label}  ({loc})";
                 cboHistorySensor.Items.Add(new SensorItem(romCode, display));
             }
@@ -530,10 +551,10 @@ namespace BinWatch
 
         // Poll interval: request 30831 from each known module every 2 minutes.
         // Offline threshold: no response for 5 minutes (> 2 poll cycles).
-        private static readonly TimeSpan PollInterval     = TimeSpan.FromMinutes(2);
+        private static readonly TimeSpan PollInterval = TimeSpan.FromMinutes(2);
         private static readonly TimeSpan OfflineThreshold = TimeSpan.FromMinutes(5);
-        private static readonly TimeSpan PassiveRefresh   = TimeSpan.FromMinutes(1);
-        private DateTime _lastPoll          = DateTime.MinValue;
+        private static readonly TimeSpan PassiveRefresh = TimeSpan.FromMinutes(1);
+        private DateTime _lastPoll = DateTime.MinValue;
         private DateTime _lastPassiveRefresh = DateTime.MinValue;
 
         private DateTime _statusClearAt = DateTime.MinValue;
@@ -564,7 +585,7 @@ namespace BinWatch
                 return;
             }
 
-            var srv    = AppServices.UdpServer;
+            var srv = AppServices.UdpServer;
             var parser = AppServices.Parser;
             lblPackets.Text = $"Packets: {srv.RawPacketsReceived} raw  |  {srv.FilteredPacketsReceived} from modules  |  {parser.ParsedCount} parsed  |  {parser.LastStatus}";
 
@@ -620,9 +641,9 @@ namespace BinWatch
             if (!onScreen) return;
 
             StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            Left   = AppConfig.MainFormLeft;
-            Top    = AppConfig.MainFormTop;
-            if (AppConfig.MainFormWidth  > 0) Width  = AppConfig.MainFormWidth;
+            Left = AppConfig.MainFormLeft;
+            Top = AppConfig.MainFormTop;
+            if (AppConfig.MainFormWidth > 0) Width = AppConfig.MainFormWidth;
             if (AppConfig.MainFormHeight > 0) Height = AppConfig.MainFormHeight;
         }
 
@@ -642,7 +663,7 @@ namespace BinWatch
         private class SensorItem
         {
             public string RomCode { get; }
-            public string Label   { get; }
+            public string Label { get; }
             public SensorItem(string romCode, string label) { RomCode = romCode; Label = label; }
             public override string ToString() => Label;
         }

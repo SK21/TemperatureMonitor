@@ -52,9 +52,17 @@ namespace BinWatch.Data
                     Enabled   INTEGER NOT NULL DEFAULT 1,
                     Offset    REAL    NOT NULL DEFAULT 0.0,
                     MaxTemp   REAL    NOT NULL DEFAULT 40.0,
-                    Label     TEXT,
+                    Label          TEXT,
+                    RawUserData    INTEGER,
+                    ManualLocation INTEGER NOT NULL DEFAULT 0,
                     FOREIGN KEY (ModuleMac) REFERENCES Modules (MacAddress)
                 )");
+
+            // Migration: add columns to existing databases that pre-date this schema version.
+            try { Database.ExecuteSqlCommand("ALTER TABLE Sensors ADD COLUMN RawUserData INTEGER"); }
+            catch { /* column already exists */ }
+            try { Database.ExecuteSqlCommand("ALTER TABLE Sensors ADD COLUMN ManualLocation INTEGER NOT NULL DEFAULT 0"); }
+            catch { /* column already exists */ }
 
             Database.ExecuteSqlCommand(@"
                 CREATE TABLE IF NOT EXISTS TemperatureRecords (

@@ -18,6 +18,16 @@ namespace BinWatch.Models
         public float MaxTemp { get; set; } = 40.0f;
         public string Label { get; set; }
 
+        /// <summary>Raw 16-bit user data from the last received packet. Null until first packet.</summary>
+        public int? RawUserData { get; set; }
+
+        /// <summary>
+        /// When true, incoming temperature packets will not overwrite BinId/CableId/SensorNum.
+        /// Set automatically when a sensor is converted via ConvertSensorsForm.
+        /// Clear it (via SensorEditForm) to allow the sensor to resume self-reporting its location.
+        /// </summary>
+        public bool ManualLocation { get; set; } = false;
+
         [ForeignKey("ModuleMac")]
         public virtual Module Module { get; set; }
 
