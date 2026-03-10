@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using System.Text;
 using BinWatch.Models;
+using BinWatch;
 
 namespace BinWatch.Network
 {
@@ -37,6 +38,7 @@ namespace BinWatch.Network
 
                 default:
                     LastStatus = $"Unknown PGN {pgn} ({data.Length}B)";
+                    BadPacketLogger.Log($"Unknown PGN {pgn}", source, data);
                     break;
             }
         }
@@ -56,8 +58,8 @@ namespace BinWatch.Network
             // 16    CRC
 
             const int length = 17;
-            if (data.Length < length) { LastStatus = $"30830 too short ({data.Length}B)"; return; }
-            if (!ValidCrc(data, length)) { LastStatus = $"30830 CRC fail"; return; }
+            if (data.Length < length) { LastStatus = $"30830 too short ({data.Length}B)"; BadPacketLogger.Log($"30830 too short ({data.Length}B)", source, data); return; }
+            if (!ValidCrc(data, length)) { LastStatus = $"30830 CRC fail"; BadPacketLogger.Log($"30830 CRC fail (got {data[data.Length-1]:X2}, expected {ComputeCrc(data, length):X2})", source, data); return; }
 
             byte moduleId = data[2];
 
@@ -87,8 +89,8 @@ namespace BinWatch.Network
             // 21    CRC
 
             const int length = 22;
-            if (data.Length < length) { LastStatus = $"30831 too short ({data.Length}B)"; return; }
-            if (!ValidCrc(data, length)) { LastStatus = $"30831 CRC fail (got {data[length-1]:X2}, expected {ComputeCrc(data, length):X2})"; return; }
+            if (data.Length < length) { LastStatus = $"30831 too short ({data.Length}B)"; BadPacketLogger.Log($"30831 too short ({data.Length}B)", source, data); return; }
+            if (!ValidCrc(data, length)) { LastStatus = $"30831 CRC fail (got {data[length-1]:X2}, expected {ComputeCrc(data, length):X2})"; BadPacketLogger.Log($"30831 CRC fail (got {data[length-1]:X2}, expected {ComputeCrc(data, length):X2})", source, data); return; }
 
             byte moduleId = data[2];
 

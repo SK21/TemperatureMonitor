@@ -8,7 +8,10 @@
       "Bash(cmd.exe:*)",
       "Bash(python3:*)",
       "Bash(cd \"F:/Documents/GitHub/TemperatureMonitor/BinWatchApp\" && sqlite3 BinWatch.db \"SELECT RomCode, ModuleMac, BinId, CableId, SensorNum, Enabled, Offset, MaxTemp, Label, RawUserData, ManualLocation, FormatId FROM Sensors LIMIT 3;\")",
-      "Bash(find \"F:\\\\Documents\\\\GitHub\\\\TemperatureMonitor\\\\BinWatchSource\\\\BinWatch\" -name \"*.cs\" -type f | xargs grep -l \"catch\\\\|try\\\\|Debug\\\\|throw\" | head -20)"
+      "Bash(find \"F:\\\\Documents\\\\GitHub\\\\TemperatureMonitor\\\\BinWatchSource\\\\BinWatch\" -name \"*.cs\" -type f | xargs grep -l \"catch\\\\|try\\\\|Debug\\\\|throw\" | head -20)",
+      "Bash(cd \"F:\\\\Documents\\\\GitHub\\\\TemperatureMonitor\\\\BinWatchSource\" && msbuild BinWatch.sln /p:Configuration=Debug /nologo /v:minimal 2>&1 | tail -20)",
+      "Bash(\"/c/Program Files/Microsoft Visual Studio/2022/Community/MSBuild/Current/Bin/MSBuild.exe\" \"F:/Documents/GitHub/TemperatureMonitor/BinWatchSource/BinWatch.sln\" /p:Configuration=Debug /nologo /v:minimal 2>&1 | tail -20)",
+      "Bash(\"/c/Program Files/Microsoft Visual Studio/18/Community/MSBuild/Current/Bin/MSBuild.exe\" \"F:/Documents/GitHub/TemperatureMonitor/BinWatchSource/BinWatch.sln\" /p:Configuration=Debug /nologo /v:minimal 2>&1 | tail -20)"
     ]
   }
 }
