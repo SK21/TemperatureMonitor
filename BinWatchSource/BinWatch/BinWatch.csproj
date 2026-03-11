@@ -67,42 +67,42 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppConfig.cs" />
-    <Compile Include="BadPacketLogger.cs" />
-    <Compile Include="Logger.cs" />
-    <Compile Include="ConvertSensorsForm.cs">
+    <Compile Include="Classes\AppConfig.cs" />
+    <Compile Include="Classes\AppServices.cs" />
+    <Compile Include="Classes\BadPacketLogger.cs" />
+    <Compile Include="Classes\Logger.cs" />
+    <Compile Include="Forms\ConvertSensorsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ConvertSensorsForm.Designer.cs">
+    <Compile Include="Forms\ConvertSensorsForm.Designer.cs">
       <DependentUpon>ConvertSensorsForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\UserDataFormatDef.cs" />
-    <Compile Include="UserDataEditForm.cs">
+    <Compile Include="Forms\UserDataEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="AppServices.cs" />
-    <Compile Include="SettingsForm.cs">
+    <Compile Include="Forms\SettingsForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SettingsForm.Designer.cs">
+    <Compile Include="Forms\SettingsForm.Designer.cs">
       <DependentUpon>SettingsForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="ModuleEditForm.cs">
+    <Compile Include="Forms\ModuleEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="ModuleEditForm.Designer.cs">
+    <Compile Include="Forms\ModuleEditForm.Designer.cs">
       <DependentUpon>ModuleEditForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="SensorEditForm.cs">
+    <Compile Include="Forms\SensorEditForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="SensorEditForm.Designer.cs">
+    <Compile Include="Forms\SensorEditForm.Designer.cs">
       <DependentUpon>SensorEditForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="MainForm.cs">
+    <Compile Include="Forms\MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="MainForm.Designer.cs">
+    <Compile Include="Forms\MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Data\AppDbContext.cs" />
@@ -118,10 +118,10 @@
     <Compile Include="Network\UdpServer.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="ConvertSensorsForm.resx">
+    <EmbeddedResource Include="Forms\ConvertSensorsForm.resx">
       <DependentUpon>ConvertSensorsForm.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="MainForm.resx">
+    <EmbeddedResource Include="Forms\MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -133,7 +133,7 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="UserDataEditForm.resx">
+    <EmbeddedResource Include="Forms\UserDataEditForm.resx">
       <DependentUpon>UserDataEditForm.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />

@@ -81,6 +81,11 @@ namespace BinWatch
         /// values so that a subsequent SaveFormBounds() call does not overwrite
         /// them with stale data. The new DB path takes effect on next start.
         /// </summary>
+        /// <remarks>
+        /// Use <see cref="SaveToFileOnly"/> when the new settings should not
+        /// affect the currently running session (e.g. saving from the Settings
+        /// dialog while the app is still active).
+        /// </remarks>
         public static void Save(string dbPath, bool passiveMode,
             bool copyDbOnStart = false, string copyDbSource = "")
         {
@@ -88,6 +93,18 @@ namespace BinWatch
             PassiveMode   = passiveMode;
             CopyDbOnStart = copyDbOnStart;
             CopyDbSource  = copyDbSource;
+            WriteIni(dbPath, passiveMode, copyDbOnStart, copyDbSource,
+                MainFormLeft, MainFormTop, MainFormWidth, MainFormHeight);
+        }
+
+        /// <summary>
+        /// Writes database/mode settings to BinWatch.ini WITHOUT updating the
+        /// in-memory properties, so the currently running session is unaffected.
+        /// Changes take effect on the next restart.
+        /// </summary>
+        public static void SaveToFileOnly(string dbPath, bool passiveMode,
+            bool copyDbOnStart = false, string copyDbSource = "")
+        {
             WriteIni(dbPath, passiveMode, copyDbOnStart, copyDbSource,
                 MainFormLeft, MainFormTop, MainFormWidth, MainFormHeight);
         }

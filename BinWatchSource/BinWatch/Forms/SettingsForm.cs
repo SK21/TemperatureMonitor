@@ -67,9 +67,9 @@ namespace BinWatch
 
             bool copyDb = chkCopyDb.Visible && chkCopyDb.Checked;
 
-            // Write to file only — do NOT update in-memory AppConfig properties.
+            // Write to file only — changes take effect on next restart.
             // The running app keeps using its current DB path and mode until restarted.
-            AppConfig.Save(
+            AppConfig.SaveToFileOnly(
                 dbPath:        newPath,
                 passiveMode:   chkPassiveMode.Checked,
                 copyDbOnStart: copyDb,
