@@ -54,6 +54,7 @@ namespace BinWatch
             if (!AppConfig.PassiveMode)
             {
                 AppServices.ModuleService.ModuleUpdated += OnModuleUpdated;
+                AppServices.ModuleService.ModuleLastSeenUpdated += OnModuleLastSeenUpdated;
                 AppServices.TemperatureService.BatchRecorded += OnBatchReceived;
                 AppServices.UdpServer.Error += OnUdpError;
             }
@@ -90,7 +91,6 @@ namespace BinWatch
             _modulesTable.Columns.Add("Name", typeof(string));
             _modulesTable.Columns.Add("ID", typeof(string));
             _modulesTable.Columns.Add("IP Address", typeof(string));
-            _modulesTable.Columns.Add("Status", typeof(string));
             _modulesTable.Columns.Add("Last Seen", typeof(string));
             _modulesTable.Columns.Add("Firmware", typeof(string));
             _modulesTable.PrimaryKey = new[] { _modulesTable.Columns["Mac"] };
@@ -112,7 +112,6 @@ namespace BinWatch
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Name", DataPropertyName = "Name", HeaderText = "Name", Width = 130 });
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "ID", DataPropertyName = "ID", HeaderText = "ID", Width = 50 });
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "IP Address", DataPropertyName = "IP Address", HeaderText = "IP Address", Width = 115 });
-            dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Status", DataPropertyName = "Status", HeaderText = "Status", Width = 90 });
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Last Seen", DataPropertyName = "Last Seen", HeaderText = "Last Seen", Width = 130, AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Firmware", DataPropertyName = "Firmware", HeaderText = "Firmware", Width = 70 });
 
@@ -200,6 +199,17 @@ namespace BinWatch
             }));
         }
 
+        private void OnModuleLastSeenUpdated(object sender, ModuleUpdatedEventArgs e)
+        {
+            if (!IsHandleCreated || IsDisposed) return;
+            BeginInvoke(new Action(() =>
+            {
+                var row = _modulesTable.Rows.Find(e.Module.MacAddress);
+                if (row != null)
+                    row["Last Seen"] = e.Module.LastSeen?.ToString("hh:mm tt dd/MMM/yy") ?? "";
+            }));
+        }
+
         private void OnBatchReceived(object sender, TemperatureBatchEventArgs e)
         {
             if (!IsHandleCreated || IsDisposed) return;
@@ -221,6 +231,7 @@ namespace BinWatch
                 }
 
                 SetStatusTimed($"Temperatures updated from {moduleName}  ({DateTime.Now:HH:mm:ss})", 10);
+                Logger.Info($"Temperatures received from {moduleName}: {string.Join(", ", e.Entries.Select(x => $"{x.Record.Temperature:F1}°C"))} at {DateTime.Now:HH:mm:ss}");
             }));
         }
 
@@ -241,7 +252,6 @@ namespace BinWatch
             row["Name"] = module.Name ?? "";
             row["ID"] = module.ModuleId == 0 ? "-" : module.ModuleId.ToString();
             row["IP Address"] = module.LastKnownIp ?? "";
-            row["Status"] = module.Status ?? "";
             row["Last Seen"] = module.LastSeen?.ToString("hh:mm tt dd/MMM/yy") ?? "";
             row["Firmware"] = module.FirmwareVersion.ToString();
         }
@@ -373,19 +383,6 @@ namespace BinWatch
         // -------------------------------------------------------------------------
         // Cell formatting (colour coding)
         // -------------------------------------------------------------------------
-
-        private void dgvModules_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
-        {
-            if (e.RowIndex < 0) return;
-            if (e.ColumnIndex != dgvModules.Columns["Status"]?.Index) return;
-
-            switch (e.Value?.ToString())
-            {
-                case "Online": e.CellStyle.ForeColor = Color.Green; break;
-                case "Offline": e.CellStyle.ForeColor = Color.Red; break;
-                case "Unregistered": e.CellStyle.ForeColor = Color.Orange; break;
-            }
-        }
 
         private void dgvTemperatures_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
@@ -544,13 +541,8 @@ namespace BinWatch
         // Status timer
         // -------------------------------------------------------------------------
 
-        // Discovery + offline check every 5 min; temperature request every 30 min.
-        // Offline threshold: no response for 10 minutes (> 2 discovery cycles).
-        private static readonly TimeSpan DiscoveryInterval = TimeSpan.FromMinutes(5);
-        private static readonly TimeSpan TempRequestInterval = TimeSpan.FromMinutes(30);
-        private static readonly TimeSpan OfflineThreshold = TimeSpan.FromMinutes(10);
+        private static readonly TimeSpan TempRequestInterval = TimeSpan.FromMinutes(60);
         private static readonly TimeSpan PassiveRefresh = TimeSpan.FromMinutes(1);
-        private DateTime _lastDiscovery = DateTime.MinValue;
         private DateTime _lastTempRequest = DateTime.MinValue;
         private DateTime _lastPassiveRefresh = DateTime.MinValue;
 
@@ -584,25 +576,6 @@ namespace BinWatch
 
             var srv = AppServices.UdpServer;
             lblPackets.Text = $"Packets: {srv.FilteredPacketsReceived}";
-
-            if ((DateTime.Now - _lastDiscovery) >= DiscoveryInterval)
-            {
-                _lastDiscovery = DateTime.Now;
-
-                // Broadcast to all subnets so modules with changed DHCP IPs can report back
-                AppServices.UdpServer.SendDiscovery();
-
-                foreach (var module in AppServices.ModuleService.GetAllModules())
-                {
-                    if (!module.LastSeen.HasValue) continue;
-
-                    if ((DateTime.Now - module.LastSeen.Value) > OfflineThreshold)
-                    {
-                        if (module.Status != "Offline")
-                            AppServices.ModuleService.SetModuleOffline(module.MacAddress);
-                    }
-                }
-            }
 
             if ((DateTime.Now - _lastTempRequest) >= TempRequestInterval)
             {
@@ -665,6 +638,12 @@ namespace BinWatch
             Top = AppConfig.MainFormTop;
             if (AppConfig.MainFormWidth > 0) Width = AppConfig.MainFormWidth;
             if (AppConfig.MainFormHeight > 0) Height = AppConfig.MainFormHeight;
+        }
+
+        private void MainForm_Shown(object sender, EventArgs e)
+        {
+            if (!AppConfig.PassiveMode)
+                AppServices.UdpServer.SendCommand(0, UdpServer.CmdSendModuleDescription | UdpServer.CmdUpdateAndSendTemps);
         }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)

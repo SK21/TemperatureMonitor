@@ -1,11 +1,11 @@
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using BinWatch;
 
 namespace BinWatch.Network
 {
@@ -81,40 +81,49 @@ namespace BinWatch.Network
             IsRunning = false;
         }
 
-        // Broadcast CmdSendModuleDescription to every local subnet's broadcast address.
-        // Called on startup and periodically so modules report their current IP via 30831.
-        public void SendDiscovery()
-        {
-            byte[] data = new byte[5];
-            data[0] = 101;
-            data[1] = 120;
-            data[2] = 0;   // moduleId=0 → all modules respond
-            data[3] = CmdSendModuleDescription;
-            data[4] = Crc(data, 4);
-
-            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
-            {
-                if (ni.OperationalStatus != OperationalStatus.Up) continue;
-                foreach (var ua in ni.GetIPProperties().UnicastAddresses)
-                {
-                    if (ua.Address.AddressFamily != AddressFamily.InterNetwork) continue;
-                    byte[] addr = ua.Address.GetAddressBytes();
-                    byte[] mask = ua.IPv4Mask.GetAddressBytes();
-                    byte[] bcast = new byte[4];
-                    for (int i = 0; i < 4; i++) bcast[i] = (byte)(addr[i] | ~mask[i]);
-                    SendPacket(data, new IPEndPoint(new IPAddress(bcast), _port));
-                }
-            }
-        }
-
-        // PGN 30820 - Heartbeat (broadcast)
+        // PGN 30820 - Heartbeat (broadcast to every local subnet)
         public void SendHeartbeat()
         {
             byte[] data = new byte[3];
             data[0] = 100;
             data[1] = 120;
             data[2] = Crc(data, 2);
-            SendPacket(data);
+            SendToAllSubnets(data);
+        }
+
+        private void SendToAllSubnets(byte[] data)
+        {
+            bool sent = false;
+            var sentBroadcasts = new HashSet<IPAddress>();
+
+            foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+            {
+
+                if (ni.OperationalStatus != OperationalStatus.Up) continue;
+                if (ni.NetworkInterfaceType == NetworkInterfaceType.Loopback) continue;
+                if (ni.NetworkInterfaceType == NetworkInterfaceType.Tunnel) continue;
+
+                foreach (var ua in ni.GetIPProperties().UnicastAddresses)
+                {
+                    if (ua.Address.AddressFamily != AddressFamily.InterNetwork) continue;
+                    if (ua.IPv4Mask == null) continue;
+
+                    byte[] addr = ua.Address.GetAddressBytes();
+                    byte[] mask = ua.IPv4Mask.GetAddressBytes();
+
+                    if (addr[0] == 169 && addr[1] == 254) continue;  // skip APIPA
+
+                    byte[] bcast = new byte[4];
+                    for (int i = 0; i < 4; i++) bcast[i] = (byte)(addr[i] | ~mask[i]);
+
+                    IPAddress broadcast = new IPAddress(bcast);
+                    if (!sentBroadcasts.Add(broadcast)) continue;  // skip duplicates
+
+                    SendPacket(data, new IPEndPoint(broadcast, _port));
+                    sent = true;
+                }
+            }
+            if (!sent) SendPacket(data);  // fallback to 255.255.255.255
         }
 
         // PGN 30821 - Command
@@ -127,11 +136,13 @@ namespace BinWatch.Network
             data[3] = commandBits;
             data[4] = Crc(data, 4);
 
-            IPEndPoint endpoint = null;
             if (targetIp != null && System.Net.IPAddress.TryParse(targetIp, out var ip))
-                endpoint = new IPEndPoint(ip, _port);
+            {
+                SendPacket(data, new IPEndPoint(ip, _port));
+                return;
+            }
 
-            SendPacket(data, endpoint);
+            SendToAllSubnets(data);
         }
 
         // PGN 30822 - Set Module Description
@@ -175,7 +186,7 @@ namespace BinWatch.Network
             data[11] = userData0;
             data[12] = userData1;
             data[13] = Crc(data, 13);
-            SendPacket(data);
+            SendToAllSubnets(data);
         }
 
         private void SendPacket(byte[] data, IPEndPoint endpoint = null)

@@ -22,7 +22,7 @@ namespace BinWatch
             UdpServer = new UdpServer();
             Parser = new PacketParser();
             ModuleService = new ModuleService(UdpServer);
-            TemperatureService = new TemperatureService();
+            TemperatureService = new TemperatureService(ModuleService);
             SensorService = new SensorService(UdpServer);
 
             if (!AppConfig.PassiveMode)
@@ -40,9 +40,6 @@ namespace BinWatch
             if (AppConfig.PassiveMode) return;
 
             UdpServer.Start();
-            // Broadcast CmdSendModuleDescription so all online modules report back with
-            // fresh 30831 packets (updates LastKnownIp even if DHCP assigned a new address)
-            UdpServer.SendDiscovery();
         }
 
         public static void Shutdown()

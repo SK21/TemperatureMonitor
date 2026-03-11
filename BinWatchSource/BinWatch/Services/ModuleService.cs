@@ -26,6 +26,7 @@ namespace BinWatch.Services
         // Subscribe this to PacketParser.ModuleDescriptionReceived
         public void HandleModuleDescription(object sender, ModuleDescriptionPacket packet)
         {
+            DateTime lastSeen = DateTime.Now;
             using (var db = new AppDbContext())
             {
                 string mac = packet.MacString;
@@ -40,18 +41,23 @@ namespace BinWatch.Services
                 module.ModuleId = packet.ModuleId;
                 module.Name = packet.Name;
                 module.LastKnownIp = packet.Source.Address.ToString();
-                module.LastSeen = DateTime.Now;
-                module.Status = packet.IsUnregistered ? "Unregistered" : "Online";
+                module.LastSeen = lastSeen;
                 module.FirmwareVersion = packet.FirmwareVersion;
 
                 db.SaveChanges();
-
-                ModuleUpdated?.Invoke(this, new ModuleUpdatedEventArgs(module));
             }
 
-            // Request current temperatures — send directly to the module's source IP
-            _udpServer.SendCommand(packet.ModuleId, UdpServer.CmdSendTemps,
-                packet.Source.Address.ToString());
+            // Pass a plain POCO snapshot — avoids EF6 proxy interference on detached entities.
+            var snapshot = new Module
+            {
+                MacAddress  = packet.MacString,
+                ModuleId    = packet.ModuleId,
+                Name        = packet.Name,
+                LastKnownIp = packet.Source.Address.ToString(),
+                LastSeen    = lastSeen,
+                FirmwareVersion = packet.FirmwareVersion
+            };
+            ModuleUpdated?.Invoke(this, new ModuleUpdatedEventArgs(snapshot));
         }
 
         // Assign an ID and name to an unregistered module — sends PGN 30822
@@ -60,17 +66,16 @@ namespace BinWatch.Services
             _udpServer.SendSetModuleDescription(mac, newId, name, targetIp);
         }
 
-        public void SetModuleOffline(string macAddress)
+        public void RaiseModuleUpdated(Module module)
         {
-            using (var db = new AppDbContext())
-            {
-                var module = db.Modules.Find(macAddress);
-                if (module == null) return;
-                module.Status = "Offline";
-                db.SaveChanges();
+            ModuleUpdated?.Invoke(this, new ModuleUpdatedEventArgs(module));
+        }
 
-                ModuleUpdated?.Invoke(this, new ModuleUpdatedEventArgs(module));
-            }
+        public event EventHandler<ModuleUpdatedEventArgs> ModuleLastSeenUpdated;
+
+        public void RaiseLastSeenUpdated(Module module)
+        {
+            ModuleLastSeenUpdated?.Invoke(this, new ModuleUpdatedEventArgs(module));
         }
 
         public Module[] GetAllModules()

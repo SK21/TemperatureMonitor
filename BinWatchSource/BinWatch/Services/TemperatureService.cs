@@ -32,9 +32,15 @@ namespace BinWatch.Services
     {
         public event EventHandler<TemperatureBatchEventArgs> BatchRecorded;
 
+        private readonly ModuleService _moduleService;
         private readonly object _batchLock = new object();
         private readonly Dictionary<byte, List<TemperaturePacket>> _batches =
             new Dictionary<byte, List<TemperaturePacket>>();
+
+        public TemperatureService(ModuleService moduleService)
+        {
+            _moduleService = moduleService;
+        }
 
         // Subscribe this to PacketParser.TemperatureReceived
         public void HandleTemperature(object sender, TemperaturePacket packet)
@@ -66,6 +72,7 @@ namespace BinWatch.Services
             byte moduleId = packets[0].ModuleId;
             string moduleName = null;
             var entries = new List<(Sensor, TemperatureRecord)>();
+            Module touchedModule = null;
 
             try
             {
@@ -76,8 +83,13 @@ namespace BinWatch.Services
                     if (moduleId != 0)
                     {
                         var module = db.Modules.FirstOrDefault(m => m.ModuleId == moduleId);
-                        moduleMac = module?.MacAddress;
-                        moduleName = module?.Name;
+                        if (module != null)
+                        {
+                            moduleMac = module.MacAddress;
+                            moduleName = module.Name;
+                            module.LastSeen = DateTime.Now;
+                            touchedModule = module;
+                        }
                     }
 
                     foreach (var packet in packets)
@@ -135,6 +147,9 @@ namespace BinWatch.Services
                 Logger.Error($"Failed to flush temperature batch from module {moduleId}", ex);
                 return;
             }
+
+            if (touchedModule != null)
+                _moduleService.RaiseLastSeenUpdated(touchedModule);
 
             if (entries.Count > 0)
                 BatchRecorded?.Invoke(this, new TemperatureBatchEventArgs(moduleId, moduleName, entries));

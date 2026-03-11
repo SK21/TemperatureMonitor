@@ -132,7 +132,6 @@ namespace BinWatch
             this.dgvModules.Size = new System.Drawing.Size(809, 417);
             this.dgvModules.TabIndex = 0;
             this.dgvModules.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvModules_CellDoubleClick);
-            this.dgvModules.CellFormatting += new System.Windows.Forms.DataGridViewCellFormattingEventHandler(this.dgvModules_CellFormatting);
             // 
             // pnlDashToolbar
             // 
@@ -371,9 +370,9 @@ namespace BinWatch
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MinimumSize = new System.Drawing.Size(602, 395);
             this.Name = "MainForm";
-            this.Text = "BinWatch";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Resize += new System.EventHandler(this.MainForm_Resize);
+            this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.tabControl.ResumeLayout(false);
             this.tabDashboard.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvModules)).EndInit();
