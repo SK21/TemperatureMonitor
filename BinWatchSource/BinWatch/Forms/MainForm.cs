@@ -75,6 +75,8 @@ namespace BinWatch
             dtpHistoryTo.Value = DateTime.Today.AddDays(1);
 
             RestoreFormBounds();
+
+            this.Text = "BinWatch - v" + Properties.Settings.Default.AppVersion;
         }
 
         // -------------------------------------------------------------------------
@@ -128,7 +130,7 @@ namespace BinWatch
                 Width = 100,
                 DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleRight }
             });
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Timestamp", DataPropertyName = "Timestamp", HeaderText = "Timestamp", Width = 130 });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Timestamp", DataPropertyName = "Timestamp", HeaderText = "Timestamp", Width = 140 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Module", DataPropertyName = "Module", HeaderText = "Module", Width = 120, AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
 
             dgvModules.DataSource = _modulesTable;
@@ -209,7 +211,7 @@ namespace BinWatch
                 {
                     // Update caches from the already-loaded sensor — no extra DB query needed
                     _sensorMaxTemps[sensor.RomCode] = sensor.MaxTemp;
-                    _sensorLabels[sensor.RomCode]   = sensor.Label ?? "";
+                    _sensorLabels[sensor.RomCode] = sensor.Label ?? "";
 
                     _moduleNames.TryGetValue(e.ModuleId, out string cachedName);
 
@@ -240,7 +242,7 @@ namespace BinWatch
             row["ID"] = module.ModuleId == 0 ? "-" : module.ModuleId.ToString();
             row["IP Address"] = module.LastKnownIp ?? "";
             row["Status"] = module.Status ?? "";
-            row["Last Seen"] = module.LastSeen?.ToString("HH:mm dd/MMM/yy") ?? "";
+            row["Last Seen"] = module.LastSeen?.ToString("hh:mm tt dd/MMM/yy") ?? "";
             row["Firmware"] = module.FirmwareVersion.ToString();
         }
 
@@ -261,7 +263,7 @@ namespace BinWatch
             row["Sensor"] = (sensorNum + 1).ToString();
             row["Label"] = label ?? "";
             row["Temperature"] = $"{temperature:F1} °C";
-            row["Timestamp"] = timestamp.ToString("HH:mm dd/MMM/yy");
+            row["Timestamp"] = timestamp.ToString("hh:mm tt dd/MMM/yy");
             row["Module"] = moduleName ?? "";
 
             if (isNew) RefreshHistorySensorList();

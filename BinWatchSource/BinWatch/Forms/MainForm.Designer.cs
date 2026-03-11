@@ -296,7 +296,8 @@ namespace BinWatch
             // 
             // dtpHistoryFrom
             // 
-            this.dtpHistoryFrom.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpHistoryFrom.CustomFormat = "dd/MMM/yy";
+            this.dtpHistoryFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpHistoryFrom.Location = new System.Drawing.Point(342, 4);
             this.dtpHistoryFrom.Name = "dtpHistoryFrom";
             this.dtpHistoryFrom.Size = new System.Drawing.Size(95, 23);
@@ -313,7 +314,8 @@ namespace BinWatch
             // 
             // dtpHistoryTo
             // 
-            this.dtpHistoryTo.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+            this.dtpHistoryTo.CustomFormat = "dd/MMM/yy";
+            this.dtpHistoryTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpHistoryTo.Location = new System.Drawing.Point(486, 4);
             this.dtpHistoryTo.Name = "dtpHistoryTo";
             this.dtpHistoryTo.Size = new System.Drawing.Size(95, 23);

@@ -167,17 +167,8 @@
   <Target Name="CopyFirmwareBin" AfterTargets="Build">
     <!-- Copies the compiled firmware binary to the app output folder after each build.
          Run Sketch > Export Compiled Binary in Arduino IDE first to produce the .bin file. -->
-    <Copy
-      SourceFiles="..\..\BinTempsModule\BinTempsModule.ino.bin"
-      DestinationFolder="$(OutputPath)"
-      Condition="Exists('..\..\BinTempsModule\BinTempsModule.ino.bin')" />
-    <Message
-      Text="Firmware binary copied to $(OutputPath)"
-      Condition="Exists('..\..\BinTempsModule\BinTempsModule.ino.bin')"
-      Importance="high" />
-    <Message
-      Text="Firmware binary not found — run Sketch &gt; Export Compiled Binary in Arduino IDE to generate it."
-      Condition="!Exists('..\..\BinTempsModule\BinTempsModule.ino.bin')"
-      Importance="high" />
+    <Copy SourceFiles="..\..\BinTempsModule\BinTempsModule.ino.bin" DestinationFolder="$(OutputPath)" Condition="Exists('..\..\BinTempsModule\BinTempsModule.ino.bin')" />
+    <Message Text="Firmware binary copied to $(OutputPath)" Condition="Exists('..\..\BinTempsModule\BinTempsModule.ino.bin')" Importance="high" />
+    <Message Text="Firmware binary not found — run Sketch &gt; Export Compiled Binary in Arduino IDE to generate it." Condition="!Exists('..\..\BinTempsModule\BinTempsModule.ino.bin')" Importance="high" />
   </Target>
 </Project>
