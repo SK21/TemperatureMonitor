@@ -25,7 +25,8 @@ namespace BinWatch
             txtLabel.Text      = sensor.Label ?? "";
             nudMaxTemp.Value   = (decimal)sensor.MaxTemp;
             nudOffset.Value    = (decimal)sensor.Offset;
-            chkEnabled.Checked = sensor.Enabled;
+            chkEnabled.Checked         = sensor.Enabled;
+            chkManualLocation.Checked  = sensor.ManualLocation;
         }
 
         private void btnSave_Click(object sender, EventArgs e)
@@ -36,10 +37,11 @@ namespace BinWatch
             string label   = txtLabel.Text.Trim();
             float maxTemp  = (float)nudMaxTemp.Value;
             float offset   = (float)nudOffset.Value;
-            bool enabled   = chkEnabled.Checked;
+            bool enabled          = chkEnabled.Checked;
+            bool manualLocation   = chkManualLocation.Checked;
 
             var svc = AppServices.SensorService;
-            svc.UpdateLocation(_sensor.RomCode, binId, cableId, sensorNum);
+            svc.UpdateLocation(_sensor.RomCode, binId, cableId, sensorNum, manualLocation);
             svc.UpdateLabel(_sensor.RomCode, label);
             svc.UpdateMaxTemp(_sensor.RomCode, maxTemp);
             svc.UpdateOffset(_sensor.RomCode, offset);
@@ -60,7 +62,8 @@ namespace BinWatch
             _sensor.Label     = label;
             _sensor.MaxTemp   = maxTemp;
             _sensor.Offset    = offset;
-            _sensor.Enabled   = enabled;
+            _sensor.Enabled         = enabled;
+            _sensor.ManualLocation  = manualLocation;
 
             DialogResult = DialogResult.OK;
             Close();

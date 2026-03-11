@@ -196,6 +196,7 @@ void SendTemps()
 		udp.beginPacket(WiFi.broadcastIP(), MDL.Port);
 		udp.write(data, PGNlength);
 		udp.endPacket();
+		delay(20);
 	}
 }
 

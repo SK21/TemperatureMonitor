@@ -22,6 +22,7 @@ namespace BinWatch
         private System.Windows.Forms.Label lblOffset;
         private System.Windows.Forms.NumericUpDown nudOffset;
         private System.Windows.Forms.CheckBox chkEnabled;
+        private System.Windows.Forms.CheckBox chkManualLocation;
         private System.Windows.Forms.Button btnSave;
         private System.Windows.Forms.Button btnCancel;
 
@@ -52,7 +53,8 @@ namespace BinWatch
             this.nudMaxTemp      = new System.Windows.Forms.NumericUpDown();
             this.lblOffset       = new System.Windows.Forms.Label();
             this.nudOffset       = new System.Windows.Forms.NumericUpDown();
-            this.chkEnabled      = new System.Windows.Forms.CheckBox();
+            this.chkEnabled          = new System.Windows.Forms.CheckBox();
+            this.chkManualLocation   = new System.Windows.Forms.CheckBox();
             this.btnSave         = new System.Windows.Forms.Button();
             this.btnCancel       = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)this.nudBin).BeginInit();
@@ -166,6 +168,12 @@ namespace BinWatch
             this.chkEnabled.Name     = "chkEnabled";
             this.chkEnabled.Text     = "Enabled";
 
+            // Lock location
+            this.chkManualLocation.AutoSize = true;
+            this.chkManualLocation.Location = new System.Drawing.Point(270, 219);
+            this.chkManualLocation.Name     = "chkManualLocation";
+            this.chkManualLocation.Text     = "Lock location";
+
             // Buttons
             this.btnSave.Location = new System.Drawing.Point(140, 253);
             this.btnSave.Name     = "btnSave";
@@ -186,7 +194,7 @@ namespace BinWatch
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode       = System.Windows.Forms.AutoScaleMode.Font;
             this.Font                = new System.Drawing.Font("Microsoft Sans Serif", 10F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ClientSize          = new System.Drawing.Size(460, 295);
+            this.ClientSize          = new System.Drawing.Size(560, 295);
             this.Controls.AddRange(new System.Windows.Forms.Control[] {
                 lblRomCode, lblRomCodeValue,
                 lblModule, lblModuleValue,
@@ -194,7 +202,7 @@ namespace BinWatch
                 lblLabel, txtLabel,
                 lblMaxTemp, nudMaxTemp,
                 lblOffset, nudOffset,
-                chkEnabled,
+                chkEnabled, chkManualLocation,
                 btnSave, btnCancel });
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MaximizeBox     = false;

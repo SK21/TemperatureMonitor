@@ -19,8 +19,8 @@
 #include "DS2482.h" 		    // https://github.com/paeaetech/paeae
 #include "ESP2SOTA_RC.h"	// modified from https://github.com/pangodream/ESP2SOTA
 
-# define InoDescription "BinTempsModule 10-Mar-2026"
-#define InoID 10036  // change to load default values
+# define InoDescription "BinTempsModule 11-Mar-2026"
+#define InoID 11036  // change to load default values
 
 #define SDApin  4
 #define SCLpin  5

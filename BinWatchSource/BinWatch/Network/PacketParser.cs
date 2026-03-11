@@ -74,6 +74,7 @@ namespace BinWatch.Network
             var packet = new TemperaturePacket(moduleId, romCode, rawTemp,
                 userData0, userData1, remaining, source);
 
+            Logger.Info($"30830 OK — module:{moduleId} remaining:{remaining} temp:{rawTemp / 16.0f:F1} ud={userData1:X2}{userData0:X2}");
             TemperatureReceived?.Invoke(this, packet);
         }
 

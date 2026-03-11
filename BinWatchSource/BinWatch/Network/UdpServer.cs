@@ -225,13 +225,33 @@ namespace BinWatch.Network
             }
         }
 
+        // Cache local IPs to avoid enumerating interfaces on every received packet.
+        // Refreshed every 60 s in case adapters change (VPN connect/disconnect, DHCP renewal).
+        private static HashSet<IPAddress> _localAddressCache;
+        private static DateTime _localAddressCacheTime = DateTime.MinValue;
+        private static readonly TimeSpan LocalAddressCacheTtl = TimeSpan.FromSeconds(60);
+        private static readonly object _localAddressLock = new object();
+
         private static bool IsLocalAddress(IPAddress address)
         {
             if (IPAddress.IsLoopback(address)) return true;
-            IPHostEntry host = Dns.GetHostEntry(Dns.GetHostName());
-            foreach (IPAddress ip in host.AddressList)
-                if (ip.Equals(address)) return true;
-            return false;
+
+            lock (_localAddressLock)
+            {
+                if (_localAddressCache == null || (DateTime.UtcNow - _localAddressCacheTime) > LocalAddressCacheTtl)
+                {
+                    var addrs = new HashSet<IPAddress>();
+                    foreach (var ni in NetworkInterface.GetAllNetworkInterfaces())
+                    {
+                        if (ni.OperationalStatus != OperationalStatus.Up) continue;
+                        foreach (var ua in ni.GetIPProperties().UnicastAddresses)
+                            addrs.Add(ua.Address);
+                    }
+                    _localAddressCache = addrs;
+                    _localAddressCacheTime = DateTime.UtcNow;
+                }
+                return _localAddressCache.Contains(address);
+            }
         }
 
         private static byte Crc(byte[] data, int length)

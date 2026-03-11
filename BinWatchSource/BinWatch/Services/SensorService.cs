@@ -77,15 +77,16 @@ namespace BinWatch.Services
             }
         }
 
-        public void UpdateLocation(string romCode, byte binId, byte cableId, byte sensorNum)
+        public void UpdateLocation(string romCode, byte binId, byte cableId, byte sensorNum, bool manualLocation = false)
         {
             using (var db = new AppDbContext())
             {
                 var sensor = db.Sensors.Find(romCode);
                 if (sensor == null) return;
-                sensor.BinId     = binId;
-                sensor.CableId   = cableId;
-                sensor.SensorNum = sensorNum;
+                sensor.BinId          = binId;
+                sensor.CableId        = cableId;
+                sensor.SensorNum      = sensorNum;
+                sensor.ManualLocation = manualLocation;
                 db.SaveChanges();
             }
         }

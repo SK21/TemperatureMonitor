@@ -1,7 +1,7 @@
+using System;
 using BinWatch.Data;
 using BinWatch.Models;
 using BinWatch.Services;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
@@ -29,6 +29,7 @@ namespace BinWatch
         private readonly ComboBox[] _cboByte = new ComboBox[Rows];
         private readonly NumericUpDown[] _nudLow = new NumericUpDown[Rows];
         private readonly NumericUpDown[] _nudHigh = new NumericUpDown[Rows];
+        private readonly NumericUpDown[] _nudOffset = new NumericUpDown[Rows];
 
         private DataGridView _dgvPreview;
         private DataTable _previewTable;
@@ -66,6 +67,7 @@ namespace BinWatch
             const int xLow = 194; const int wNud = 52;
             const int xDash = 250;
             const int xHigh = 264;
+            const int xOffset = 324;
             const int rowH = 32;
             const int formW = 580;
 
@@ -88,6 +90,7 @@ namespace BinWatch
             hdr.Controls.Add(new Label { Text = "Byte", Location = new Point(xByte, 3), Width = wByte, Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold) });
             hdr.Controls.Add(new Label { Text = "Bit low", Location = new Point(xLow, 3), Width = 65, Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold) });
             hdr.Controls.Add(new Label { Text = "Bit high", Location = new Point(xHigh, 3), Width = 65, Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold) });
+            hdr.Controls.Add(new Label { Text = "Offset", Location = new Point(xOffset, 3), Width = 65, Font = new Font("Microsoft Sans Serif", 10F, FontStyle.Bold) });
             Controls.Add(hdr);
 
             // 4 field-definition rows
@@ -114,7 +117,10 @@ namespace BinWatch
                 _nudHigh[i] = new NumericUpDown { Location = new Point(xHigh, y), Size = new Size(wNud, 24), Minimum = 0, Maximum = 7, Value = 7 };
                 _nudHigh[i].ValueChanged += OnFieldChanged;
 
-                Controls.AddRange(new Control[] { _cboDesc[i], _cboByte[i], _nudLow[i], _nudHigh[i] });
+                _nudOffset[i] = new NumericUpDown { Location = new Point(xOffset, y), Size = new Size(wNud, 24), Minimum = -127, Maximum = 127, Value = 0 };
+                _nudOffset[i].ValueChanged += OnFieldChanged;
+
+                Controls.AddRange(new Control[] { _cboDesc[i], _cboByte[i], _nudLow[i], _nudHigh[i], _nudOffset[i] });
                 y += rowH;
             }
 
@@ -202,12 +208,13 @@ namespace BinWatch
             _txtName.Text = fmt.Name ?? "";
             for (int i = 0; i < Rows; i++)
             {
-                var (desc, byteNum, low, high) = fmt.GetRow(i);
+                var (desc, byteNum, low, high, offset) = fmt.GetRow(i);
                 string d = string.IsNullOrEmpty(desc) ? "-" : desc;
                 _cboDesc[i].SelectedItem = _cboDesc[i].Items.Contains(d) ? (object)d : _cboDesc[i].Items[0];
                 _cboByte[i].SelectedIndex = (byteNum == 2) ? 1 : 0;
                 _nudLow[i].Value = Math.Max(0, Math.Min(7, low));
                 _nudHigh[i].Value = Math.Max(0, Math.Min(7, high));
+                _nudOffset[i].Value = Math.Max(-127, Math.Min(127, offset));
             }
             _loading = false;
         }
@@ -246,6 +253,7 @@ namespace BinWatch
                 row["Sensor"] = (sensor + 1).ToString();
                 _previewTable.Rows.Add(row);
             }
+            _dgvPreview.Refresh();
         }
 
         private UserDataFormatDef CurrentFormat()
@@ -257,7 +265,8 @@ namespace BinWatch
                 int byteNum = (_cboByte[i].SelectedIndex == 1) ? 2 : 1;
                 int low = (int)_nudLow[i].Value;
                 int high = (int)_nudHigh[i].Value;
-                fmt.SetRow(i, desc == "-" ? null : desc, byteNum, low, high);
+                int offset = (int)_nudOffset[i].Value;
+                fmt.SetRow(i, desc == "-" ? null : desc, byteNum, low, high, offset);
             }
             return fmt;
         }
@@ -300,7 +309,6 @@ namespace BinWatch
                     sensor.BinId = (byte)binVal;
                     sensor.CableId = (byte)cableVal;
                     sensor.SensorNum = (byte)sensorVal;
-                    sensor.ManualLocation = true;
                     sensor.FormatId = dbFmt.Id;
                     count++;
                 }
@@ -308,10 +316,8 @@ namespace BinWatch
             }
 
             MessageBox.Show(
-                $"{count} sensor(s) updated.\n\n" +
-                "Location is now locked — incoming packets will not overwrite it.\n\n" +
-                "Use 'Reprogram Selected' in the sensor list to write the new location\n" +
-                "into each sensor's EEPROM so future packets decode correctly.",
+                $"{count} sensor(s) updated with format '{fmt.Name}'.\n\n" +
+                "Incoming packets will be automatically re-decoded using this format.",
                 "Applied", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             DialogResult = DialogResult.OK;
@@ -322,9 +328,9 @@ namespace BinWatch
 
         private static void CopyRows(UserDataFormatDef src, UserDataFormatDef dst)
         {
-            dst.R0Desc = src.R0Desc; dst.R0Byte = src.R0Byte; dst.R0Low = src.R0Low; dst.R0High = src.R0High;
-            dst.R1Desc = src.R1Desc; dst.R1Byte = src.R1Byte; dst.R1Low = src.R1Low; dst.R1High = src.R1High;
-            dst.R2Desc = src.R2Desc; dst.R2Byte = src.R2Byte; dst.R2Low = src.R2Low; dst.R2High = src.R2High;
+            dst.R0Desc = src.R0Desc; dst.R0Byte = src.R0Byte; dst.R0Low = src.R0Low; dst.R0High = src.R0High; dst.R0Offset = src.R0Offset;
+            dst.R1Desc = src.R1Desc; dst.R1Byte = src.R1Byte; dst.R1Low = src.R1Low; dst.R1High = src.R1High; dst.R1Offset = src.R1Offset;
+            dst.R2Desc = src.R2Desc; dst.R2Byte = src.R2Byte; dst.R2Low = src.R2Low; dst.R2High = src.R2High; dst.R2Offset = src.R2Offset;
         }
 
         private static string FormatRomCode(string rc)

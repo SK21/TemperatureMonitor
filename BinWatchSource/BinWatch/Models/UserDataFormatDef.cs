@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,10 +19,11 @@ namespace BinWatch.Models
 
         public string Name { get; set; }
 
-        // Row 0 – 2: Description (Bin/Cable/Sensor/null), Byte (1 or 2), BitLow, BitHigh
-        public string R0Desc { get; set; }  public int R0Byte { get; set; }  public int R0Low { get; set; }  public int R0High { get; set; }
-        public string R1Desc { get; set; }  public int R1Byte { get; set; }  public int R1Low { get; set; }  public int R1High { get; set; }
-        public string R2Desc { get; set; }  public int R2Byte { get; set; }  public int R2Low { get; set; }  public int R2High { get; set; }
+        // Row 0 – 2: Description (Bin/Cable/Sensor/null), Byte (1 or 2), BitLow, BitHigh, Offset
+        // Offset is added to the extracted bit value before storing (e.g. -1 converts 1-based to 0-based).
+        public string R0Desc { get; set; }  public int R0Byte { get; set; }  public int R0Low { get; set; }  public int R0High { get; set; }  public int R0Offset { get; set; }
+        public string R1Desc { get; set; }  public int R1Byte { get; set; }  public int R1Low { get; set; }  public int R1High { get; set; }  public int R1Offset { get; set; }
+        public string R2Desc { get; set; }  public int R2Byte { get; set; }  public int R2Low { get; set; }  public int R2High { get; set; }  public int R2Offset { get; set; }
 
         public virtual ICollection<Sensor> Sensors { get; set; } = new List<Sensor>();
 
@@ -35,9 +37,9 @@ namespace BinWatch.Models
             int bin = 0, cable = 0, sensor = 0;
             for (int i = 0; i < 3; i++)
             {
-                var (desc, byteNum, low, high) = GetRow(i);
+                var (desc, byteNum, low, high, offset) = GetRow(i);
                 if (string.IsNullOrEmpty(desc) || desc == "-") continue;
-                int val = FieldValue(raw, byteNum, low, high);
+                int val = Math.Max(0, FieldValue(raw, byteNum, low, high) + offset);
                 if (desc == "Bin")    bin    = val;
                 if (desc == "Cable")  cable  = val;
                 if (desc == "Sensor") sensor = val;
@@ -45,23 +47,23 @@ namespace BinWatch.Models
             return (bin, cable, sensor);
         }
 
-        public (string desc, int byteNum, int low, int high) GetRow(int i)
+        public (string desc, int byteNum, int low, int high, int offset) GetRow(int i)
         {
             switch (i)
             {
-                case 0:  return (R0Desc, R0Byte, R0Low, R0High);
-                case 1:  return (R1Desc, R1Byte, R1Low, R1High);
-                default: return (R2Desc, R2Byte, R2Low, R2High);
+                case 0:  return (R0Desc, R0Byte, R0Low, R0High, R0Offset);
+                case 1:  return (R1Desc, R1Byte, R1Low, R1High, R1Offset);
+                default: return (R2Desc, R2Byte, R2Low, R2High, R2Offset);
             }
         }
 
-        public void SetRow(int i, string desc, int byteNum, int low, int high)
+        public void SetRow(int i, string desc, int byteNum, int low, int high, int offset = 0)
         {
             switch (i)
             {
-                case 0: R0Desc = desc; R0Byte = byteNum; R0Low = low; R0High = high; break;
-                case 1: R1Desc = desc; R1Byte = byteNum; R1Low = low; R1High = high; break;
-                case 2: R2Desc = desc; R2Byte = byteNum; R2Low = low; R2High = high; break;
+                case 0: R0Desc = desc; R0Byte = byteNum; R0Low = low; R0High = high; R0Offset = offset; break;
+                case 1: R1Desc = desc; R1Byte = byteNum; R1Low = low; R1High = high; R1Offset = offset; break;
+                case 2: R2Desc = desc; R2Byte = byteNum; R2Low = low; R2High = high; R2Offset = offset; break;
             }
         }
 

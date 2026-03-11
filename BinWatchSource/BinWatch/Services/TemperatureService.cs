@@ -36,10 +36,18 @@ namespace BinWatch.Services
         private readonly object _batchLock = new object();
         private readonly Dictionary<byte, List<TemperaturePacket>> _batches =
             new Dictionary<byte, List<TemperaturePacket>>();
+        private readonly Dictionary<byte, DateTime> _batchLastPacket =
+            new Dictionary<byte, DateTime>();
+
+        // Flush incomplete batches after this long with no new packets (weak WiFi recovery)
+        private static readonly TimeSpan BatchTimeout = TimeSpan.FromSeconds(15);
+        private readonly System.Threading.Timer _timeoutTimer;
 
         public TemperatureService(ModuleService moduleService)
         {
             _moduleService = moduleService;
+            _timeoutTimer = new System.Threading.Timer(_ => FlushTimedOutBatches(), null,
+                TimeSpan.FromSeconds(15), TimeSpan.FromSeconds(15));
         }
 
         // Subscribe this to PacketParser.TemperatureReceived
@@ -52,16 +60,51 @@ namespace BinWatch.Services
                 if (!_batches.ContainsKey(packet.ModuleId))
                     _batches[packet.ModuleId] = new List<TemperaturePacket>();
 
-                _batches[packet.ModuleId].Add(packet);
+                var existing = _batches[packet.ModuleId];
+
+                // In a valid batch, (SensorsRemaining + packetCount) is constant.
+                // If it increases, the previous batch lost its last packet — discard it.
+                if (existing.Count > 0 &&
+                    (packet.SensorsRemaining + existing.Count) > existing[0].SensorsRemaining)
+                {
+                    Logger.Warning($"Discarding stale batch for module {packet.ModuleId} ({existing.Count} packets)");
+                    existing.Clear();
+                }
+
+                existing.Add(packet);
+                _batchLastPacket[packet.ModuleId] = DateTime.UtcNow;
 
                 if (packet.SensorsRemaining == 0)
                 {
-                    batch = _batches[packet.ModuleId];
+                    batch = existing;
                     _batches.Remove(packet.ModuleId);
+                    _batchLastPacket.Remove(packet.ModuleId);
                 }
             }
 
             if (batch != null)
+                FlushBatch(batch);
+        }
+
+        private void FlushTimedOutBatches()
+        {
+            var toFlush = new List<List<TemperaturePacket>>();
+            lock (_batchLock)
+            {
+                var now = DateTime.UtcNow;
+                foreach (var kvp in _batchLastPacket)
+                {
+                    if ((now - kvp.Value) < BatchTimeout) continue;
+                    byte moduleId = kvp.Key;
+                    if (!_batches.TryGetValue(moduleId, out var batch)) continue;
+                    Logger.Warning($"Flushing incomplete batch for module {moduleId} ({batch.Count} of {batch[0].SensorsRemaining + 1} packets) after timeout");
+                    toFlush.Add(batch);
+                    _batches.Remove(moduleId);
+                }
+                foreach (var batch in toFlush)
+                    _batchLastPacket.Remove(batch[0].ModuleId);
+            }
+            foreach (var batch in toFlush)
                 FlushBatch(batch);
         }
 
@@ -92,10 +135,13 @@ namespace BinWatch.Services
                         }
                     }
 
+                    var formats = db.Formats.ToList().ToDictionary(f => f.Id);
+
                     foreach (var packet in packets)
                     {
                         string romCode = packet.RomCodeHex;
                         var sensor = db.Sensors.Find(romCode);
+                        ushort rawUserData = (ushort)((packet.UserData1 << 8) | packet.UserData0);
 
                         if (sensor == null)
                         {
@@ -106,25 +152,36 @@ namespace BinWatch.Services
                                 BinId       = packet.BinId,
                                 CableId     = packet.CableId,
                                 SensorNum   = packet.SensorNum,
-                                RawUserData = (packet.UserData1 << 8) | packet.UserData0,
+                                RawUserData = rawUserData,
                                 Enabled     = true
                             };
                             db.Sensors.Add(sensor);
                         }
                         else
                         {
-                            if (!sensor.ManualLocation)
+                            sensor.RawUserData = rawUserData;
+
+                            if (sensor.FormatId.HasValue &&
+                                formats.TryGetValue(sensor.FormatId.Value, out var fmt))
+                            {
+                                var (bin, cable, sensorNum) = fmt.Decode(rawUserData);
+                                sensor.BinId    = (byte)bin;
+                                sensor.CableId  = (byte)cable;
+                                sensor.SensorNum = (byte)sensorNum;
+                            }
+                            else if (!sensor.ManualLocation)
                             {
                                 sensor.BinId    = packet.BinId;
                                 sensor.CableId  = packet.CableId;
                                 sensor.SensorNum = packet.SensorNum;
                             }
+
                             if (moduleMac != null && sensor.ModuleMac == null)
                                 sensor.ModuleMac = moduleMac;
                         }
 
-                        // Always capture raw user data so ConvertSensorsForm can re-decode later
-                        sensor.RawUserData = (packet.UserData1 << 8) | packet.UserData0;
+                        // Always capture raw user data
+                        sensor.RawUserData = rawUserData;
 
                         if (!sensor.Enabled) continue;
 

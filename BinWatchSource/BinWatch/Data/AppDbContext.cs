@@ -79,6 +79,17 @@ namespace BinWatch.Data
             try { Database.ExecuteSqlCommand("ALTER TABLE Sensors ADD COLUMN FormatId INTEGER REFERENCES UserDataFormats(Id)"); }
             catch { /* column already exists */ }
 
+            // Migration: add Offset columns to UserDataFormats
+            try { Database.ExecuteSqlCommand("ALTER TABLE UserDataFormats ADD COLUMN R0Offset INTEGER NOT NULL DEFAULT 0"); }
+            catch { /* column already exists */ }
+            try { Database.ExecuteSqlCommand("ALTER TABLE UserDataFormats ADD COLUMN R1Offset INTEGER NOT NULL DEFAULT 0"); }
+            catch { /* column already exists */ }
+            try { Database.ExecuteSqlCommand("ALTER TABLE UserDataFormats ADD COLUMN R2Offset INTEGER NOT NULL DEFAULT 0"); }
+            catch { /* column already exists */ }
+
+            // Clear lock on sensors that have a format assigned — format decodes automatically, no lock needed
+            Database.ExecuteSqlCommand("UPDATE Sensors SET ManualLocation = 0 WHERE FormatId IS NOT NULL");
+
             // Seed BinWatch format if not present
             Database.ExecuteSqlCommand(
                 "INSERT OR IGNORE INTO UserDataFormats (Id, Name, R0Desc, R0Byte, R0Low, R0High, R1Desc, R1Byte, R1Low, R1High, R2Desc, R2Byte, R2Low, R2High) " +
