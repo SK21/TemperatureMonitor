@@ -357,8 +357,10 @@ namespace BinWatch
 
         private void btnRequestTemps_Click(object sender, EventArgs e)
         {
-            AppServices.UdpServer.SendCommand(0, UdpServer.CmdUpdateAndSendTemps);
-            SetStatusTimed("Reading temperatures on all modules… (may take several minutes)", 120);
+            var module = GetSelectedModule();
+            if (module == null) return;
+            AppServices.UdpServer.SendCommand(module.ModuleId, UdpServer.CmdUpdateAndSendTemps, module.LastKnownIp);
+            SetStatusTimed($"Updating temperatures from {module.Name}…", 120);
         }
 
         private void btnSettings_Click(object sender, EventArgs e)

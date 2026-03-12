@@ -45,6 +45,7 @@ Select a sensor from the dropdown, set the date range, and click **Load**. The c
 |---|---|
 | Database path | Where BinWatch.db is stored. Leave blank for the default (same folder as the exe). Restart the app to apply a path change. |
 | Passive mode | Tick to open an existing database read-only without starting the UDP server. Use this on a secondary machine sharing a database over a network drive. |
+| Debug logging | Tick to write verbose debug output to BinWatch.log. Takes effect immediately without a restart. |
 
 ---
 
@@ -56,7 +57,7 @@ Each module broadcasts a WiFi access point named **ModuleName (MAC)**. Connect t
 
 - Default gateway IP: **192.168.4.1**
 
-The module's home page shows sensor count and signal strength, with links to:
+The module's home page shows the module name and sensor count, with links to:
 
 | Link | Purpose |
 |---|---|
@@ -68,12 +69,15 @@ The module's home page shows sensor count and signal strength, with links to:
 
 | Field | Description |
 |---|---|
-| WiFi SSID / Password | Network the module connects to for UDP reporting |
-| Module name | Shown in BinWatch (max 10 characters) |
+| Network / Password | WiFi network the module connects to for UDP reporting |
+| Module Name | Shown in BinWatch (max 10 characters) |
+| Use Wifi Server | Tick to enable WiFi connection; untick to run in access-point mode only |
 | Use DS2482 | Tick if the module uses a DS2482 I²C 1-Wire master instead of GPIO |
 | Strong pullup | Tick if a strong pullup circuit is fitted |
 
-Save settings — the module restarts automatically.
+Click **Save/Restart** — the module restarts automatically with the new settings.
+
+The bottom of the page shows the current WiFi connection status, signal strength, and firmware version. An **Update Firmware** link opens the OTA update page directly.
 
 > The module ID and name are normally set from BinWatch using **Identify Module** then double-clicking the module row.
 
@@ -82,10 +86,10 @@ Save settings — the module restarts automatically.
 Each module reads and reports temperatures once per hour. To reduce network congestion, modules stagger their reports based on their ID:
 
 - Module 1 reports at the top of the hour
-- Module 2 reports 5 minutes later
-- Module 3 reports 10 minutes later, and so on
+- Module 2 reports 1 minute later
+- Module 3 reports 2 minutes later, and so on
 
-BinWatch also polls all modules every 30 minutes as a fallback, staggering commands 5 seconds apart.
+BinWatch also polls all modules every 60 minutes as a fallback, staggering commands 5 seconds apart.
 
 ---
 
