@@ -89,7 +89,7 @@ Each module reads and reports temperatures once per hour. To reduce network cong
 - Module 2 reports 1 minute later
 - Module 3 reports 2 minutes later, and so on
 
-BinWatch also polls all modules every 60 minutes as a fallback, staggering commands 5 seconds apart.
+BinWatch also sends a broadcast poll every 60 minutes as a fallback. Each module staggers its response by 1 minute per module ID, so module 1 responds immediately, module 2 after 1 minute, module 3 after 2 minutes, and so on.
 
 ---
 

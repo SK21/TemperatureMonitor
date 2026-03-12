@@ -97,9 +97,19 @@ void ReadPGNs(byte data[], uint16_t len)
 				}
 				else if (data[2] == 0x00)
 				{
-					// Broadcast command — stagger response by module ID * BroadcastStaggerMs
-					PendingCommand = data[3];
-					CommandSetTime = millis();
+					byte cmd = data[3];
+					if (cmd & 4)
+					{
+						// Temp update needed — stagger response by module ID * BroadcastStaggerMs
+						PendingCommand = cmd;
+						CommandSetTime = millis();
+					}
+					else
+					{
+						// Description / cached temps only — respond immediately, no stagger needed
+						if ((cmd & 1) == 1) SendTemps();
+						if ((cmd & 2) == 2) SendModuleDescription();
+					}
 				}
 			}
 		}

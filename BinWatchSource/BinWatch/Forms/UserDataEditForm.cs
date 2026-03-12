@@ -281,6 +281,11 @@ namespace BinWatch
                 MessageBox.Show("Enter a format name.", "Save", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+            if (fmt.Name.Equals("BinWatch", StringComparison.OrdinalIgnoreCase))
+            {
+                MessageBox.Show("The 'BinWatch' format is locked and cannot be modified.\n\nTo create a custom format based on it, change the name before saving.", "Locked", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             int count = 0;
             using (var db = new AppDbContext())

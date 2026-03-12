@@ -16,6 +16,7 @@ namespace BinWatch
         private System.Windows.Forms.Button btnRequestTemps;
         private System.Windows.Forms.Button btnSettings;
         private System.Windows.Forms.Button btnConvertSensors;
+        private System.Windows.Forms.Button btnDiscover;
         private System.Windows.Forms.DataGridView dgvModules;
 
         // Temperatures tab
@@ -64,6 +65,7 @@ namespace BinWatch
             this.btnRequestTemps = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
             this.btnConvertSensors = new System.Windows.Forms.Button();
+            this.btnDiscover = new System.Windows.Forms.Button();
             this.tabTemperatures = new System.Windows.Forms.TabPage();
             this.dgvTemperatures = new System.Windows.Forms.DataGridView();
             this.pnlTempsToolbar = new System.Windows.Forms.Panel();
@@ -149,6 +151,7 @@ namespace BinWatch
             this.pnlDashToolbar.Controls.Add(this.btnRequestTemps);
             this.pnlDashToolbar.Controls.Add(this.btnSettings);
             this.pnlDashToolbar.Controls.Add(this.btnConvertSensors);
+            this.pnlDashToolbar.Controls.Add(this.btnDiscover);
             this.pnlDashToolbar.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlDashToolbar.Location = new System.Drawing.Point(3, 3);
             this.pnlDashToolbar.Name = "pnlDashToolbar";
@@ -157,7 +160,7 @@ namespace BinWatch
             // 
             // btnRequestDescription
             // 
-            this.btnRequestDescription.Location = new System.Drawing.Point(303, 7);
+            this.btnRequestDescription.Location = new System.Drawing.Point(301, 7);
             this.btnRequestDescription.Name = "btnRequestDescription";
             this.btnRequestDescription.Size = new System.Drawing.Size(136, 27);
             this.btnRequestDescription.TabIndex = 0;
@@ -175,7 +178,7 @@ namespace BinWatch
             // 
             // btnSettings
             // 
-            this.btnSettings.Location = new System.Drawing.Point(188, 7);
+            this.btnSettings.Location = new System.Drawing.Point(187, 7);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(93, 27);
             this.btnSettings.TabIndex = 2;
@@ -184,12 +187,21 @@ namespace BinWatch
             // 
             // btnConvertSensors
             // 
-            this.btnConvertSensors.Location = new System.Drawing.Point(461, 7);
+            this.btnConvertSensors.Location = new System.Drawing.Point(458, 7);
             this.btnConvertSensors.Name = "btnConvertSensors";
             this.btnConvertSensors.Size = new System.Drawing.Size(145, 27);
             this.btnConvertSensors.TabIndex = 3;
             this.btnConvertSensors.Text = "Convert Sensors";
             this.btnConvertSensors.Click += new System.EventHandler(this.btnConvertSensors_Click);
+            // 
+            // btnDiscover
+            // 
+            this.btnDiscover.Location = new System.Drawing.Point(624, 7);
+            this.btnDiscover.Name = "btnDiscover";
+            this.btnDiscover.Size = new System.Drawing.Size(130, 27);
+            this.btnDiscover.TabIndex = 4;
+            this.btnDiscover.Text = "Discover Modules";
+            this.btnDiscover.Click += new System.EventHandler(this.btnDiscover_Click);
             // 
             // tabTemperatures
             // 
@@ -234,36 +246,37 @@ namespace BinWatch
             this.pnlTempsToolbar.Name = "pnlTempsToolbar";
             this.pnlTempsToolbar.Size = new System.Drawing.Size(809, 31);
             this.pnlTempsToolbar.TabIndex = 1;
-            //
+            // 
             // lblModuleFilter
-            //
+            // 
             this.lblModuleFilter.Location = new System.Drawing.Point(5, 6);
             this.lblModuleFilter.Name = "lblModuleFilter";
             this.lblModuleFilter.Size = new System.Drawing.Size(57, 18);
             this.lblModuleFilter.TabIndex = 1;
             this.lblModuleFilter.Text = "Module:";
             this.lblModuleFilter.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
+            // 
             // cboModuleFilter
-            //
+            // 
             this.cboModuleFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboModuleFilter.Location = new System.Drawing.Point(66, 3);
             this.cboModuleFilter.Name = "cboModuleFilter";
             this.cboModuleFilter.Size = new System.Drawing.Size(180, 24);
             this.cboModuleFilter.TabIndex = 2;
             this.cboModuleFilter.SelectedIndexChanged += new System.EventHandler(this.cboModuleFilter_SelectedIndexChanged);
-            //
+            // 
             // chkFahrenheit
-            //
+            // 
             this.chkFahrenheit.AutoSize = true;
             this.chkFahrenheit.Location = new System.Drawing.Point(258, 6);
             this.chkFahrenheit.Name = "chkFahrenheit";
+            this.chkFahrenheit.Size = new System.Drawing.Size(41, 21);
             this.chkFahrenheit.TabIndex = 3;
             this.chkFahrenheit.Text = "°F";
             this.chkFahrenheit.CheckedChanged += new System.EventHandler(this.chkFahrenheit_CheckedChanged);
-            //
+            // 
             // btnExportCsv
-            //
+            // 
             this.btnExportCsv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnExportCsv.Location = new System.Drawing.Point(1285, 3);
             this.btnExportCsv.Name = "btnExportCsv";
@@ -308,81 +321,81 @@ namespace BinWatch
             this.pnlHistoryToolbar.Name = "pnlHistoryToolbar";
             this.pnlHistoryToolbar.Size = new System.Drawing.Size(809, 31);
             this.pnlHistoryToolbar.TabIndex = 1;
-            //
+            // 
             // lblHistoryModule
-            //
+            // 
             this.lblHistoryModule.Location = new System.Drawing.Point(7, 6);
             this.lblHistoryModule.Name = "lblHistoryModule";
             this.lblHistoryModule.Size = new System.Drawing.Size(57, 18);
             this.lblHistoryModule.TabIndex = 0;
             this.lblHistoryModule.Text = "Module:";
             this.lblHistoryModule.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
+            // 
             // cboHistoryModule
-            //
+            // 
             this.cboHistoryModule.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboHistoryModule.Location = new System.Drawing.Point(67, 3);
             this.cboHistoryModule.Name = "cboHistoryModule";
             this.cboHistoryModule.Size = new System.Drawing.Size(150, 24);
             this.cboHistoryModule.TabIndex = 1;
             this.cboHistoryModule.SelectedIndexChanged += new System.EventHandler(this.cboHistoryModule_SelectedIndexChanged);
-            //
+            // 
             // lblHistorySensor
-            //
+            // 
             this.lblHistorySensor.Location = new System.Drawing.Point(221, 6);
             this.lblHistorySensor.Name = "lblHistorySensor";
             this.lblHistorySensor.Size = new System.Drawing.Size(57, 18);
             this.lblHistorySensor.TabIndex = 2;
             this.lblHistorySensor.Text = "Sensor:";
             this.lblHistorySensor.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
+            // 
             // cboHistorySensor
-            //
+            // 
             this.cboHistorySensor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboHistorySensor.Location = new System.Drawing.Point(281, 3);
             this.cboHistorySensor.Name = "cboHistorySensor";
             this.cboHistorySensor.Size = new System.Drawing.Size(160, 24);
             this.cboHistorySensor.TabIndex = 3;
             this.cboHistorySensor.SelectedIndexChanged += new System.EventHandler(this.cboHistorySensor_SelectedIndexChanged);
-            //
+            // 
             // lblHistoryFrom
-            //
+            // 
             this.lblHistoryFrom.Location = new System.Drawing.Point(445, 6);
             this.lblHistoryFrom.Name = "lblHistoryFrom";
             this.lblHistoryFrom.Size = new System.Drawing.Size(50, 18);
             this.lblHistoryFrom.TabIndex = 4;
             this.lblHistoryFrom.Text = "From:";
             this.lblHistoryFrom.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
+            // 
             // dtpHistoryFrom
-            //
+            // 
             this.dtpHistoryFrom.CustomFormat = "dd/MMM/yy";
             this.dtpHistoryFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpHistoryFrom.Location = new System.Drawing.Point(498, 4);
             this.dtpHistoryFrom.Name = "dtpHistoryFrom";
             this.dtpHistoryFrom.Size = new System.Drawing.Size(95, 23);
             this.dtpHistoryFrom.TabIndex = 5;
-            //
+            // 
             // lblHistoryTo
-            //
+            // 
             this.lblHistoryTo.Location = new System.Drawing.Point(597, 6);
             this.lblHistoryTo.Name = "lblHistoryTo";
             this.lblHistoryTo.Size = new System.Drawing.Size(32, 18);
             this.lblHistoryTo.TabIndex = 6;
             this.lblHistoryTo.Text = "To:";
             this.lblHistoryTo.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            //
+            // 
             // dtpHistoryTo
-            //
+            // 
             this.dtpHistoryTo.CustomFormat = "dd/MMM/yy";
             this.dtpHistoryTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
             this.dtpHistoryTo.Location = new System.Drawing.Point(632, 4);
             this.dtpHistoryTo.Name = "dtpHistoryTo";
             this.dtpHistoryTo.Size = new System.Drawing.Size(95, 23);
             this.dtpHistoryTo.TabIndex = 7;
-            //
+            // 
             // btnLoadHistory
-            //
+            // 
             this.btnLoadHistory.Location = new System.Drawing.Point(731, 2);
             this.btnLoadHistory.Name = "btnLoadHistory";
             this.btnLoadHistory.Size = new System.Drawing.Size(75, 27);
@@ -432,8 +445,8 @@ namespace BinWatch
             this.MinimumSize = new System.Drawing.Size(602, 395);
             this.Name = "MainForm";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
-            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.Resize += new System.EventHandler(this.MainForm_Resize);
             this.tabControl.ResumeLayout(false);
             this.tabDashboard.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvModules)).EndInit();
@@ -441,6 +454,7 @@ namespace BinWatch
             this.tabTemperatures.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dgvTemperatures)).EndInit();
             this.pnlTempsToolbar.ResumeLayout(false);
+            this.pnlTempsToolbar.PerformLayout();
             this.tabHistory.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.chart)).EndInit();
             this.pnlHistoryToolbar.ResumeLayout(false);

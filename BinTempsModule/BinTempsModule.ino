@@ -19,8 +19,8 @@
 #include "DS2482.h" 		    // https://github.com/paeaetech/paeae
 #include "ESP2SOTA_RC.h"	// modified from https://github.com/pangodream/ESP2SOTA
 
-# define InoDescription "BinTempsModule 11-Mar-2026"
-#define InoID 11036         // firmware version — update with every build (DDMMY format)
+# define InoDescription "BinTempsModule 12-Mar-2026"
+#define InoID 12036         // firmware version — update with every build (DDMMY format)
 #define StructVersion 1     // EEPROM layout version — increment ONLY when ModuleData fields change
 
 #define SDApin  4

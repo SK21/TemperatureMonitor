@@ -58,6 +58,13 @@ namespace BinWatch
         public static int MainFormWidth  { get; set; } = -1;
         public static int MainFormHeight { get; set; } = -1;
 
+        // ── Grid sort orders ──────────────────────────────────────────────────────
+
+        public static string ModulesSortColumn    { get; set; } = "";
+        public static bool   ModulesSortAscending { get; set; } = true;
+        public static string TempsSortColumn      { get; set; } = "";
+        public static bool   TempsSortAscending   { get; set; } = true;
+
         // ── Load / Save ───────────────────────────────────────────────────────────
 
         public static void Load()
@@ -80,6 +87,10 @@ namespace BinWatch
                 else if (key == "MainForm.Top")    { if (int.TryParse(val, out int v)) MainFormTop    = v; }
                 else if (key == "MainForm.Width")  { if (int.TryParse(val, out int v)) MainFormWidth  = v; }
                 else if (key == "MainForm.Height") { if (int.TryParse(val, out int v)) MainFormHeight = v; }
+                else if (key == "Modules.SortColumn")    ModulesSortColumn    = val;
+                else if (key == "Modules.SortAscending") { if (bool.TryParse(val, out bool v)) ModulesSortAscending = v; }
+                else if (key == "Temps.SortColumn")      TempsSortColumn      = val;
+                else if (key == "Temps.SortAscending")   { if (bool.TryParse(val, out bool v)) TempsSortAscending   = v; }
             }
         }
 
@@ -112,6 +123,10 @@ namespace BinWatch
         public static void SaveToFileOnly(string dbPath, bool passiveMode,
             bool copyDbOnStart = false, string copyDbSource = "")
         {
+            DbPath        = dbPath;
+            PassiveMode   = passiveMode;
+            CopyDbOnStart = copyDbOnStart;
+            CopyDbSource  = copyDbSource;
             WriteIni(dbPath, passiveMode, copyDbOnStart, copyDbSource,
                 MainFormLeft, MainFormTop, MainFormWidth, MainFormHeight);
         }
@@ -144,7 +159,11 @@ namespace BinWatch
                 $"MainForm.Left={left}",
                 $"MainForm.Top={top}",
                 $"MainForm.Width={width}",
-                $"MainForm.Height={height}"
+                $"MainForm.Height={height}",
+                $"Modules.SortColumn={ModulesSortColumn}",
+                $"Modules.SortAscending={ModulesSortAscending.ToString().ToLower()}",
+                $"Temps.SortColumn={TempsSortColumn}",
+                $"Temps.SortAscending={TempsSortAscending.ToString().ToLower()}"
             });
         }
     }

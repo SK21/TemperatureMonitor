@@ -9,7 +9,6 @@ using System.Drawing;
 using System.IO;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace BinWatch
@@ -63,10 +62,12 @@ namespace BinWatch
                 // Passive mode: hide active-only controls
                 btnRequestDescription.Visible = false;
                 btnRequestTemps.Visible = false;
+                btnDiscover.Visible = false;
             }
 
             LoadModules();
             LoadLatestTemperatures();
+            RestoreSortOrders();
             lblStatus.Text = AppConfig.PassiveMode
                 ? "Passive mode (read-only)"
                 : $"Listening on UDP port {UdpServer.DefaultPort}";
@@ -77,7 +78,7 @@ namespace BinWatch
 
             RestoreFormBounds();
 
-            this.Text = "BinWatch - v" + Properties.Settings.Default.AppVersion;
+            this.Text = "BinWatch - " + Properties.Settings.Default.AppVersion;
         }
 
         // -------------------------------------------------------------------------
@@ -136,6 +137,11 @@ namespace BinWatch
 
             dgvModules.DataSource = _modulesTable;
             dgvTemperatures.DataSource = _temperaturesTable;
+
+            dgvModules.ColumnHeaderMouseClick += dgvModules_ColumnHeaderMouseClick;
+            dgvTemperatures.ColumnHeaderMouseClick += dgvTemperatures_ColumnHeaderMouseClick;
+            dgvModules.DataError += (s, e) => e.Cancel = true;
+            dgvTemperatures.DataError += (s, e) => e.Cancel = true;
         }
 
         // -------------------------------------------------------------------------
@@ -336,6 +342,48 @@ namespace BinWatch
         }
 
         // -------------------------------------------------------------------------
+        // Grid sorting
+        // -------------------------------------------------------------------------
+
+        private void dgvModules_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string col = dgvModules.Columns[e.ColumnIndex].Name;
+            bool asc = AppConfig.ModulesSortColumn == col ? !AppConfig.ModulesSortAscending : true;
+            AppConfig.ModulesSortColumn = col;
+            AppConfig.ModulesSortAscending = asc;
+            ApplySort(dgvModules, _modulesTable.DefaultView, col, asc);
+        }
+
+        private void dgvTemperatures_ColumnHeaderMouseClick(object sender, DataGridViewCellMouseEventArgs e)
+        {
+            string col = dgvTemperatures.Columns[e.ColumnIndex].Name;
+            bool asc = AppConfig.TempsSortColumn == col ? !AppConfig.TempsSortAscending : true;
+            AppConfig.TempsSortColumn = col;
+            AppConfig.TempsSortAscending = asc;
+            ApplySort(dgvTemperatures, _temperaturesTable.DefaultView, col, asc);
+        }
+
+        private void ApplySort(DataGridView dgv, System.Data.DataView view, string columnName, bool ascending)
+        {
+            foreach (DataGridViewColumn c in dgv.Columns)
+                c.HeaderCell.SortGlyphDirection = SortOrder.None;
+
+            if (string.IsNullOrEmpty(columnName) || !dgv.Columns.Contains(columnName)) return;
+
+            view.Sort = $"{columnName} {(ascending ? "ASC" : "DESC")}";
+            dgv.Columns[columnName].HeaderCell.SortGlyphDirection =
+                ascending ? SortOrder.Ascending : SortOrder.Descending;
+        }
+
+        private void RestoreSortOrders()
+        {
+            ApplySort(dgvModules, _modulesTable.DefaultView,
+                AppConfig.ModulesSortColumn, AppConfig.ModulesSortAscending);
+            ApplySort(dgvTemperatures, _temperaturesTable.DefaultView,
+                AppConfig.TempsSortColumn, AppConfig.TempsSortAscending);
+        }
+
+        // -------------------------------------------------------------------------
         // Dashboard toolbar
         // -------------------------------------------------------------------------
 
@@ -361,6 +409,12 @@ namespace BinWatch
             if (module == null) return;
             AppServices.UdpServer.SendCommand(module.ModuleId, UdpServer.CmdUpdateAndSendTemps, module.LastKnownIp);
             SetStatusTimed($"Updating temperatures from {module.Name}…", 120);
+        }
+
+        private void btnDiscover_Click(object sender, EventArgs e)
+        {
+            AppServices.UdpServer.SendCommand(0, UdpServer.CmdSendModuleDescription);
+            SetStatusTimed("Discovering modules…", 10);
         }
 
         private void btnSettings_Click(object sender, EventArgs e)
@@ -622,7 +676,7 @@ namespace BinWatch
 
         private static readonly TimeSpan TempRequestInterval = TimeSpan.FromMinutes(60);
         private static readonly TimeSpan PassiveRefresh = TimeSpan.FromMinutes(1);
-        private DateTime _lastTempRequest = DateTime.MinValue;
+        private DateTime _lastTempRequest = DateTime.Now;
         private DateTime _lastPassiveRefresh = DateTime.MinValue;
 
         private DateTime _statusClearAt = DateTime.MinValue;
@@ -659,23 +713,7 @@ namespace BinWatch
             if ((DateTime.Now - _lastTempRequest) >= TempRequestInterval)
             {
                 _lastTempRequest = DateTime.Now;
-
-                var modules = AppServices.ModuleService.GetAllModules()
-                    .Where(m => m.LastKnownIp != null)
-                    .ToArray();
-
-                int staggerMs = 0;
-                foreach (var module in modules)
-                {
-                    var ip = module.LastKnownIp;
-                    var id = module.ModuleId;
-                    if (staggerMs == 0)
-                        AppServices.UdpServer.SendCommand(id, UdpServer.CmdUpdateAndSendTemps, ip);
-                    else
-                        Task.Delay(staggerMs).ContinueWith(_ =>
-                            AppServices.UdpServer.SendCommand(id, UdpServer.CmdUpdateAndSendTemps, ip));
-                    staggerMs += 5000;
-                }
+                AppServices.UdpServer.SendCommand(0, UdpServer.CmdUpdateAndSendTemps);
             }
         }
 
@@ -729,6 +767,9 @@ namespace BinWatch
         {
             if (WindowState == System.Windows.Forms.FormWindowState.Normal)
                 AppConfig.SaveFormBounds(Left, Top, Width, Height);
+            else
+                AppConfig.SaveFormBounds(AppConfig.MainFormLeft, AppConfig.MainFormTop,
+                    AppConfig.MainFormWidth, AppConfig.MainFormHeight);
 
             tmrStatus.Stop();
             AppServices.Shutdown();
