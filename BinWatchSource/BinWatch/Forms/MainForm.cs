@@ -493,7 +493,7 @@ namespace BinWatch
                     DateTime.MinValue, DateTime.MaxValue);
 
                 var sb = new StringBuilder();
-                sb.AppendLine("Timestamp,RomCode,Label,Bin,Cable,Sensor,Module,Temperature");
+                sb.AppendLine("Timestamp,RomCode,Label,Bin,Cable,Sensor,Module,Temperature,RawUserData");
 
                 foreach (var r in records)
                 {
@@ -503,6 +503,8 @@ namespace BinWatch
                     string cable = sensor != null ? (sensor.CableId + 1).ToString() : "";
                     string snum = sensor != null ? (sensor.SensorNum + 1).ToString() : "";
                     string module = sensor?.Module?.Name ?? sensor?.ModuleMac ?? "";
+                    string rawUserData = sensor?.RawUserData.HasValue == true
+                        ? $"{sensor.RawUserData.Value:X4}" : "";
 
                     sb.AppendLine(string.Join(",",
                         r.Timestamp.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -510,7 +512,8 @@ namespace BinWatch
                         $"\"{label}\"",
                         bin, cable, snum,
                         $"\"{module}\"",
-                        r.Temperature.ToString("F2")));
+                        r.Temperature.ToString("F2"),
+                        rawUserData));
                 }
 
                 File.WriteAllText(dlg.FileName, sb.ToString(), Encoding.UTF8);

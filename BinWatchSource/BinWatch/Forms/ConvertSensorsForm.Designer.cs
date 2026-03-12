@@ -66,7 +66,7 @@ namespace BinWatch
             this.btnEditFormat.Name = "btnEditFormat";
             this.btnEditFormat.Size = new System.Drawing.Size(145, 27);
             this.btnEditFormat.TabIndex = 0;
-            this.btnEditFormat.Text = "Edit Format...";
+            this.btnEditFormat.Text = "Edit Selected...";
             this.btnEditFormat.Click += new System.EventHandler(this.btnEditFormat_Click);
             //
             // btnReprogram
