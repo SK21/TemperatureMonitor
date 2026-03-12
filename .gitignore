@@ -415,3 +415,10 @@ fp-info-cache
 
 # Visual Micro stuff
 __vm/
+
+# BinWatch runtime files (database, log, settings)
+BinWatchApp/*.db
+BinWatchApp/*.db-shm
+BinWatchApp/*.db-wal
+BinWatchApp/*.ini
+BinWatchApp/*.log
