@@ -101,9 +101,10 @@ namespace BinWatch
             _temperaturesTable.Columns.Add("Cable", typeof(string));
             _temperaturesTable.Columns.Add("Sensor", typeof(string));
             _temperaturesTable.Columns.Add("Label", typeof(string));
-            _temperaturesTable.Columns.Add("Temperature", typeof(string));
+            _temperaturesTable.Columns.Add("Temperature", typeof(float));
             _temperaturesTable.Columns.Add("Timestamp", typeof(string));
             _temperaturesTable.Columns.Add("Module", typeof(string));
+            _temperaturesTable.Columns.Add("Locked", typeof(string));
             _temperaturesTable.PrimaryKey = new[] { _temperaturesTable.Columns["RomCode"] };
 
             // Define columns manually so they exist before the tabs are shown
@@ -116,7 +117,7 @@ namespace BinWatch
             dgvModules.Columns.Add(new DataGridViewTextBoxColumn { Name = "Firmware", DataPropertyName = "Firmware", HeaderText = "Firmware", Width = 70 });
 
             dgvTemperatures.AutoGenerateColumns = false;
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "RomCode", DataPropertyName = "RomCode", HeaderText = "RomCode", Width = 150 });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "RomCode", DataPropertyName = "RomCode", HeaderText = "RomCode", Width = 180 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Bin", DataPropertyName = "Bin", HeaderText = "Bin", Width = 40 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Cable", DataPropertyName = "Cable", HeaderText = "Cable", Width = 50 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Sensor", DataPropertyName = "Sensor", HeaderText = "Sensor", Width = 55 });
@@ -131,6 +132,7 @@ namespace BinWatch
             });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Timestamp", DataPropertyName = "Timestamp", HeaderText = "Timestamp", Width = 140 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Module", DataPropertyName = "Module", HeaderText = "Module", Width = 120, AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Locked", DataPropertyName = "Locked", HeaderText = "Locked", Width = 55, DefaultCellStyle = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter } });
 
             dgvModules.DataSource = _modulesTable;
             dgvTemperatures.DataSource = _temperaturesTable;
@@ -148,6 +150,57 @@ namespace BinWatch
                 if (module.ModuleId != 0)
                     _moduleNames[module.ModuleId] = module.Name;
             }
+            RefreshModuleFilter();
+        }
+
+        private void RefreshModuleFilter()
+        {
+            RefreshModuleCombo(cboModuleFilter, cboModuleFilter_SelectedIndexChanged);
+            RefreshModuleCombo(cboHistoryModule, cboHistoryModule_SelectedIndexChanged);
+            ApplyModuleFilter();
+        }
+
+        private void RefreshModuleCombo(ComboBox cbo, EventHandler handler)
+        {
+            string selected = cbo.SelectedItem as string;
+
+            cbo.SelectedIndexChanged -= handler;
+            cbo.Items.Clear();
+            cbo.Items.Add("(All)");
+            foreach (DataRow row in _modulesTable.Rows)
+            {
+                string name = row["Name"]?.ToString();
+                if (!string.IsNullOrWhiteSpace(name) && !cbo.Items.Contains(name))
+                    cbo.Items.Add(name);
+            }
+
+            int idx = selected != null ? cbo.Items.IndexOf(selected) : -1;
+            cbo.SelectedIndex = idx >= 0 ? idx : 0;
+            cbo.SelectedIndexChanged += handler;
+        }
+
+        private void ApplyModuleFilter()
+        {
+            string selected = cboModuleFilter.SelectedItem as string;
+            _temperaturesTable.DefaultView.RowFilter =
+                string.IsNullOrEmpty(selected) || selected == "(All)"
+                    ? ""
+                    : $"Module = '{selected.Replace("'", "''")}'";
+        }
+
+        private void cboModuleFilter_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            ApplyModuleFilter();
+        }
+
+        private void cboHistoryModule_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshHistorySensorList();
+        }
+
+        private void chkFahrenheit_CheckedChanged(object sender, EventArgs e)
+        {
+            dgvTemperatures.Invalidate();
         }
 
         private void LoadLatestTemperatures()
@@ -170,7 +223,7 @@ namespace BinWatch
 
                     UpdateTemperatureRow(record.RomCode, sensor.BinId, sensor.CableId,
                         sensor.SensorNum, sensor.Label, record.Temperature,
-                        record.Timestamp, moduleName);
+                        record.Timestamp, moduleName, sensor.ManualLocation);
                 }
             }
 
@@ -196,6 +249,7 @@ namespace BinWatch
                 UpdateModuleRow(e.Module);
                 if (e.Module.ModuleId != 0)
                     _moduleNames[e.Module.ModuleId] = e.Module.Name ?? "";
+                RefreshModuleFilter();
             }));
         }
 
@@ -227,11 +281,11 @@ namespace BinWatch
 
                     UpdateTemperatureRow(sensor.RomCode, sensor.BinId, sensor.CableId,
                         sensor.SensorNum, sensor.Label ?? "", record.Temperature,
-                        record.Timestamp, cachedName ?? moduleName);
+                        record.Timestamp, cachedName ?? moduleName, sensor.ManualLocation);
                 }
 
                 SetStatusTimed($"Temperatures updated from {moduleName}  ({DateTime.Now:HH:mm:ss})", 10);
-                Logger.Info($"Temperatures received from {moduleName}: {string.Join(", ", e.Entries.Select(x => $"{x.Record.Temperature:F1}°C"))} at {DateTime.Now:HH:mm:ss}");
+                Logger.Debug($"Temperatures received from {moduleName}: {string.Join(", ", e.Entries.Select(x => $"{x.Record.Temperature:F1}°C"))} at {DateTime.Now:HH:mm:ss}");
             }));
         }
 
@@ -257,7 +311,8 @@ namespace BinWatch
         }
 
         private void UpdateTemperatureRow(string romCode, byte binId, byte cableId,
-            byte sensorNum, string label, float temperature, DateTime timestamp, string moduleName)
+            byte sensorNum, string label, float temperature, DateTime timestamp, string moduleName,
+            bool manualLocation = false)
         {
             var row = _temperaturesTable.Rows.Find(romCode);
             bool isNew = row == null;
@@ -272,9 +327,10 @@ namespace BinWatch
             row["Cable"] = (cableId + 1).ToString();
             row["Sensor"] = (sensorNum + 1).ToString();
             row["Label"] = label ?? "";
-            row["Temperature"] = $"{temperature:F1} °C";
+            row["Temperature"] = temperature;
             row["Timestamp"] = timestamp.ToString("hh:mm tt dd/MMM/yy");
             row["Module"] = moduleName ?? "";
+            row["Locked"] = manualLocation ? "Yes" : "";
 
             if (isNew) RefreshHistorySensorList();
         }
@@ -301,11 +357,8 @@ namespace BinWatch
 
         private void btnRequestTemps_Click(object sender, EventArgs e)
         {
-            var module = GetSelectedModule();
-            if (module == null) return;
-            AppServices.UdpServer.SendCommand(
-                module.ModuleId, UdpServer.CmdUpdateAndSendTemps, module.LastKnownIp);
-            SetStatusTimed($"Reading temperatures on {module.Name ?? module.MacAddress}… (may take several seconds)", 120);
+            AppServices.UdpServer.SendCommand(0, UdpServer.CmdUpdateAndSendTemps);
+            SetStatusTimed("Reading temperatures on all modules… (may take several minutes)", 120);
         }
 
         private void btnSettings_Click(object sender, EventArgs e)
@@ -374,6 +427,7 @@ namespace BinWatch
                         row["Cable"] = (sensor.CableId + 1).ToString();
                         row["Sensor"] = (sensor.SensorNum + 1).ToString();
                         row["Label"] = sensor.Label ?? "";
+                        row["Locked"] = sensor.ManualLocation ? "Yes" : "";
                     }
                     RefreshHistorySensorList();
                 }
@@ -398,15 +452,25 @@ namespace BinWatch
 
             if (e.ColumnIndex != dgvTemperatures.Columns["Temperature"]?.Index) return;
 
-            string romCode = dgvTemperatures.Rows[e.RowIndex].Cells["RomCode"].Value?.ToString();
-
-            if (!_sensorMaxTemps.TryGetValue(romCode, out float maxTemp)) return;
-
-            string tempStr = e.Value?.ToString().Replace("°C", "").Trim();
-            if (float.TryParse(tempStr, out float temp) && temp > maxTemp)
+            if (e.Value is float tempC)
             {
-                e.CellStyle.BackColor = Color.LightCoral;
-                e.CellStyle.ForeColor = Color.DarkRed;
+                if (chkFahrenheit.Checked)
+                {
+                    float tempF = tempC * 9f / 5f + 32f;
+                    e.Value = $"{tempF:F1} °F";
+                }
+                else
+                {
+                    e.Value = $"{tempC:F1} °C";
+                }
+                e.FormattingApplied = true;
+
+                string romCode = dgvTemperatures.Rows[e.RowIndex].Cells["RomCode"].Value?.ToString();
+                if (_sensorMaxTemps.TryGetValue(romCode, out float maxTemp) && tempC > maxTemp)
+                {
+                    e.CellStyle.BackColor = Color.LightCoral;
+                    e.CellStyle.ForeColor = Color.DarkRed;
+                }
             }
         }
 
@@ -477,6 +541,11 @@ namespace BinWatch
             }
         }
 
+        private void cboHistorySensor_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            btnLoadHistory_Click(null, EventArgs.Empty);
+        }
+
         private void tabControl_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (tabControl.SelectedTab == tabHistory)
@@ -518,8 +587,13 @@ namespace BinWatch
             string selected = (cboHistorySensor.SelectedItem as SensorItem)?.RomCode;
             cboHistorySensor.Items.Clear();
 
+            string moduleFilter = cboHistoryModule.SelectedItem as string;
+            bool filterActive = !string.IsNullOrEmpty(moduleFilter) && moduleFilter != "(All)";
+
             foreach (DataRow row in _temperaturesTable.Rows)
             {
+                if (filterActive && row["Module"].ToString() != moduleFilter) continue;
+
                 string romCode = row["RomCode"].ToString();
                 string label = row["Label"].ToString();
                 string loc = $"Bin {row["Bin"]} / Cable {row["Cable"]} / #{row["Sensor"]}";

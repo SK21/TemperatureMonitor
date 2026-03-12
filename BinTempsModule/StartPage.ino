@@ -110,8 +110,6 @@ String GetPage0()
 	st += "    </h1>";
 	st += "    <h1 align=center>Sensor Count: " + String(SensorCount);
 	st += "    </h1>";
-	st += "    <h1 align=center>Server RSSI: " + String(SignalStrength());
-	st += "    </h1>";
 	st += "    <form id=FORM1 method=post action='/'>&nbsp;";
 	st += "";
 	st += "";

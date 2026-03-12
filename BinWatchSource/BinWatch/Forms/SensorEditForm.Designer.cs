@@ -172,7 +172,7 @@ namespace BinWatch
             this.chkManualLocation.AutoSize = true;
             this.chkManualLocation.Location = new System.Drawing.Point(270, 219);
             this.chkManualLocation.Name     = "chkManualLocation";
-            this.chkManualLocation.Text     = "Lock location";
+            this.chkManualLocation.Text     = "Lock location in database";
 
             // Buttons
             this.btnSave.Location = new System.Drawing.Point(140, 253);

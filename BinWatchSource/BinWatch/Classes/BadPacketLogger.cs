@@ -24,6 +24,7 @@ namespace BinWatch
         /// </summary>
         public static void Log(string reason, IPEndPoint source, byte[] data)
         {
+            if (!AppConfig.DebugLogging) return;
             try
             {
                 string src = source != null ? source.ToString() : "unknown";

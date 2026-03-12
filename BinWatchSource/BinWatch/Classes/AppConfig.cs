@@ -37,6 +37,12 @@ namespace BinWatch
         public static string CopyDbSource { get; set; } = "";
 
         /// <summary>
+        /// When true, Logger.Debug() writes to the log and bad packets are logged.
+        /// Takes effect immediately without restart.
+        /// </summary>
+        public static bool DebugLogging { get; set; } = false;
+
+        /// <summary>
         /// Resolved database path — DbPath if set, otherwise the default location.
         /// </summary>
         public static string ResolvedDbPath =>
@@ -69,6 +75,7 @@ namespace BinWatch
                 else if (key == "PassiveMode")     PassiveMode   = val.Equals("true", StringComparison.OrdinalIgnoreCase);
                 else if (key == "CopyDbOnStart")   CopyDbOnStart = val.Equals("true", StringComparison.OrdinalIgnoreCase);
                 else if (key == "CopyDbSource")    CopyDbSource  = val;
+                else if (key == "DebugLogging")    DebugLogging  = val.Equals("true", StringComparison.OrdinalIgnoreCase);
                 else if (key == "MainForm.Left")   { if (int.TryParse(val, out int v)) MainFormLeft   = v; }
                 else if (key == "MainForm.Top")    { if (int.TryParse(val, out int v)) MainFormTop    = v; }
                 else if (key == "MainForm.Width")  { if (int.TryParse(val, out int v)) MainFormWidth  = v; }
@@ -133,6 +140,7 @@ namespace BinWatch
                 $"PassiveMode={passiveMode.ToString().ToLower()}",
                 $"CopyDbOnStart={copyDbOnStart.ToString().ToLower()}",
                 $"CopyDbSource={copyDbSource}",
+                $"DebugLogging={DebugLogging.ToString().ToLower()}",
                 $"MainForm.Left={left}",
                 $"MainForm.Top={top}",
                 $"MainForm.Width={width}",

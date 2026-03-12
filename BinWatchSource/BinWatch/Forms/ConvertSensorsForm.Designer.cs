@@ -3,12 +3,12 @@ namespace BinWatch
     partial class ConvertSensorsForm
     {
         private System.ComponentModel.IContainer components = null;
-
         private System.Windows.Forms.DataGridView dgv;
         private System.Windows.Forms.Panel pnlBottom;
         private System.Windows.Forms.Button btnEditFormat;
         private System.Windows.Forms.Button btnReprogram;
         private System.Windows.Forms.Button btnClose;
+        private System.Windows.Forms.ToolTip toolTip;
 
         protected override void Dispose(bool disposing)
         {
@@ -19,11 +19,13 @@ namespace BinWatch
 
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.dgv = new System.Windows.Forms.DataGridView();
             this.pnlBottom = new System.Windows.Forms.Panel();
             this.btnEditFormat = new System.Windows.Forms.Button();
             this.btnReprogram = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
+            this.toolTip = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dgv)).BeginInit();
             this.pnlBottom.SuspendLayout();
             this.SuspendLayout();
@@ -75,6 +77,7 @@ namespace BinWatch
             this.btnReprogram.TabIndex = 1;
             this.btnReprogram.Text = "Reprogram Selected";
             this.btnReprogram.Click += new System.EventHandler(this.btnReprogram_Click);
+            this.toolTip.SetToolTip(this.btnReprogram, "Sends the current Bin/Cable/Sensor values to the sensor's EEPROM via UDP.\r\nThe sensor will report this location on every future temperature packet.");
             //
             // btnClose
             //

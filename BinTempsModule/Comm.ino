@@ -87,13 +87,19 @@ void ReadPGNs(byte data[], uint16_t len)
 		{
 			if (GoodCRC(data, PGNlength))
 			{
-				bool targeted = (data[2] == MDL.ID || data[2] == 0x00);
-				if (targeted)
+				if (data[2] == MDL.ID)
 				{
+					// Targeted command — respond immediately
 					byte InCommand = data[3];
 					if ((InCommand & 1) == 1) SendTemps();
 					if ((InCommand & 2) == 2) SendModuleDescription();
 					if ((InCommand & 4) == 4) { UpdateTemps(); SendTemps(); }
+				}
+				else if (data[2] == 0x00)
+				{
+					// Broadcast command — stagger response by module ID * BroadcastStaggerMs
+					PendingCommand = data[3];
+					CommandSetTime = millis();
 				}
 			}
 		}

@@ -20,7 +20,8 @@
 #include "ESP2SOTA_RC.h"	// modified from https://github.com/pangodream/ESP2SOTA
 
 # define InoDescription "BinTempsModule 11-Mar-2026"
-#define InoID 11036  // change to load default values
+#define InoID 11036         // firmware version — update with every build (DDMMY format)
+#define StructVersion 1     // EEPROM layout version — increment ONLY when ModuleData fields change
 
 #define SDApin  4
 #define SCLpin  5
@@ -75,6 +76,11 @@ unsigned long pulsetime = millis() - pulsewait;     // set expired on startup so
 unsigned long LoopTime;
 WiFiUDP udp;
 byte SensorCount = 0;
+
+// Pending broadcast command — set when a moduleId=0 command arrives, executed after stagger delay
+byte PendingCommand = 0;
+unsigned long CommandSetTime = 0;
+const uint32_t BroadcastStaggerMs = 60000UL;   // 1 minute per module ID
 bool DS2842Connected = false;
 ESP8266WebServer server(80);
 uint32_t Readtime;
@@ -92,17 +98,17 @@ void setup()
 
 	EEPROM.begin(256);
 
-	int16_t StoredID;
-	EEPROM.get(0, StoredID);
-	if (StoredID == InoID)
+	int16_t StoredStructVersion;
+	EEPROM.get(0, StoredStructVersion);
+	if (StoredStructVersion == StructVersion)
 	{
 		Serial.println("Loading stored settings.");
 		EEPROM.get(10, MDL);
 	}
 	else
 	{
-		Serial.println("Updating stored settings.");
-		EEPROM.put(0, InoID);
+		Serial.println("ModuleData struct changed — resetting to defaults.");
+		EEPROM.put(0, (int16_t)StructVersion);
 		EEPROM.put(10, MDL);
 		EEPROM.commit();
 	}
@@ -192,10 +198,10 @@ void setup()
 		digitalWrite(MDL.PullupPin, HIGH);
 	}
 
-	// Stagger first read by 5 minutes per module ID so modules don't all burst at once.
-	// Module 0 reads immediately, module 1 reads after 5 min, module 2 after 10 min, etc.
+	// Stagger first read by 1 minute per module ID so modules don't all burst at once.
+	// Module 1 reads immediately, module 2 reads after 1 min, module 3 after 2 min, etc.
 	// After the first read each module runs on its own 1-hour cadence.
-	uint32_t staggerMs = ((uint32_t)MDL.ID * 300000UL) % SampleTime;
+	uint32_t staggerMs = ((uint32_t)(MDL.ID - 1) * BroadcastStaggerMs) % SampleTime;
 	Readtime = millis() - SampleTime + staggerMs;
 
 	/* INITIALIZE ESP2SOTA LIBRARY */
@@ -245,6 +251,15 @@ void loop()
 		Serial.print(Min);
 		Serial.println(" minutes.");
 	}
+
+	if (PendingCommand != 0 && millis() - CommandSetTime >= (uint32_t)(MDL.ID - 1) * BroadcastStaggerMs)
+	{
+		byte cmd = PendingCommand;
+		PendingCommand = 0;
+		if ((cmd & 1) == 1) SendTemps();
+		if ((cmd & 2) == 2) SendModuleDescription();
+		if ((cmd & 4) == 4) { UpdateTemps(); SendTemps(); }
+	}
 }
 
 bool GoodCRC(byte Data[], byte Length)
@@ -266,7 +281,7 @@ byte CRC(byte Chk[], byte Length, byte Start)
 
 void SaveData()
 {
-	EEPROM.put(0, InoID);
+	EEPROM.put(0, (int16_t)StructVersion);
 	EEPROM.put(10, MDL);
 	EEPROM.put(100, MDLnetwork);
 	EEPROM.commit();

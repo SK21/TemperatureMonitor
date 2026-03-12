@@ -1,3 +1,4 @@
+using System;
 using System.Data.Entity;
 using BinWatch.Data;
 using BinWatch.Network;
@@ -16,8 +17,19 @@ namespace BinWatch
         public static void Initialize()
         {
             Database.SetInitializer<AppDbContext>(null);
-            using (var db = new AppDbContext())
-                db.EnsureSchema();
+
+            if (!AppConfig.PassiveMode)
+            {
+                try
+                {
+                    using (var db = new AppDbContext())
+                        db.EnsureSchema();
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception($"Failed to open database: {AppDbContext.DbPath}", ex);
+                }
+            }
 
             UdpServer = new UdpServer();
             Parser = new PacketParser();

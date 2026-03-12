@@ -14,9 +14,10 @@ namespace BinWatch
             InitializeComponent();
             Icon = System.Drawing.Icon.ExtractAssociatedIcon(Application.ExecutablePath);
 
-            _currentDbPath         = AppConfig.ResolvedDbPath;
-            txtDbPath.Text         = AppConfig.DbPath;
-            chkPassiveMode.Checked = AppConfig.PassiveMode;
+            _currentDbPath          = AppConfig.ResolvedDbPath;
+            txtDbPath.Text          = AppConfig.DbPath;
+            chkPassiveMode.Checked  = AppConfig.PassiveMode;
+            chkDebugLogging.Checked = AppConfig.DebugLogging;
 
             UpdateCopyDbVisibility();
         }
@@ -67,8 +68,10 @@ namespace BinWatch
 
             bool copyDb = chkCopyDb.Visible && chkCopyDb.Checked;
 
-            // Write to file only — changes take effect on next restart.
-            // The running app keeps using its current DB path and mode until restarted.
+            // Debug logging takes effect immediately; DB/mode changes require restart.
+            AppConfig.DebugLogging = chkDebugLogging.Checked;
+
+            // Write to file only — DB/mode changes take effect on next restart.
             AppConfig.SaveToFileOnly(
                 dbPath:        newPath,
                 passiveMode:   chkPassiveMode.Checked,

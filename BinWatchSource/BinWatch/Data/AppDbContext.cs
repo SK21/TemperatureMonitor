@@ -9,9 +9,14 @@ namespace BinWatch.Data
         public static string DbPath => AppConfig.ResolvedDbPath;
 
         public AppDbContext()
-            : base(new SQLiteConnection($"Data Source={DbPath};BusyTimeout=5000"), contextOwnsConnection: true)
+            : base(new SQLiteConnection(ConnectionString), contextOwnsConnection: true)
         {
         }
+
+        private static string ConnectionString =>
+            AppConfig.PassiveMode
+                ? $"Data Source={DbPath};Read Only=true"
+                : $"Data Source={DbPath};BusyTimeout=5000";
 
         public DbSet<Module> Modules { get; set; }
         public DbSet<Sensor> Sensors { get; set; }

@@ -41,10 +41,44 @@ namespace BinWatch
             catch (Exception ex)
             {
                 Logger.Error("Startup failed", ex);
-                MessageBox.Show(
-                    $"Startup error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\nDetails have been logged to BinWatch.log.",
-                    "BinWatch", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
+
+                if (!AppConfig.PassiveMode)
+                {
+                    var result = MessageBox.Show(
+                        $"Startup failed:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\n" +
+                        "Another instance may already have the database open.\n\n" +
+                        "Start in passive mode (read-only view)?",
+                        "BinWatch", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        AppConfig.PassiveMode = true;
+                        try
+                        {
+                            AppServices.Initialize();
+                            AppServices.Start();
+                        }
+                        catch (Exception ex2)
+                        {
+                            Logger.Error("Startup failed in passive mode", ex2);
+                            MessageBox.Show(
+                                $"Startup error:\n\n{ex2.Message}\n\n{ex2.InnerException?.Message}\n\nDetails have been logged to BinWatch.log.",
+                                "BinWatch", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                    else
+                    {
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show(
+                        $"Startup error:\n\n{ex.Message}\n\n{ex.InnerException?.Message}\n\nDetails have been logged to BinWatch.log.",
+                        "BinWatch", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
 
             MainForm form;

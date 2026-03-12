@@ -61,7 +61,7 @@ String GetPage2()
 	st += "        font-weight: 700;";
 	st += "      }";
 	st += "";
-	st += "      a:link {";
+	st += "      a:link:not(.button-72) {";
 	st += "        font-size: 150%;";
 	st += "      }";
 	st += "";

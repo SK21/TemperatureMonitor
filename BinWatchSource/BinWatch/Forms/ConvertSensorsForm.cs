@@ -39,7 +39,6 @@ namespace BinWatch
             _table.Columns.Add("Bin",      typeof(string));
             _table.Columns.Add("Cable",    typeof(string));
             _table.Columns.Add("Sensor",   typeof(string));
-            _table.Columns.Add("Locked",   typeof(string));
             dgv.DataSource = _table;
 
             var center = new DataGridViewCellStyle { Alignment = DataGridViewContentAlignment.MiddleCenter };
@@ -50,7 +49,6 @@ namespace BinWatch
             dgv.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Bin",     HeaderText = "Bin",      Width = 50, DefaultCellStyle = center });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Cable",   HeaderText = "Cable",    Width = 55, DefaultCellStyle = center });
             dgv.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Sensor",  HeaderText = "Sensor",   Width = 60, DefaultCellStyle = center });
-            dgv.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Locked",  HeaderText = "Locked",   Width = 55, DefaultCellStyle = center });
         }
 
         // ── Data ──────────────────────────────────────────────────────────────────
@@ -77,7 +75,6 @@ namespace BinWatch
                 row["Bin"]      = (s.BinId     + 1).ToString();
                 row["Cable"]    = (s.CableId   + 1).ToString();
                 row["Sensor"]   = (s.SensorNum + 1).ToString();
-                row["Locked"]   = s.ManualLocation ? "Yes" : "";
                 _table.Rows.Add(row);
             }
         }

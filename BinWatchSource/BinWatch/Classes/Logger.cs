@@ -18,6 +18,7 @@ namespace BinWatch
         private static readonly object _lock = new object();
 
         public static void Info(string message) => Write("INFO ", message, null);
+        public static void Debug(string message) { if (AppConfig.DebugLogging) Write("DEBUG", message, null); }
         public static void Warning(string message) => Write("WARN ", message, null);
         public static void Error(string message, Exception ex = null) => Write("ERROR", message, ex);
 
