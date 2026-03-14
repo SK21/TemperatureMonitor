@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -640,6 +641,21 @@ namespace BinWatch
             chart.Titles.Add($"{label}  —  {records.Count} readings");
         }
 
+        private void btnPrintHistory_Click(object sender, EventArgs e)
+        {
+            var pd = new PrintDocument();
+            pd.DefaultPageSettings.Landscape = true;
+            pd.PrintPage += (s, args) =>
+            {
+                chart.Printing.PrintPaint(args.Graphics, args.MarginBounds);
+            };
+            using (var dlg = new PrintDialog { Document = pd })
+            {
+                if (dlg.ShowDialog(this) != DialogResult.OK) return;
+                pd.Print();
+            }
+        }
+
         // Called whenever a new sensor appears in the temperatures table
         private void RefreshHistorySensorList()
         {
@@ -730,8 +746,9 @@ namespace BinWatch
 
         private void MainForm_Resize(object sender, EventArgs e)
         {
-            // Keep Export CSV button anchored to the right edge
             btnExportCsv.Left = pnlTempsToolbar.Width - btnExportCsv.Width - 4;
+            btnPrintHistory.Left = pnlHistoryToolbar.Width - btnPrintHistory.Width - 4;
+            btnLoadHistory.Left = btnPrintHistory.Left - btnLoadHistory.Width - 4;
         }
 
         private void RestoreFormBounds()
@@ -759,6 +776,9 @@ namespace BinWatch
 
         private void MainForm_Shown(object sender, EventArgs e)
         {
+            btnExportCsv.Left = pnlTempsToolbar.Width - btnExportCsv.Width - 4;
+            btnPrintHistory.Left = pnlHistoryToolbar.Width - btnPrintHistory.Width - 4;
+            btnLoadHistory.Left = btnPrintHistory.Left - btnLoadHistory.Width - 4;
             if (!AppConfig.PassiveMode)
                 AppServices.UdpServer.SendCommand(0, UdpServer.CmdSendModuleDescription | UdpServer.CmdUpdateAndSendTemps);
         }

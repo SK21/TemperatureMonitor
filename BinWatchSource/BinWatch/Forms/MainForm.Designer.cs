@@ -38,6 +38,7 @@ namespace BinWatch
         private System.Windows.Forms.Label lblHistoryTo;
         private System.Windows.Forms.DateTimePicker dtpHistoryTo;
         private System.Windows.Forms.Button btnLoadHistory;
+        private System.Windows.Forms.Button btnPrintHistory;
         private System.Windows.Forms.DataVisualization.Charting.Chart chart;
 
         // Status strip
@@ -85,6 +86,7 @@ namespace BinWatch
             this.lblHistoryTo = new System.Windows.Forms.Label();
             this.dtpHistoryTo = new System.Windows.Forms.DateTimePicker();
             this.btnLoadHistory = new System.Windows.Forms.Button();
+            this.btnPrintHistory = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.lblPackets = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
@@ -278,7 +280,7 @@ namespace BinWatch
             // btnExportCsv
             // 
             this.btnExportCsv.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnExportCsv.Location = new System.Drawing.Point(1285, 3);
+            this.btnExportCsv.Location = new System.Drawing.Point(692, 3);
             this.btnExportCsv.Name = "btnExportCsv";
             this.btnExportCsv.Size = new System.Drawing.Size(113, 27);
             this.btnExportCsv.TabIndex = 0;
@@ -316,6 +318,7 @@ namespace BinWatch
             this.pnlHistoryToolbar.Controls.Add(this.lblHistoryTo);
             this.pnlHistoryToolbar.Controls.Add(this.dtpHistoryTo);
             this.pnlHistoryToolbar.Controls.Add(this.btnLoadHistory);
+            this.pnlHistoryToolbar.Controls.Add(this.btnPrintHistory);
             this.pnlHistoryToolbar.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlHistoryToolbar.Location = new System.Drawing.Point(3, 3);
             this.pnlHistoryToolbar.Name = "pnlHistoryToolbar";
@@ -324,7 +327,7 @@ namespace BinWatch
             // 
             // lblHistoryModule
             // 
-            this.lblHistoryModule.Location = new System.Drawing.Point(7, 6);
+            this.lblHistoryModule.Location = new System.Drawing.Point(3, 6);
             this.lblHistoryModule.Name = "lblHistoryModule";
             this.lblHistoryModule.Size = new System.Drawing.Size(57, 18);
             this.lblHistoryModule.TabIndex = 0;
@@ -334,15 +337,15 @@ namespace BinWatch
             // cboHistoryModule
             // 
             this.cboHistoryModule.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboHistoryModule.Location = new System.Drawing.Point(67, 3);
+            this.cboHistoryModule.Location = new System.Drawing.Point(63, 3);
             this.cboHistoryModule.Name = "cboHistoryModule";
-            this.cboHistoryModule.Size = new System.Drawing.Size(150, 24);
+            this.cboHistoryModule.Size = new System.Drawing.Size(110, 24);
             this.cboHistoryModule.TabIndex = 1;
             this.cboHistoryModule.SelectedIndexChanged += new System.EventHandler(this.cboHistoryModule_SelectedIndexChanged);
             // 
             // lblHistorySensor
             // 
-            this.lblHistorySensor.Location = new System.Drawing.Point(221, 6);
+            this.lblHistorySensor.Location = new System.Drawing.Point(177, 6);
             this.lblHistorySensor.Name = "lblHistorySensor";
             this.lblHistorySensor.Size = new System.Drawing.Size(57, 18);
             this.lblHistorySensor.TabIndex = 2;
@@ -352,15 +355,15 @@ namespace BinWatch
             // cboHistorySensor
             // 
             this.cboHistorySensor.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cboHistorySensor.Location = new System.Drawing.Point(281, 3);
+            this.cboHistorySensor.Location = new System.Drawing.Point(237, 3);
             this.cboHistorySensor.Name = "cboHistorySensor";
-            this.cboHistorySensor.Size = new System.Drawing.Size(160, 24);
+            this.cboHistorySensor.Size = new System.Drawing.Size(134, 24);
             this.cboHistorySensor.TabIndex = 3;
             this.cboHistorySensor.SelectedIndexChanged += new System.EventHandler(this.cboHistorySensor_SelectedIndexChanged);
             // 
             // lblHistoryFrom
             // 
-            this.lblHistoryFrom.Location = new System.Drawing.Point(445, 6);
+            this.lblHistoryFrom.Location = new System.Drawing.Point(375, 6);
             this.lblHistoryFrom.Name = "lblHistoryFrom";
             this.lblHistoryFrom.Size = new System.Drawing.Size(50, 18);
             this.lblHistoryFrom.TabIndex = 4;
@@ -371,14 +374,14 @@ namespace BinWatch
             // 
             this.dtpHistoryFrom.CustomFormat = "dd/MMM/yy";
             this.dtpHistoryFrom.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpHistoryFrom.Location = new System.Drawing.Point(498, 4);
+            this.dtpHistoryFrom.Location = new System.Drawing.Point(428, 4);
             this.dtpHistoryFrom.Name = "dtpHistoryFrom";
-            this.dtpHistoryFrom.Size = new System.Drawing.Size(95, 23);
+            this.dtpHistoryFrom.Size = new System.Drawing.Size(90, 23);
             this.dtpHistoryFrom.TabIndex = 5;
             // 
             // lblHistoryTo
             // 
-            this.lblHistoryTo.Location = new System.Drawing.Point(597, 6);
+            this.lblHistoryTo.Location = new System.Drawing.Point(522, 6);
             this.lblHistoryTo.Name = "lblHistoryTo";
             this.lblHistoryTo.Size = new System.Drawing.Size(32, 18);
             this.lblHistoryTo.TabIndex = 6;
@@ -389,20 +392,29 @@ namespace BinWatch
             // 
             this.dtpHistoryTo.CustomFormat = "dd/MMM/yy";
             this.dtpHistoryTo.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtpHistoryTo.Location = new System.Drawing.Point(632, 4);
+            this.dtpHistoryTo.Location = new System.Drawing.Point(557, 4);
             this.dtpHistoryTo.Name = "dtpHistoryTo";
-            this.dtpHistoryTo.Size = new System.Drawing.Size(95, 23);
+            this.dtpHistoryTo.Size = new System.Drawing.Size(90, 23);
             this.dtpHistoryTo.TabIndex = 7;
             // 
             // btnLoadHistory
             // 
-            this.btnLoadHistory.Location = new System.Drawing.Point(731, 2);
+            this.btnLoadHistory.Location = new System.Drawing.Point(651, 2);
             this.btnLoadHistory.Name = "btnLoadHistory";
             this.btnLoadHistory.Size = new System.Drawing.Size(75, 27);
             this.btnLoadHistory.TabIndex = 8;
             this.btnLoadHistory.Text = "Load";
             this.btnLoadHistory.Click += new System.EventHandler(this.btnLoadHistory_Click);
-            // 
+            //
+            // btnPrintHistory
+            //
+            this.btnPrintHistory.Location = new System.Drawing.Point(730, 2);
+            this.btnPrintHistory.Name = "btnPrintHistory";
+            this.btnPrintHistory.Size = new System.Drawing.Size(75, 27);
+            this.btnPrintHistory.TabIndex = 9;
+            this.btnPrintHistory.Text = "Print…";
+            this.btnPrintHistory.Click += new System.EventHandler(this.btnPrintHistory_Click);
+            //
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {

@@ -30,12 +30,12 @@ namespace BinWatch.Data
         /// </summary>
         public void EnsureSchema()
         {
-            // WAL mode allows concurrent readers + one writer without "database is locked"
-            // errors when the background UDP thread writes while the UI thread reads.
-            // This setting is persistent — only needs to be applied once per database file.
+            // DELETE journal mode (SQLite default) — single-file database with no -wal/-shm
+            // side files, making cloud sync (Sync.com) simpler. Viable because writes are
+            // infrequent (hourly) and BusyTimeout handles any brief lock contention.
             Database.ExecuteSqlCommand(
                 System.Data.Entity.TransactionalBehavior.DoNotEnsureTransaction,
-                "PRAGMA journal_mode=WAL;");
+                "PRAGMA journal_mode=DELETE;");
 
             Database.ExecuteSqlCommand(@"
                 CREATE TABLE IF NOT EXISTS Modules (

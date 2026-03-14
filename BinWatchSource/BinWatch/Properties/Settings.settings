@@ -3,7 +3,7 @@
   <Profiles />
   <Settings>
     <Setting Name="AppVersion" Type="System.String" Scope="User">
-      <Value Profile="(Default)">1.0.2-beta</Value>
+      <Value Profile="(Default)">1.0.3-beta</Value>
     </Setting>
   </Settings>
 </SettingsFile>

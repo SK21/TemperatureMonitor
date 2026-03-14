@@ -25,7 +25,7 @@ namespace BinWatch.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1.0.2-beta")]
+        [global::System.Configuration.DefaultSettingValueAttribute("1.0.3-beta")]
         public string AppVersion {
             get {
                 return ((string)(this["AppVersion"]));

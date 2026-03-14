@@ -416,6 +416,10 @@ fp-info-cache
 # Visual Micro stuff
 __vm/
 
+# BinWatch distribution DLLs (x86/x64 subfolders would otherwise be caught by build rules above)
+!BinWatchApp/x86/
+!BinWatchApp/x64/
+
 # BinWatch runtime files (database, log, settings)
 BinWatchApp/*.db
 BinWatchApp/*.db-shm
