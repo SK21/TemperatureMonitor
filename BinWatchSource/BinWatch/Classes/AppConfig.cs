@@ -92,6 +92,18 @@ namespace BinWatch
                 else if (key == "Temps.SortColumn")      TempsSortColumn      = val;
                 else if (key == "Temps.SortAscending")   { if (bool.TryParse(val, out bool v)) TempsSortAscending   = v; }
             }
+
+            // If the configured DB folder doesn't exist (e.g. copied install from another PC),
+            // fall back to the local default so the app still starts.
+            if (!string.IsNullOrWhiteSpace(DbPath))
+            {
+                string dir = Path.GetDirectoryName(DbPath);
+                if (!string.IsNullOrWhiteSpace(dir) && !Directory.Exists(dir))
+                {
+                    Logger.Warning($"DbPath folder not found ({dir}), falling back to local database");
+                    DbPath = "";
+                }
+            }
         }
 
         /// <summary>
