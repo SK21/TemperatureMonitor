@@ -442,6 +442,18 @@ namespace BinWatch
             LoadLatestTemperatures();   // refresh grid in case locations changed
         }
 
+        private void btnUserManual_Click(object sender, EventArgs e)
+        {
+            string path = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "BinWatch User Manual.pdf");
+            if (!File.Exists(path))
+            {
+                MessageBox.Show("User manual not found:\n" + path, "BinWatch",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+            System.Diagnostics.Process.Start(path);
+        }
+
         // -------------------------------------------------------------------------
         // Double-click to edit
         // -------------------------------------------------------------------------

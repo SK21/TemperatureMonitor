@@ -91,6 +91,7 @@ namespace BinWatch
             this.lblPackets = new System.Windows.Forms.ToolStripStatusLabel();
             this.lblStatus = new System.Windows.Forms.ToolStripStatusLabel();
             this.tmrStatus = new System.Windows.Forms.Timer(this.components);
+            this.btnUserManual = new System.Windows.Forms.Button();
             this.tabControl.SuspendLayout();
             this.tabDashboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dgvModules)).BeginInit();
@@ -149,6 +150,7 @@ namespace BinWatch
             // 
             // pnlDashToolbar
             // 
+            this.pnlDashToolbar.Controls.Add(this.btnUserManual);
             this.pnlDashToolbar.Controls.Add(this.btnRequestDescription);
             this.pnlDashToolbar.Controls.Add(this.btnRequestTemps);
             this.pnlDashToolbar.Controls.Add(this.btnSettings);
@@ -162,7 +164,7 @@ namespace BinWatch
             // 
             // btnRequestDescription
             // 
-            this.btnRequestDescription.Location = new System.Drawing.Point(301, 7);
+            this.btnRequestDescription.Location = new System.Drawing.Point(299, 7);
             this.btnRequestDescription.Name = "btnRequestDescription";
             this.btnRequestDescription.Size = new System.Drawing.Size(136, 27);
             this.btnRequestDescription.TabIndex = 0;
@@ -180,7 +182,7 @@ namespace BinWatch
             // 
             // btnSettings
             // 
-            this.btnSettings.Location = new System.Drawing.Point(187, 7);
+            this.btnSettings.Location = new System.Drawing.Point(186, 7);
             this.btnSettings.Name = "btnSettings";
             this.btnSettings.Size = new System.Drawing.Size(93, 27);
             this.btnSettings.TabIndex = 2;
@@ -189,7 +191,7 @@ namespace BinWatch
             // 
             // btnConvertSensors
             // 
-            this.btnConvertSensors.Location = new System.Drawing.Point(458, 7);
+            this.btnConvertSensors.Location = new System.Drawing.Point(455, 7);
             this.btnConvertSensors.Name = "btnConvertSensors";
             this.btnConvertSensors.Size = new System.Drawing.Size(145, 27);
             this.btnConvertSensors.TabIndex = 3;
@@ -198,7 +200,7 @@ namespace BinWatch
             // 
             // btnDiscover
             // 
-            this.btnDiscover.Location = new System.Drawing.Point(624, 7);
+            this.btnDiscover.Location = new System.Drawing.Point(620, 7);
             this.btnDiscover.Name = "btnDiscover";
             this.btnDiscover.Size = new System.Drawing.Size(130, 27);
             this.btnDiscover.TabIndex = 4;
@@ -405,16 +407,16 @@ namespace BinWatch
             this.btnLoadHistory.TabIndex = 8;
             this.btnLoadHistory.Text = "Load";
             this.btnLoadHistory.Click += new System.EventHandler(this.btnLoadHistory_Click);
-            //
+            // 
             // btnPrintHistory
-            //
+            // 
             this.btnPrintHistory.Location = new System.Drawing.Point(730, 2);
             this.btnPrintHistory.Name = "btnPrintHistory";
             this.btnPrintHistory.Size = new System.Drawing.Size(75, 27);
             this.btnPrintHistory.TabIndex = 9;
             this.btnPrintHistory.Text = "Print…";
             this.btnPrintHistory.Click += new System.EventHandler(this.btnPrintHistory_Click);
-            //
+            // 
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -444,6 +446,17 @@ namespace BinWatch
             // 
             this.tmrStatus.Interval = 1000;
             this.tmrStatus.Tick += new System.EventHandler(this.tmrStatus_Tick);
+            // 
+            // btnUserManual
+            // 
+            this.btnUserManual.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnUserManual.Location = new System.Drawing.Point(770, 7);
+            this.btnUserManual.Name = "btnUserManual";
+            this.btnUserManual.Size = new System.Drawing.Size(36, 27);
+            this.btnUserManual.TabIndex = 5;
+            this.btnUserManual.Text = "?";
+            this.btnUserManual.UseVisualStyleBackColor = true;
+            this.btnUserManual.Click += new System.EventHandler(this.btnUserManual_Click);
             // 
             // MainForm
             // 
@@ -476,5 +489,7 @@ namespace BinWatch
             this.PerformLayout();
 
         }
+
+        private System.Windows.Forms.Button btnUserManual;
     }
 }
