@@ -123,7 +123,7 @@ namespace BinWatch
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Bin", DataPropertyName = "Bin", HeaderText = "Bin", Width = 40 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Cable", DataPropertyName = "Cable", HeaderText = "Cable", Width = 50 });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Sensor", DataPropertyName = "Sensor", HeaderText = "Sensor", Width = 55 });
-            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Label", DataPropertyName = "Label", HeaderText = "Label", Width = 120 });
+            dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn { Name = "Label", DataPropertyName = "Label", HeaderText = "Label", Width = 120, Visible = false });
             dgvTemperatures.Columns.Add(new DataGridViewTextBoxColumn
             {
                 Name = "Temperature",
@@ -330,7 +330,7 @@ namespace BinWatch
                 _temperaturesTable.Rows.Add(row);
             }
 
-            row["Bin"] = (binId + 1).ToString();
+            row["Bin"] = binId == 255 ? "-" : (binId + 1).ToString();
             row["Cable"] = (cableId + 1).ToString();
             row["Sensor"] = (sensorNum + 1).ToString();
             row["Label"] = label ?? "";
@@ -492,7 +492,7 @@ namespace BinWatch
                     var row = _temperaturesTable.Rows.Find(romCode);
                     if (row != null)
                     {
-                        row["Bin"] = (sensor.BinId + 1).ToString();
+                        row["Bin"] = sensor.BinId == 255 ? "-" : (sensor.BinId + 1).ToString();
                         row["Cable"] = (sensor.CableId + 1).ToString();
                         row["Sensor"] = (sensor.SensorNum + 1).ToString();
                         row["Label"] = sensor.Label ?? "";
@@ -568,7 +568,7 @@ namespace BinWatch
                 {
                     sensors.TryGetValue(r.RomCode, out var sensor);
                     string label = sensor?.Label ?? "";
-                    string bin = sensor != null ? (sensor.BinId + 1).ToString() : "";
+                    string bin = sensor != null ? (sensor.BinId == 255 ? "-" : (sensor.BinId + 1).ToString()) : "";
                     string cable = sensor != null ? (sensor.CableId + 1).ToString() : "";
                     string snum = sensor != null ? (sensor.SensorNum + 1).ToString() : "";
                     string module = sensor?.Module?.Name ?? sensor?.ModuleMac ?? "";

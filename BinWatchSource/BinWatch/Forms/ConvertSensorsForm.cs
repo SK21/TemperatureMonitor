@@ -72,7 +72,7 @@ namespace BinWatch
                 row["Module"]   = s.Module?.Name ?? s.ModuleMac ?? "";
                 row["Raw"]      = $"{raw:X4}";
                 row["Format"]   = s.Format?.Name ?? "";
-                row["Bin"]      = (s.BinId     + 1).ToString();
+                row["Bin"]      = s.BinId == 255 ? "-" : (s.BinId + 1).ToString();
                 row["Cable"]    = (s.CableId   + 1).ToString();
                 row["Sensor"]   = (s.SensorNum + 1).ToString();
                 _table.Rows.Add(row);

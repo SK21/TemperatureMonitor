@@ -248,7 +248,7 @@ namespace BinWatch
                 var row = _previewTable.NewRow();
                 row["RomCode"] = FormatRomCode(s.RomCode);
                 row["Raw"] = $"{raw:X4}";
-                row["Bin"] = (bin + 1).ToString();
+                row["Bin"] = bin == 255 ? "-" : (bin + 1).ToString();
                 row["Cable"] = (cable + 1).ToString();
                 row["Sensor"] = (sensor + 1).ToString();
                 _previewTable.Rows.Add(row);
@@ -275,6 +275,13 @@ namespace BinWatch
 
         private void btnSave_Click(object sender, EventArgs e)
         {
+            if (AppConfig.PassiveMode)
+            {
+                MessageBox.Show("Cannot save changes in passive mode.", "Passive Mode",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var fmt = CurrentFormat();
             if (string.IsNullOrWhiteSpace(fmt.Name))
             {

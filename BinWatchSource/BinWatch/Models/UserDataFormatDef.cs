@@ -31,10 +31,13 @@ namespace BinWatch.Models
 
         // ── Decode ────────────────────────────────────────────────────────────────
 
-        /// <summary>Decode raw user data (ushort) into 0-based bin/cable/sensor.</summary>
+        /// <summary>
+        /// Decode raw user data (ushort) into 0-based bin/cable/sensor.
+        /// bin == 255 means no Bin field is mapped in this format ("no bin").
+        /// </summary>
         public (int bin, int cable, int sensor) Decode(ushort raw)
         {
-            int bin = 0, cable = 0, sensor = 0;
+            int bin = 255, cable = 0, sensor = 0;  // 255 = no bin (no Bin row mapped)
             for (int i = 0; i < 3; i++)
             {
                 var (desc, byteNum, low, high, offset) = GetRow(i);

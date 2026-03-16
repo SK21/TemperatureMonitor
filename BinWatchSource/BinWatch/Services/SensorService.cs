@@ -96,7 +96,9 @@ namespace BinWatch.Services
             byte cableId, byte sensorNum)
         {
             // Encode: [15:8] Bin | [7:4] Cable | [3:0] Sensor
-            ushort raw = (ushort)((binId << 8) | (cableId << 4) | sensorNum);
+            // binId==255 means "no bin" — encode as 0 so the EEPROM gets a clean value
+            byte encodedBin = binId == 255 ? (byte)0 : binId;
+            ushort raw = (ushort)((encodedBin << 8) | (cableId << 4) | sensorNum);
             byte ud0 = (byte)(raw & 0xFF);
             byte ud1 = (byte)(raw >> 8);
             _udpServer.SendSetSensorUserData(moduleId, romCodeBytes, ud0, ud1);

@@ -17,8 +17,9 @@ namespace BinWatch
             lblRomCodeValue.Text = sensor.RomCode;
             lblModuleValue.Text  = sensor.Module?.Name ?? sensor.ModuleMac ?? "-";
 
-            // Location — 1-indexed display, 0-indexed storage
-            nudBin.Value       = sensor.BinId + 1;
+            // Location — 1-indexed display, 0-indexed storage.
+            // BinId==255 means "no bin" (set by a format with no Bin field); show as 1 here.
+            nudBin.Value       = sensor.BinId == 255 ? 1 : sensor.BinId + 1;
             nudCable.Value     = sensor.CableId + 1;
             nudSensorNum.Value = sensor.SensorNum + 1;
 
