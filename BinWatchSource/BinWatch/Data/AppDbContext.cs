@@ -109,6 +109,10 @@ namespace BinWatch.Data
                     FOREIGN KEY (RomCode) REFERENCES Sensors (RomCode)
                 )");
 
+            // Without this index GetLatestPerSensor() is O(n²) — startup slows as the table grows.
+            Database.ExecuteSqlCommand(
+                "CREATE INDEX IF NOT EXISTS idx_records_romcode_ts ON TemperatureRecords (RomCode, Timestamp DESC)");
+
             Database.ExecuteSqlCommand(@"
                 CREATE TABLE IF NOT EXISTS Settings (
                     Key   TEXT PRIMARY KEY NOT NULL,

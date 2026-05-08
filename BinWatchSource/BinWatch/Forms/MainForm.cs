@@ -67,7 +67,6 @@ namespace BinWatch
             }
 
             LoadModules();
-            LoadLatestTemperatures();
             RestoreSortOrders();
             lblStatus.Text = AppConfig.PassiveMode
                 ? "Passive mode (read-only)"
@@ -791,6 +790,15 @@ namespace BinWatch
             btnExportCsv.Left = pnlTempsToolbar.Width - btnExportCsv.Width - 4;
             btnPrintHistory.Left = pnlHistoryToolbar.Width - btnPrintHistory.Width - 4;
             btnLoadHistory.Left = btnPrintHistory.Left - btnLoadHistory.Width - 4;
+
+            lblStatus.Text = "Loading…";
+            Application.DoEvents();
+            LoadLatestTemperatures();
+
+            lblStatus.Text = AppConfig.PassiveMode
+                ? "Passive mode (read-only)"
+                : $"Listening on UDP port {UdpServer.DefaultPort}";
+
             if (!AppConfig.PassiveMode)
                 AppServices.UdpServer.SendCommand(0, UdpServer.CmdSendModuleDescription | UdpServer.CmdUpdateAndSendTemps);
         }
